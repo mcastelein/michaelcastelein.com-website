@@ -1,0 +1,80 @@
+/* Reset default margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set a default font and font color */
+body {
+  font-family: Arial, sans-serif;
+  color: #fff;
+  background-color: #121212;
+}
+
+/* Style the header */
+header {
+  background-color: #0f4c75;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Style the navigation menu */
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+nav ul li:last-child {
+  margin-right: 0;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Style the main content area */
+main {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+/* Style the blog post previews */
+article {
+  margin-bottom: 30px;
+  background-color: #17223b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+article h3 a {
+  color: #fff;
+  text-decoration: none;
+}
+
+article h3 a:hover {
+  text-decoration: underline;
+}
+
+article p {
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+/* Style the footer */
+footer {
+  background-color: #0f4c75;
+  padding: 10px;
+  text-align: center;
+}
