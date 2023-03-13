@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Quiz Page</title>
+    <title>Kana Quiz</title>
     <link rel="stylesheet" href="../css/quizMain.css" />
   </head>
   <body>
     <header>
-      <h1>Quiz Page</h1>
+      <h1>Kana Quiz</h1>
       <div id="score">Score: 0</div>
+      <div id="tracker">#1/15</div>
     </header>
     <main>
       <form>
-        <h2>Question 1:</h2>
-        <p>あ</p>
+        <h2 class="question">Question 1:</h2>
+        <p class="kana">あ</p>
         <input type="text" id="answer" />
-        <button type="submit" id="submit">Submit</button>
+        <button class="btn submit" type="submit" id="submit">Submit</button>
+        <button class="btn incorrect hidden" type="incorrect" id="incorrect">
+          Study Incorrect
+        </button>
+        <button class="btn restart hidden" type="restart" id="restart">
+          Restart
+        </button>
+        <p class="wrong">Wrong:</p>
       </form>
     </main>
-    <script src="script.js"></script>
+    <script src="../scripts/kana_quiz.js"></script>
   </body>
 </html>

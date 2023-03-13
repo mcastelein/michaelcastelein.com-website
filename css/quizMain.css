@@ -20,8 +20,14 @@ h1 {
 }
 
 /* Style the paragraph */
-p {
-  font-size: 18px;
+.kana {
+  font-size: 100px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.wrong {
+  font-size: 30px;
   line-height: 1.5;
   margin-bottom: 20px;
 }
@@ -52,4 +58,8 @@ a {
 a:hover {
   background-color: #cccccc;
   color: #ffffff;
+}
+
+.hidden {
+  display: none;
 }
