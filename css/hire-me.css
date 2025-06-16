@@ -1,0 +1,370 @@
+/* Santorini-inspired color palette */
+:root {
+  --white: #ffffff;
+  --sky-blue: #a8dadc;
+  --deep-blue: #264653;
+  --navy: #1d3557;
+  --terracotta: #e76f51;
+  --light-grey: #f1f1f1;
+  --santorini-highlight: #edf6f9;
+  --santorini-accent: #1d3557;
+  --santorini-gradient: linear-gradient(to bottom right, #a8dadc, #457b9d);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  color: var(--navy);
+  background-color: var(--santorini-highlight);
+  scroll-behavior: smooth;
+  line-height: 1.6;
+}
+
+header {
+  background-color: var(--white);
+  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--deep-blue);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--santorini-accent);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--terracotta);
+}
+
+.hero {
+  height: 100vh;
+  background: var(--santorini-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: var(--white);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+  color: var(--santorini-highlight);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--terracotta);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+  background-color: #d45c41;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+section {
+  padding-top: 80px;
+}
+
+.about h2,
+.projects h2,
+.resume h2,
+.contact h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--deep-blue);
+  border-left: 6px solid var(--sky-blue);
+  padding-left: 1rem;
+}
+
+.project-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-top: 2rem;
+}
+
+.project-card {
+  background-color: var(--light-grey);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+  border-left: 4px solid var(--sky-blue);
+  color: var(--santorini-accent);
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  background-color: var(--santorini-highlight);
+}
+
+.timeline {
+  list-style: none;
+  padding-left: 1rem;
+  margin: 2rem 0;
+}
+
+.timeline li {
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+  color: var(--santorini-accent);
+}
+
+.timeline li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 10px;
+  height: 10px;
+  background-color: var(--terracotta);
+  border-radius: 50%;
+}
+
+.contact-links {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-links a:hover {
+  color: var(--terracotta);
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .container {
+    padding: 4rem 1.5rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.hero-slideshow {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.slideshow img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* try changing this line */
+  object-position: center;
+  animation: fade 24s infinite;
+  opacity: 0;
+  max-height: 100vh;
+}
+
+.slideshow img:nth-child(1) {
+  animation-delay: 0s;
+}
+.slideshow img:nth-child(2) {
+  animation-delay: 8s;
+}
+.slideshow img:nth-child(3) {
+  animation-delay: 16s;
+}
+
+@keyframes fade {
+  0%,
+  33.333% {
+    opacity: 1;
+  }
+  33.334%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+}
+
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  height: 100%;
+  animation: scroll-left 60s linear infinite;
+  gap: 0; /* ensures no space between images */
+}
+
+.carousel-track img {
+  flex: none;
+  height: 100vh;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+  background-color: var(--santorini-highlight);
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-300vw);
+  }
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  color: white;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.hire-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  margin: 4rem 0;
+  flex-direction: row;
+}
+
+.hire-block.reverse {
+  flex-direction: row-reverse;
+}
+
+.hire-img img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.hire-text {
+  flex: 1;
+}
+
+.hire-text h2 {
+  color: var(--deep-blue);
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.hire-text p {
+  color: var(--navy);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .hire-block,
+  .hire-block.reverse {
+    flex-direction: column;
+  }
+
+  .hire-img img {
+    max-width: 100%;
+  }
+}
+
+.hire-img {
+  flex: 0 0 45%;
+}
+
+.hire-text {
+  flex: 1;
+  max-width: 50ch; /* or try 60ch for a wider feel */
+}
