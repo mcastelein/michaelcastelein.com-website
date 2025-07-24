@@ -23,7 +23,7 @@ Currently focused on building projects in AI, freelancing, and online education.
 
 <div class="profile-image-grid" markdown>
 
-![Michael Castelein](assets/@daveebbelaar.jpg){ .profile-image alt="Michael Castelein headshot" }
+![Michael Castelein](assets/@michaelcastelein.jpeg){ .profile-image alt="Michael Castelein headshot" }
 
 </div>
 
