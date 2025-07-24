@@ -81,4 +81,4 @@ If you’re interested in:
 
 Then let’s chat!
 
-[Book a free call :material-arrow-top-right:](https://www.calendly.com){ .md-button .md-button--primary }
+[Lets grab a digital coffee☕! :material-arrow-top-right:](https://calendly.com/mpcastelein/1-1-coffee-chat){ .md-button .md-button--primary }
