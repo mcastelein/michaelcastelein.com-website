@@ -1,0 +1,30 @@
+{
+  "name": "michaelcastelein-com",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.1.1",
+    "@fontsource-variable/bricolage-grotesque": "^5.1.1",
+    "@fontsource-variable/cormorant-garamond": "^5.3.0",
+    "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.1.2",
+    "@fontsource-variable/karla": "^5.1.0",
+    "@fontsource-variable/libre-franklin": "^5.1.1",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.1.1",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.1.1",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "astro": "^5.6.1",
+    "posthog-js": "^1.416.0",
+    "three": "^0.185.1"
+  }
+}

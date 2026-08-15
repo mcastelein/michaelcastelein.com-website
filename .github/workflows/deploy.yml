@@ -1,0 +1,50 @@
+name: Deploy site
+
+# The custom domain michaelcastelein.com is served from the gh-pages branch
+# (Pages "legacy" source), so this builds the Astro site and publishes dist/
+# to that branch rather than using the Pages artifact flow.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # public/CNAME is copied into dist/ by Astro, which keeps the custom
+      # domain bound on every deploy. Fail loudly if it ever goes missing,
+      # because a gh-pages push without it silently unbinds the domain.
+      - name: Verify CNAME survived the build
+        run: |
+          test -f dist/CNAME || { echo "dist/CNAME missing — custom domain would break"; exit 1; }
+          echo "CNAME: $(cat dist/CNAME)"
+
+      # Jekyll would otherwise ignore Astro's _astro/ asset directory.
+      - name: Disable Jekyll processing
+        run: touch dist/.nojekyll
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages

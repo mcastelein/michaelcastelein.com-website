@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import { photoAt } from '../lib/photos';
+
+/**
+ * One photo slot. Renders the real optimised image if Michael has dropped a file
+ * into src/assets/photos/<category>/, and a labelled placeholder if not — so
+ * every layout is built at full fidelity before a single photo exists, and
+ * tells him exactly what to put where.
+ */
+interface Props {
+  category: string;
+  /** Which photo in the folder (0-based). Slots claim different indexes. */
+  index?: number;
+  /** What this slot wants, shown on the placeholder. */
+  hint: string;
+  /** CSS aspect-ratio, e.g. "4 / 5". Also used to size the placeholder. */
+  ratio?: string;
+  /** Rendered widths for the srcset. */
+  widths?: number[];
+  sizes?: string;
+  class?: string;
+  /** Treat as decoration — skips the caption and empties alt text. */
+  decorative?: boolean;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  category,
+  index = 0,
+  hint,
+  ratio = '4 / 5',
+  widths = [400, 800, 1200],
+  sizes = '(max-width: 700px) 100vw, 45vw',
+  class: className = '',
+  decorative = false,
+  loading = 'lazy',
+} = Astro.props;
+
+const photo = photoAt(category, index);
+
+/**
+ * Placeholders are a build-time authoring aid, never something a visitor sees.
+ * In production an unfilled slot renders nothing at all; the layouts that hold
+ * them are gated on `hasPhotos()` so nothing collapses into an empty gap.
+ */
+const showPlaceholder = import.meta.env.DEV;
+---
+
+{photo ? (
+  <figure class:list={['ph', className]} style={`--ratio:${ratio}`}>
+    <Image
+      src={photo.src}
+      alt={decorative ? '' : photo.caption}
+      widths={widths}
+      sizes={sizes}
+      loading={loading}
+      decoding="async"
+      class="ph__img"
+    />
+    {!decorative && <figcaption class="ph__cap">{photo.caption}</figcaption>}
+  </figure>
+) : showPlaceholder ? (
+  <div class:list={['ph', 'ph--empty', className]} style={`--ratio:${ratio}`} aria-hidden="true">
+    <div class="ph__slot">
+      <span class="ph__cat">{category}</span>
+      <span class="ph__hint">{hint}</span>
+      <span class="ph__meta">{ratio.replace(/\s/g, '')} · slot {index + 1}</span>
+    </div>
+  </div>
+) : null}
+
+<style>
+  .ph {
+    margin: 0;
+    position: relative;
+    min-width: 0;
+  }
+  .ph__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--ratio);
+    object-fit: cover;
+    border-radius: var(--photo-radius, 3px);
+  }
+  .ph__cap {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+    color: var(--photo-cap, currentColor);
+    opacity: 0.66;
+  }
+
+  /* Placeholder: unmistakably a to-do, and still holds correct layout space. */
+  .ph--empty { }
+  .ph__slot {
+    aspect-ratio: var(--ratio);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px;
+    text-align: center;
+    border-radius: var(--photo-radius, 3px);
+    border: 1px dashed var(--photo-empty-line, rgba(30, 90, 190, 0.42));
+    background:
+      repeating-linear-gradient(
+        135deg,
+        var(--photo-empty-bg, rgba(30, 90, 190, 0.05)) 0 10px,
+        transparent 10px 20px
+      );
+    color: var(--photo-empty-ink, rgba(20, 60, 130, 0.8));
+  }
+  .ph__cat {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .ph__hint {
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 22ch;
+  }
+  .ph__meta {
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+  }
+</style>

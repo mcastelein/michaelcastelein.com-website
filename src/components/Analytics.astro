@@ -1,0 +1,100 @@
+---
+/**
+ * PostHog, configured for a personal site with no cookie banner.
+ *
+ * Why these settings:
+ *  - persistence: 'memory'  — nothing is written to cookies or localStorage, so
+ *    no consent prompt is required under GDPR/ePrivacy. The trade-off is that a
+ *    returning visitor counts as new. Worth it to keep the site banner-free.
+ *  - api_host: eu.i.posthog.com — data stays in the EU.
+ *  - autocapture: on — this is the "track everything" part. Every click, input
+ *    and pageview is captured without defining events up front.
+ *  - session recording: OFF. It's the most invasive feature and answers no
+ *    question Michael actually has. Turn it on deliberately, never by default.
+ *
+ * If PUBLIC_POSTHOG_KEY is unset the script bails before importing anything, so
+ * local builds send nothing and ship no analytics bundle at all.
+ */
+---
+
+<script>
+  const KEY = import.meta.env.PUBLIC_POSTHOG_KEY;
+
+  if (KEY) {
+    // Dynamic import so posthog-js is a separate chunk, fetched only when a key exists.
+    const { default: posthog } = await import('posthog-js');
+
+    posthog.init(KEY, {
+      api_host: 'https://eu.i.posthog.com',
+      persistence: 'memory', // cookieless -> no consent banner needed
+      autocapture: true,
+      capture_pageview: true,
+      capture_pageleave: true, // gives real time-on-page
+      disable_session_recording: true,
+      person_profiles: 'never', // no cross-session identity; matches cookieless
+    });
+
+    const design = () => document.body.dataset.design || 'unknown';
+    const track = (event, props) => {
+      try {
+        posthog.capture(event, props);
+      } catch {
+        /* analytics must never break the page */
+      }
+    };
+
+    /* ── Named events ─────────────────────────────────────────────────────────
+       Autocapture already logs raw clicks. These are the few events worth
+       building funnels on. Naming follows object_action, lowercase_underscores. */
+
+    document.addEventListener('click', (e) => {
+      const el = e.target instanceof Element ? e.target.closest('a, button') : null;
+      if (!el) return;
+      const href = el.getAttribute('href') || '';
+
+      // The conversion that matters: someone asking for a coffee.
+      if (el.matches('[data-track="coffee"]') || /cal\.com|calendly/.test(href)) {
+        track('coffee_cta_clicked', {
+          location: el.getAttribute('data-track-location') || 'unknown',
+          label: el.textContent?.trim().slice(0, 60),
+          design: design(),
+        });
+        return;
+      }
+
+      // Which of the four homes people are actually curious about.
+      const base = el.getAttribute('data-track-base');
+      if (base) {
+        track('base_selected', { base, design: design() });
+        return;
+      }
+
+      // Where people go when they leave.
+      if (/^https?:\/\//.test(href) && !href.includes(location.host)) {
+        track('outbound_link_clicked', { href, label: el.textContent?.trim().slice(0, 60) });
+      }
+    });
+
+    /* How far people actually get — reported per section, once each, which is
+       far more useful than a scroll percentage. */
+    const seen = new Set();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const id = entry.target.id;
+          if (!id || seen.has(id)) continue;
+          seen.add(id);
+          track('section_viewed', { section: id, design: design() });
+        }
+      },
+      { threshold: 0.4 }
+    );
+    document.querySelectorAll('section[id]').forEach((s) => io.observe(s));
+
+    // Does anyone touch the globe? Tells us if the 3D is a feature or decoration.
+    document.addEventListener('globe:interact', (e) => {
+      track('globe_interacted', { ...(e.detail || {}), design: design() });
+    });
+  }
+</script>

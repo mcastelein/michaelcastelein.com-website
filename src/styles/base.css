@@ -1,0 +1,46 @@
+/* Shared reset + placeholder styling. Deliberately tiny — each art direction
+   owns its own palette, type and layout so the four don't bleed into each other. */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body,
+h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol {
+  margin: 0;
+}
+
+ul, ol { padding: 0; list-style: none; }
+
+img, svg, video { display: block; max-width: 100%; }
+
+a { color: inherit; }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* Placeholder marker — every [[bracketed]] item in the content renders like this
+   so Michael can find all of them at a glance. Works on light and dark. */
+mark.todo {
+  background: rgba(255, 206, 0, 0.22);
+  color: inherit;
+  border-bottom: 1px dashed rgba(255, 206, 0, 0.9);
+  padding: 0 0.18em;
+  border-radius: 2px;
+  font-style: italic;
+  cursor: help;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

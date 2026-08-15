@@ -1,0 +1,777 @@
+---
+import '../styles/base.css';
+import '@fontsource/instrument-serif';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import Analytics from '../components/Analytics.astro';
+import Globe from '../components/Globe.astro';
+import Photo from '../components/Photo.astro';
+import { hasPhotos, photoAt } from '../lib/photos';
+import { site, bases, baseColors, now, work, path, languages, play, coffee } from '../data/site';
+
+const today = new Date();
+const currentBase = bases.find((b) => b.months.includes(today.getMonth() + 1)) ?? bases[0];
+
+/* Photo-bearing blocks only render once there are photos to put in them. */
+/* The opening band is designed as a triptych. Until all three slots are filled
+   it would leave holes, so a partly-filled band collapses to a single centred
+   portrait instead of a lopsided row. */
+const bandSlots: Array<[string, number]> = [['me', 0], ['chaozhou', 0], ['kunming', 0]];
+const bandFilled = bandSlots.filter(([c, i]) => photoAt(c, i)).length;
+const bandMode = bandFilled === bandSlots.length ? 'full' : bandFilled > 0 ? 'solo' : 'none';
+const showMosaic = hasPhotos(
+  ['chaozhou', 3], ['netherlands', 0], ['play', 0],
+  ['kunming', 3], ['usa', 0], ['me', 1]
+);
+const showPlayPhotos = hasPhotos(['play', 1], ['play', 2]);
+const homeHasPhotos = (id: string) => hasPhotos([id, 1], [id, 2]);
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://michaelcastelein.com').href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{site.name} — Three countries, four homes, one loop</title>
+    <meta name="description" content={site.short} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${site.name} — Three countries, four homes, one loop`} />
+    <meta property="og:description" content={site.short} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Analytics />
+  </head>
+  <body data-design="b1-meridian">
+    <!-- The structural signature: meridian lines ruled down the page, the flat
+         version of the longitude lines on the globe. -->
+    <div class="meridians" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <header class="mast">
+      <a class="mast__id" href="#top">
+        <span class="mast__dot"></span>{site.name}
+      </a>
+      <nav class="mast__nav">
+        <a href="#homes">Homes</a>
+        <a href="#now">Now</a>
+        <a href="#work">Work</a>
+        <a href="#play">Play</a>
+        <a href="#coffee" class="mast__cta" data-track="coffee" data-track-location="nav">Coffee</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+      <section class="hero">
+        <div class="hero__text">
+          <p class="eyebrow">Dutch-American · Data &amp; AI · {site.domain}</p>
+          <h1 class="hero__h1">
+            Three countries.<br />
+            Four homes.<br />
+            <em>One loop, every year.</em>
+          </h1>
+          <p class="lede">
+            Chaozhou, Kunming, the Netherlands, the United States — the same route,
+            in the same order, annually. I run a data and AI consultancy from
+            whichever one I'm in, and I'm slowly learning the language of a city
+            that mostly doesn't write it down.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--solid" href={site.contact} data-track="coffee" data-track-location="hero">
+              Get in touch
+            </a>
+            <a class="btn" href="#homes">See the loop</a>
+          </div>
+          <p class="hero__now">
+            <span class="pip" style={`--c:${baseColors[currentBase.id].accent}`}></span>
+            Right now — {currentBase.country}, {currentBase.utc}
+          </p>
+        </div>
+
+        <div class="hero__globe">
+          <Globe />
+          <p class="hero__globe-cap">Drag to spin. The arcs are the actual route.</p>
+        </div>
+      </section>
+
+      <!-- ── Opening photo band ───────────────────────────────────────────── -->
+      {bandMode !== 'none' && (
+        <section class:list={['band', `band--${bandMode}`]} aria-label="Photographs">
+          <Photo category="me" index={0} hint="A portrait that isn't a headshot" ratio="4 / 5" class="band__a" loading="eager" />
+          <Photo category="chaozhou" index={0} hint="Chaozhou street life, wide" ratio="3 / 2" class="band__b" />
+          <Photo category="kunming" index={0} hint="Kunming — the plateau or the city" ratio="4 / 5" class="band__c" />
+        </section>
+      )}
+
+      <!-- ── The four homes ───────────────────────────────────────────────── -->
+      <section class="section" id="homes">
+        <div class="section__head">
+          <p class="rubric">The loop</p>
+          <h2>Four homes, and one country that counts twice.</h2>
+          <p class="section__sub">
+            Chaozhou and Kunming are both China and share almost nothing —
+            different food, climate, language, and a thousand kilometres between them.
+          </p>
+        </div>
+
+        {bases.map((b, i) => (
+          <article
+            class:list={['home', { 'home--flip': i % 2 === 1, 'home--solo': !homeHasPhotos(b.id) }]}
+            style={`--c:${baseColors[b.id].accent}`}
+          >
+            {homeHasPhotos(b.id) && (
+              <div class="home__photos">
+                <Photo category={b.id} index={1} hint={`${b.city} — the establishing shot`} ratio="3 / 4" />
+                <Photo category={b.id} index={2} hint={`${b.city} — a detail, close up`} ratio="1 / 1" class="home__photo2" />
+              </div>
+            )}
+
+            <div class="home__body">
+              <p class="home__index">
+                <span>{String(i + 1).padStart(2, '0')}</span> / {b.role}
+              </p>
+              <h3 class="home__city">
+                <span>{b.city}</span>
+                {b.cityLocal && <em lang="zh-Hans">{b.cityLocal}</em>}
+              </h3>
+              <p class="home__when">{b.monthLabel} · {b.country} · {b.lat.toFixed(1)}°, {b.lon.toFixed(1)}°</p>
+              <p class="home__headline">{b.headline}</p>
+              <p class="home__prose">{b.body}</p>
+              <ul class="home__list">
+                {b.doing.map((d) => <li>{d}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <!-- ── Mosaic ───────────────────────────────────────────────────────── -->
+      {showMosaic && (
+        <section class="section section--tight" aria-label="More photographs">
+          <div class="section__head">
+            <p class="rubric">A year, roughly</p>
+            <h2>Pictures from the circuit.</h2>
+          </div>
+          <div class="mosaic">
+            <Photo category="chaozhou" index={3} hint="Family traditions, Chaozhou" ratio="1 / 1" />
+            <Photo category="netherlands" index={0} hint="Dutch water, bikes, or summer" ratio="1 / 1" />
+            <Photo category="play" index={0} hint="Table tennis or badminton" ratio="1 / 1" />
+            <Photo category="kunming" index={3} hint="Kunming, everyday" ratio="1 / 1" />
+            <Photo category="usa" index={0} hint="The US stretch" ratio="1 / 1" />
+            <Photo category="me" index={1} hint="You, mid-something" ratio="1 / 1" />
+          </div>
+        </section>
+      )}
+
+      <!-- ── Now ──────────────────────────────────────────────────────────── -->
+      <section class="section section--split" id="now">
+        <div class="section__head">
+          <p class="rubric">Now</p>
+          <h2>What's actually happening.</h2>
+          <p class="section__sub">Updated {now.updated}</p>
+        </div>
+        <ul class="ruled">
+          {now.lines.map((l) => <li>{l}</li>)}
+        </ul>
+      </section>
+
+      <!-- ── Work ─────────────────────────────────────────────────────────── -->
+      <section class="section" id="work">
+        <div class="section__head">
+          <p class="rubric">Work</p>
+          <h2>What I'm running.</h2>
+          <p class="section__sub">{work.intro}</p>
+        </div>
+        <div class="cards">
+          {work.strands.map((s) => (
+            <article class="card">
+              <header class="card__head">
+                <h3>{s.name}</h3>
+                <span class="tag">{s.status}</span>
+              </header>
+              <p>{s.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- ── Path ─────────────────────────────────────────────────────────── -->
+      <section class="section section--split" id="path">
+        <div class="section__head">
+          <p class="rubric">Before this</p>
+          <h2>Aerospace to analytics.</h2>
+        </div>
+        <ol class="log">
+          {path.map((p) => (
+            <li>
+              <span class="log__what">{p.what}</span>
+              <span class="log__where">{p.where}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- ── Play ─────────────────────────────────────────────────────────── -->
+      <section class="section" id="play">
+        <div class="section__head">
+          <p class="rubric">Off the clock</p>
+          <h2>Rackets, distance, spreadsheets.</h2>
+        </div>
+        <div class:list={['play', { 'play--nophotos': !showPlayPhotos }]}>
+          {showPlayPhotos && (
+            <div class="play__photos">
+              <Photo category="play" index={1} hint="Mid-rally, or a team photo" ratio="3 / 2" />
+              <Photo category="play" index={2} hint="Running or training" ratio="3 / 2" />
+            </div>
+          )}
+          <div class="play__cards">
+            {play.map((p) => (
+              <article class="mini">
+                <h3>{p.name}</h3>
+                <p>{p.body}</p>
+              </article>
+            ))}
+          </div>
+          <div class="langs">
+            <p class="rubric">Languages</p>
+            <ul>
+              {languages.map((l) => (
+                <li>
+                  <span>{l.name}</span>
+                  <span class="langs__dot" aria-hidden="true"></span>
+                  <span class="langs__lvl">{l.level}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Coffee ───────────────────────────────────────────────────────── -->
+      <section class="coffee" id="coffee">
+        <div class="coffee__inner">
+          <p class="rubric rubric--light">Get in touch</p>
+          <h2>{coffee.headline}</h2>
+          <p class="coffee__body">{coffee.body}</p>
+          <a class="btn btn--light btn--lg" href={site.contact} data-track="coffee" data-track-location="footer-cta">
+            {site.contactLabel}
+          </a>
+          <p class="coffee__fine">{coffee.fineprint}</p>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>{site.name}</span>
+        <ul>
+          {site.socials.map((s) => <li><a href={s.href}>{s.handle}</a></li>)}
+        </ul>
+      </footer>
+    </main>
+
+    <style>
+      /* ── Palette: white paper, hairline blue, one strong blue ─────────────── */
+      :root {
+        --paper: #ffffff;
+        --paper-2: #f6f9fe;
+        --rule: #e3ebf7;
+        --rule-2: #c5d9f3;
+        --ink: #0b1a2e;
+        --ink-2: #4b6084;
+        --ink-3: #8195af;
+        --blue: #1f6feb;
+        --blue-deep: #0e2c57;
+        --serif: 'Instrument Serif', Georgia, serif;
+        --sans: 'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+        --globe-sphere: #ffffff;
+        /* Deeper than feels right in isolation: a white sphere on a white page
+           needs real contrast in the graticule or it disappears. */
+        --globe-line: #7ba9e8;
+        --globe-line-faint: #b9d4f3;
+        --globe-arc: #1f6feb;
+        --globe-glow: #cfe2fa;
+        --globe-label-ink: #0e2c57;
+        --photo-radius: 2px;
+        --photo-cap: var(--ink-3);
+        --photo-empty-line: rgba(31, 111, 235, 0.36);
+        --photo-empty-bg: rgba(31, 111, 235, 0.05);
+        --photo-empty-ink: rgba(14, 44, 87, 0.72);
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 17px;
+        line-height: 1.62;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .meridians {
+        position: fixed;
+        inset: 0;
+        left: 0;
+        right: 0;
+        max-width: 1280px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .meridians span { border-left: 1px solid var(--rule); }
+      .meridians span:first-child { border-left: 0; }
+      @media (max-width: 800px) { .meridians { display: none; } }
+
+      .mast, main { position: relative; z-index: 1; }
+
+      /* ── Masthead ───────────────────────────────────────────────────────── */
+      .mast {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 15px clamp(18px, 4vw, 46px);
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--rule);
+      }
+      .mast__id {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: -0.012em;
+        text-decoration: none;
+      }
+      .mast__dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--blue);
+      }
+      .mast__nav { display: flex; align-items: center; gap: 22px; }
+      .mast__nav a {
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        text-decoration: none;
+        color: var(--ink-2);
+        transition: color 0.15s;
+      }
+      .mast__nav a:hover { color: var(--blue); }
+      .mast__cta {
+        padding: 7px 14px;
+        border: 1px solid var(--rule-2);
+        border-radius: 999px;
+        color: var(--blue) !important;
+        font-weight: 550;
+      }
+      .mast__cta:hover { background: var(--paper-2); }
+      @media (max-width: 760px) {
+        .mast__nav a:not(.mast__cta) { display: none; }
+      }
+
+      /* ── Hero ───────────────────────────────────────────────────────────── */
+      .hero {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: clamp(36px, 6vw, 84px) clamp(18px, 4vw, 46px) clamp(30px, 4vw, 54px);
+        display: grid;
+        grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
+        gap: clamp(24px, 5vw, 64px);
+        align-items: center;
+      }
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; }
+        .hero__globe { max-width: 420px; margin: 0 auto; width: 100%; }
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 22px;
+      }
+      .hero__h1 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(44px, 7.6vw, 96px);
+        line-height: 0.98;
+        letter-spacing: -0.026em;
+        margin-bottom: 24px;
+      }
+      .hero__h1 em { font-style: italic; color: var(--blue); }
+
+      .lede {
+        max-width: 48ch;
+        color: var(--ink-2);
+        font-size: clamp(15.5px, 1.4vw, 17.5px);
+        line-height: 1.7;
+      }
+      .hero__actions { display: flex; flex-wrap: wrap; gap: 11px; margin: 26px 0 20px; }
+      .hero__now {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        letter-spacing: 0.05em;
+        color: var(--ink-3);
+      }
+      .pip {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 21px;
+        border: 1px solid var(--rule-2);
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 550;
+        text-decoration: none;
+        color: var(--ink);
+        transition: background 0.16s, border-color 0.16s, transform 0.16s;
+      }
+      .btn:hover { background: var(--paper-2); transform: translateY(-1px); }
+      .btn--solid { background: var(--blue); border-color: var(--blue); color: #fff; }
+      .btn--solid:hover { background: #175fd0; border-color: #175fd0; }
+      .btn--light { background: #fff; border-color: #fff; color: var(--blue-deep); }
+      .btn--light:hover { background: #eaf1fd; border-color: #eaf1fd; }
+      .btn--lg { padding: 15px 30px; font-size: 15px; }
+
+      .hero__globe-cap {
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-top: 6px;
+      }
+
+      /* ── Photo band ─────────────────────────────────────────────────────── */
+      .band {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 clamp(18px, 4vw, 46px) clamp(36px, 5vw, 70px);
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr;
+        gap: 12px;
+        align-items: end;
+      }
+      @media (max-width: 780px) {
+        .band--full { grid-template-columns: 1fr 1fr; }
+        .band--full .band__b { grid-column: span 2; order: -1; }
+      }
+      /* Only one of the three slots is filled: centre it at portrait size so it
+         reads as a deliberate portrait rather than a gappy row. */
+      .band--solo {
+        grid-template-columns: minmax(0, 300px);
+        justify-content: center;
+      }
+
+      /* ── Sections ───────────────────────────────────────────────────────── */
+      .section {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: clamp(44px, 6vw, 88px) clamp(18px, 4vw, 46px);
+        border-top: 1px solid var(--rule);
+      }
+      .section--tight { padding-top: clamp(30px, 4vw, 54px); }
+      .section__head { max-width: 60ch; margin-bottom: clamp(26px, 4vw, 46px); }
+      .rubric {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 14px;
+      }
+      .rubric--light { color: rgba(255, 255, 255, 0.72); }
+      .section__head h2 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(28px, 4.2vw, 50px);
+        line-height: 1.04;
+        letter-spacing: -0.024em;
+      }
+      .section__sub { margin-top: 12px; color: var(--ink-2); font-size: 16px; }
+
+      .section--split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.44fr) minmax(0, 1fr);
+        gap: clamp(22px, 5vw, 64px);
+        align-items: start;
+      }
+      .section--split .section__head { margin-bottom: 0; }
+      @media (max-width: 820px) {
+        .section--split { grid-template-columns: 1fr; }
+        .section--split .section__head { margin-bottom: 24px; }
+      }
+
+      /* ── A home ─────────────────────────────────────────────────────────── */
+      .home {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+        gap: clamp(22px, 4vw, 56px);
+        align-items: start;
+        padding: clamp(28px, 4vw, 52px) 0;
+        border-top: 1px solid var(--rule);
+      }
+      .home:first-of-type { border-top: 0; padding-top: 0; }
+      .home--flip .home__photos { order: 2; }
+      /* No photos yet: the entry becomes a single measured column of type
+         rather than a two-column layout with one side missing. */
+      .home--solo { grid-template-columns: minmax(0, 1fr); }
+      .home--solo .home__body { max-width: 68ch; }
+      @media (max-width: 860px) {
+        .home { grid-template-columns: 1fr; }
+        .home--flip .home__photos { order: 0; }
+      }
+
+      .home__photos {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+      .home__photo2 { margin-top: 26px; }
+
+      .home__index {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 12px;
+      }
+      .home__index span { color: var(--c); font-weight: 500; }
+      .home__city {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(34px, 5vw, 60px);
+        line-height: 0.98;
+        letter-spacing: -0.028em;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .home__city em {
+        font-style: normal;
+        font-size: 0.4em;
+        color: var(--c);
+        letter-spacing: 0.08em;
+      }
+      .home__when {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin: 12px 0 18px;
+      }
+      .home__headline {
+        font-family: var(--serif);
+        font-size: clamp(19px, 2vw, 24px);
+        font-style: italic;
+        line-height: 1.34;
+        color: var(--blue-deep);
+        margin-bottom: 12px;
+      }
+      .home__prose { color: var(--ink-2); font-size: 16px; line-height: 1.7; max-width: 52ch; }
+      .home__list {
+        display: grid;
+        gap: 0;
+        margin-top: 18px;
+      }
+      .home__list li {
+        padding: 11px 0 11px 16px;
+        border-top: 1px solid var(--rule);
+        position: relative;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--ink-2);
+      }
+      .home__list li::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 18px;
+        width: 6px; height: 1px;
+        background: var(--c);
+      }
+
+      /* ── Mosaic ─────────────────────────────────────────────────────────── */
+      .mosaic {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      /* ── Ruled list ─────────────────────────────────────────────────────── */
+      .ruled { display: grid; }
+      .ruled li {
+        padding: 16px 0;
+        border-top: 1px solid var(--rule);
+        font-size: 17px;
+        line-height: 1.58;
+      }
+      .ruled li:last-child { border-bottom: 1px solid var(--rule); }
+
+      /* ── Cards ──────────────────────────────────────────────────────────── */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(252px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        padding: 20px;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        background: var(--paper-2);
+      }
+      .card__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .card h3 { font-size: 17.5px; font-weight: 600; letter-spacing: -0.018em; }
+      .tag {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--blue);
+        white-space: nowrap;
+      }
+      .card p { font-size: 14.5px; line-height: 1.64; color: var(--ink-2); }
+
+      /* ── Log ────────────────────────────────────────────────────────────── */
+      .log { display: grid; }
+      .log li {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 14px;
+        padding: 14px 0;
+        border-top: 1px solid var(--rule);
+        align-items: baseline;
+        font-size: 16px;
+      }
+      .log li:last-child { border-bottom: 1px solid var(--rule); }
+      .log__what { font-weight: 550; }
+      .log__where { color: var(--ink-2); font-size: 15px; }
+      @media (max-width: 680px) { .log li { grid-template-columns: 1fr; gap: 2px; } }
+
+      /* ── Play ───────────────────────────────────────────────────────────── */
+      .play {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+        gap: clamp(16px, 3vw, 34px);
+        align-items: start;
+      }
+      /* Without the photo column the cards and languages share the width. */
+      .play--nophotos { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+      @media (max-width: 900px) {
+        .play, .play--nophotos { grid-template-columns: 1fr; }
+      }
+      .play__photos { display: grid; gap: 10px; }
+      .play__cards { display: grid; gap: 10px; align-content: start; }
+      .mini {
+        padding: 16px 18px;
+        border-left: 2px solid var(--blue);
+        background: var(--paper-2);
+      }
+      .mini h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 5px; }
+      .mini p { font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+
+      .langs ul { display: grid; }
+      .langs li {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 9px;
+        align-items: baseline;
+        padding: 10px 0;
+        border-top: 1px solid var(--rule);
+        font-size: 15.5px;
+      }
+      .langs__dot { border-bottom: 1px dotted var(--rule-2); transform: translateY(-4px); }
+      .langs__lvl { font-family: var(--mono); font-size: 11px; color: var(--blue); }
+
+      /* ── Coffee ─────────────────────────────────────────────────────────── */
+      .coffee {
+        background:
+          radial-gradient(120% 130% at 50% 0%, #2a7bf5 0%, #0e2c57 68%);
+        color: #fff;
+      }
+      .coffee__inner {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: clamp(54px, 8vw, 104px) clamp(18px, 4vw, 46px);
+        text-align: center;
+      }
+      .coffee h2 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: clamp(32px, 5.4vw, 60px);
+        line-height: 1;
+        letter-spacing: -0.03em;
+        margin-bottom: 16px;
+      }
+      .coffee__body {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 16.5px;
+        line-height: 1.68;
+        margin-bottom: 28px;
+      }
+      .coffee__fine {
+        margin-top: 18px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* ── Footer ─────────────────────────────────────────────────────────── */
+      .foot {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px clamp(18px, 4vw, 46px) 84px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .foot ul { display: flex; flex-wrap: wrap; gap: 18px; }
+      .foot a { text-decoration: none; }
+      .foot a:hover { color: var(--blue); }
+    </style>
+  </body>
+</html>
