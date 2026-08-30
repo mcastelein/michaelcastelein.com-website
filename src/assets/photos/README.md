@@ -1,4 +1,4 @@
-# Photos — drop files here
+# Photos: drop files here
 
 Put images into the folder that matches, and they show up on the site. No
 imports, no config, no list to update. Astro converts them to WebP and
@@ -15,7 +15,7 @@ kunming-from-the-apartment.jpg    ->  "Kunming from the apartment"
 IMG_4821.jpg                      ->  "IMG 4821"   <- don't do this
 ```
 
-Prefix with numbers to control order — the number is stripped from the caption:
+Prefix with numbers to control order. The number is stripped from the caption:
 
 ```
 01-first-photo-shown.jpg   ->  "First photo shown"
@@ -26,20 +26,20 @@ Prefix with numbers to control order — the number is stripped from the caption
 
 | Folder | How many | Looking for |
 |---|---|---|
-| `chaozhou/` | 4–6 | Street life, family food and traditions, the Shenzhen/Guangzhou trips |
-| `kunming/` | 4–6 | The plateau, the city, where you actually work |
-| `netherlands/` | 3–5 | Water, bikes, Dutch summer, Rotterdam |
-| `usa/` | 3–4 | Wherever you spend Nov–Dec |
-| `me/` | 3–4 | One good portrait, plus candids that aren't posed |
-| `play/` | 2–4 | Table tennis, badminton, running |
+| `chaozhou/` | 4 to 6 | Street life, family food and traditions, the Shenzhen/Guangzhou trips |
+| `kunming/` | 4 to 6 | The plateau, the city, where you actually work |
+| `netherlands/` | 3 to 5 | Water, bikes, Dutch summer, Rotterdam |
+| `usa/` | 3 to 4 | Wherever you spend November and December |
+| `me/` (slot 0 is the hero portrait) | 3 to 4 | One good portrait, plus candids that aren't posed |
+| `play/` | 2 to 4 | Table tennis, badminton, running |
 
-Landscape and portrait both work — the layouts use a mix on purpose.
+Landscape and portrait both work. The layouts use a mix on purpose.
 
 ## Formats
 
 JPG, PNG, WebP and AVIF work directly.
 
-**HEIC does not** — Astro's image pipeline can't read it. If your files come
+**HEIC does not.** Astro's image pipeline can't read it. If your files come
 straight off an iPhone, convert first:
 
 ```bash
@@ -52,7 +52,7 @@ Or tell Claude and it'll convert a folder for you.
 ## A note on what goes public
 
 Everything in here ends up on a public, Google-indexed page. Photos of other
-people — Lina, her family, friends — are worth a moment's thought before they
+people (Lina, her family, friends) are worth a moment's thought before they
 go in, especially family members who may not expect to be findable online.
 
 ## Nothing here yet?
