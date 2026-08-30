@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caffeine Lab &middot; Michael Castelein</title>
+<meta name="description" content="A sandbox for understanding caffeine. Drag drinks onto a day and watch the curve, the bedtime number and every panel redraw live.">
+<style>
+:root{
+  color-scheme: dark;
+  --plane:#0d0d0d;
+  --surface:#1a1a19;
+  --surface-2:#232321;
+  --ink:#ffffff;
+  --ink-2:#c3c2b7;
+  --muted:#898781;
+  --grid:#2c2c2a;
+  --axis:#383835;
+  --hair:rgba(255,255,255,0.10);
+
+  /* ordered heat ramp, caffeine intensity */
+  --z0:#5b8f6b;
+  --z1:#e0a92e;
+  --z2:#eb6834;
+  --z3:#e34948;
+  --z4:#d03b3b;
+
+  /* ordinal blue ramp, half-life comparison (light→dark = fast→slow) */
+  --hl1:#9ec5f4;
+  --hl2:#5598e7;
+  --hl3:#256abf;
+
+  --accent:#e0a92e;
+  --ok:#7fdc7f;
+  --bad:#ff8a86;
+
+  --r:14px;
+  --pad:clamp(14px, 3vw, 22px);
+  font-synthesis-weight:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--plane);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;padding:0 0 60px;overflow-x:hidden;
+}
+.app{max-width:960px;margin:0 auto;padding:0 var(--pad)}
+
+header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:24px 0 18px}
+.brand{min-width:0;flex:1}
+.brand h1{
+  margin:0;font-size:clamp(19px,4.6vw,24px);letter-spacing:.15em;
+  text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:10px;
+}
+.brand p{margin:7px 0 0;font-size:13.5px;color:var(--muted);line-height:1.5;max-width:56ch}
+.iconbtn{
+  appearance:none;border:1px solid var(--hair);background:var(--surface-2);
+  color:var(--ink-2);width:38px;height:38px;border-radius:999px;cursor:pointer;
+  font-size:16px;display:grid;place-items:center;flex:none;
+}
+.iconbtn:hover{color:var(--ink);border-color:rgba(255,255,255,.22)}
+
+.card{
+  background:var(--surface);border:1px solid var(--hair);
+  border-radius:var(--r);padding:var(--pad);margin-bottom:14px;
+}
+.card h2{
+  margin:0 0 3px;font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;
+}
+.card h2 .plain{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
+.sectiontitle{
+  margin:30px 0 12px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;display:flex;align-items:center;gap:12px;
+}
+.sectiontitle::after{content:"";flex:1;height:1px;background:var(--hair)}
+
+/* verdict */
+.verdict{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end}
+.verdict .main{flex:1 1 280px;min-width:0}
+.hero{
+  font-size:clamp(32px,7.8vw,50px);font-weight:650;line-height:1.04;
+  letter-spacing:-.02em;margin:6px 0 0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.hero .unit{font-size:.4em;font-weight:600;color:var(--muted);letter-spacing:0}
+.hero.ok{color:var(--ok)} .hero.bad{color:var(--bad)}
+.verdict .sub{margin:9px 0 0;font-size:14px;color:var(--ink-2);line-height:1.55}
+.verdict .sub b{color:var(--ink);font-weight:650}
+.stat{flex:0 0 auto;min-width:94px}
+.stat .lab{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat .val{font-size:25px;font-weight:650;margin-top:3px;letter-spacing:-.01em}
+.stat .val small{font-size:13px;color:var(--muted);font-weight:600;margin-left:2px}
+.quickset{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--muted)}
+.quickset label{font-weight:600}
+.quickset input{
+  background:var(--surface-2);border:1px solid var(--hair);color:var(--ink);
+  border-radius:8px;padding:5px 8px;font:inherit;font-size:13px;font-weight:600;
+  font-variant-numeric:tabular-nums;color-scheme:dark;
+}
+.quickset input[type=number]{width:62px}
+.qs-unit{margin-left:-3px}
+
+/* scrub readout */
+.scrub{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+.scrub .time{font-size:20px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.scrub .mg{font-size:20px;font-weight:650}
+.scrub .zone{font-size:13px;font-weight:650;padding:2px 9px;border-radius:999px;background:var(--surface-2)}
+.scrub .from{font-size:12.5px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.5}
+input[type=range].timeline{
+  width:100%;accent-color:var(--accent);margin:2px 0 0;
+}
+
+/* chart */
+.chartwrap{position:relative}
+svg.chart{display:block;width:100%;touch-action:none;user-select:none}
+.hintrow{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12px;color:var(--muted)}
+.key{display:inline-flex;align-items:center;gap:6px}
+.sw{width:15px;height:3px;border-radius:2px;display:inline-block;background:var(--accent)}
+.sw.ghost{background:var(--accent);opacity:.34}
+.sw.thr{background:transparent;border-top:2px dashed #fff;opacity:.55;height:0}
+.sw.hl1{background:var(--hl1)} .sw.hl2{background:var(--hl2)} .sw.hl3{background:var(--hl3)}
+.tablebtn{
+  appearance:none;background:transparent;border:0;color:var(--muted);font:inherit;
+  font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0;margin-left:auto;
+}
+.tablebtn:hover{color:var(--ink-2)}
+.tblwrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;font-size:13px;width:100%;min-width:340px}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums}
+th{color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.09em;text-transform:uppercase}
+td.z{color:var(--ink-2)}
+
+/* shelf */
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:9px;margin-top:12px}
+.drink{
+  appearance:none;text-align:left;cursor:grab;font:inherit;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--hair);border-radius:11px;
+  padding:11px 12px;transition:transform .09s,border-color .15s,background .15s;
+  touch-action:none;
+}
+.drink:hover{border-color:rgba(255,255,255,.24);background:#2a2a27}
+.drink:active{cursor:grabbing;transform:scale(.965)}
+.drink .n{font-size:13px;font-weight:600;line-height:1.25}
+.drink .m{font-size:11.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
+.drink .lc{font-size:11px;margin-top:5px;color:var(--accent);font-variant-numeric:tabular-nums}
+.drink.add{border-style:dashed;color:var(--ink-2);display:grid;place-items:center;text-align:center;cursor:pointer}
+#dragghost{
+  position:fixed;z-index:99;pointer-events:none;opacity:0;
+  background:var(--accent);color:#141312;font-size:12.5px;font-weight:700;
+  padding:7px 12px;border-radius:999px;transform:translate(-50%,-160%);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap;
+}
+
+/* log */
+.log ul{list-style:none;margin:10px 0 0;padding:0}
+.log li{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--hair)}
+.log li:first-child{border-top:0}
+.pinno{
+  width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-size:11px;font-weight:700;color:#141312;background:var(--accent);
+}
+.log input[type=time]{
+  background:var(--surface-2);border:1px solid var(--hair);color:var(--ink);
+  border-radius:8px;padding:5px 8px;font:inherit;font-size:13px;
+  font-variant-numeric:tabular-nums;color-scheme:dark;
+}
+.log .nm{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log .mg{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;flex:none}
+.log .del{appearance:none;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:17px;padding:4px 2px;flex:none}
+.log .del:hover{color:var(--bad)}
+.empty{color:var(--muted);font-size:13.5px;margin-top:10px;line-height:1.55}
+.totalrow{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:11px;border-top:1px solid var(--hair);font-size:13px}
+.totalrow b{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
+.over{color:var(--bad)}
+
+/* chips */
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--hair);border-radius:999px;padding:6px 12px;font-size:13px}
+.chip b{font-weight:650;font-variant-numeric:tabular-nums}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+
+/* sleep threshold box */
+.thrbox{background:var(--surface-2);border:1px solid var(--hair);border-radius:11px;padding:14px 15px 15px;margin-top:12px}
+.thrbox input[type=range]{width:100%;accent-color:var(--accent)}
+.thrbox .rangehead span{font-size:15px;font-weight:650}
+.bands{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.band{
+  flex:1 1 96px;border:1px solid var(--hair);border-radius:9px;padding:8px 10px;
+  background:var(--surface);font-size:12px;color:var(--muted);line-height:1.4;
+}
+.band.on{border-color:var(--accent);color:var(--ink-2)}
+.band b{display:block;font-size:13px;color:var(--ink-2);font-weight:650;margin-bottom:2px}
+.band.on b{color:var(--accent)}
+.equiv{margin:11px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* prose */
+.prose{font-size:14px;line-height:1.65;color:var(--ink-2);margin:12px 0 0;max-width:66ch}
+.prose p{margin:0 0 11px}
+.prose p:last-child{margin-bottom:0}
+.prose b{color:var(--ink);font-weight:650}
+.prose .term{color:var(--accent);font-weight:650}
+
+/* settings */
+dialog{border:1px solid var(--hair);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:0;width:min(420px,calc(100vw - 28px));max-height:calc(100dvh - 40px)}
+dialog::backdrop{background:rgba(0,0,0,.62)}
+.dlg{padding:var(--pad);overflow:auto;max-height:calc(100dvh - 44px)}
+.dlg h3{margin:0 0 4px;font-size:16px}
+.dlg p.note{margin:0 0 16px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:6px;font-weight:600}
+.field .hint{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+.field input[type=time],.field input[type=number],.field input[type=text]{
+  background:var(--surface-2);border:1px solid var(--hair);color:var(--ink);
+  border-radius:9px;padding:8px 10px;font:inherit;font-size:14px;width:100%;color-scheme:dark;
+}
+.field input[type=range]{width:100%;accent-color:var(--accent)}
+.rangehead{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-2);margin-bottom:6px;font-weight:600}
+.rangehead span{color:var(--ink);font-variant-numeric:tabular-nums}
+.dlgfoot{display:flex;gap:9px;margin-top:20px;flex-wrap:wrap}
+.btn{appearance:none;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;padding:10px 16px;border:1px solid var(--hair);background:var(--surface-2);color:var(--ink)}
+.btn.primary{background:var(--ink);color:#101010;border-color:var(--ink)}
+.btn.ghost{color:var(--muted)}
+.btn:hover{border-color:rgba(255,255,255,.26)}
+
+#toast{
+  position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);
+  background:#f2f1ec;color:#141312;font-size:13.5px;font-weight:650;
+  padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:520px){
+  .stat{min-width:76px}.stat .val{font-size:21px}
+  .scrub .from{margin-left:0;text-align:left;flex:1 0 100%}
+}
+</style>
+</head>
+<body>
+<!-- Injected when this tool was mounted at michaelcastelein.com/caffeine.
+     Keeps the tool a single self-contained file; only this strip is added. -->
+<a href="/projects/" id="mc-back" aria-label="Back to michaelcastelein.com">&#8592;&nbsp; michaelcastelein.com</a>
+<style>
+#mc-back{
+  position:fixed; top:10px; left:12px; z-index:9999;
+  display:inline-flex; align-items:center;
+  padding:7px 13px; border-radius:999px;
+  font:500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing:.08em; text-transform:uppercase; text-decoration:none;
+  color:rgba(255,255,255,.72);
+  background:rgba(20,20,19,.72); border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(8px);
+}
+#mc-back:hover{ color:#fff; border-color:rgba(255,255,255,.34); }
+@media (max-width:640px){ #mc-back{ position:static; margin:10px 0 0 12px; } }
+</style>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <h1><span>☕</span> Caffeine Lab</h1>
+      <p>A sandbox, not a tracker. Drag drinks onto the day, move them around, and watch what your body does with them.</p>
+    </div>
+    <button class="iconbtn" id="openSettings" title="Your numbers" aria-label="Your numbers">⚙</button>
+  </header>
+
+  <!-- VERDICT -->
+  <section class="card verdict" aria-live="polite">
+    <div class="main">
+      <h2 id="verdictLabel">At bedtime</h2>
+      <p class="hero ok" id="hero">All clear</p>
+      <p class="sub" id="verdictSub"></p>
+      <div class="quickset">
+        <label for="bedQuick">Bedtime</label>
+        <input type="time" id="bedQuick">
+        <label for="thrQuick" style="margin-left:6px">under</label>
+        <input type="number" id="thrQuick" min="5" max="200" step="1" aria-label="Sleep threshold in mg">
+        <span class="qs-unit">mg</span>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="lab">Peak</div>
+      <div class="val" id="statPeak">0<small>mg</small></div>
+    </div>
+    <div class="stat">
+      <div class="lab">Total drunk</div>
+      <div class="val" id="statTotal">0<small>mg</small></div>
+    </div>
+  </section>
+
+  <!-- THE DAY -->
+  <section class="card">
+    <h2>The day <span class="plain">· drag a drink from below onto the chart, or drag a pin to retime it</span></h2>
+    <div class="scrub">
+      <span class="time" id="scrubTime">·</span>
+      <span class="mg" id="scrubMg">0 mg</span>
+      <span class="zone" id="scrubZone">Clear</span>
+      <span class="from" id="scrubFrom"></span>
+    </div>
+    <input type="range" class="timeline" id="scrubber" aria-label="Scrub through the day">
+    <div class="chartwrap">
+      <svg id="chart" class="chart" role="img" aria-label="Caffeine in your bloodstream across the day"></svg>
+    </div>
+    <div class="hintrow">
+      <span class="key"><i class="sw"></i> total in blood</span>
+      <span class="key"><i class="sw ghost"></i> each drink alone</span>
+      <span class="key"><i class="sw thr"></i> sleep threshold</span>
+      <button class="tablebtn" id="toggleTable" aria-expanded="false">Show table view</button>
+    </div>
+    <div class="tblwrap" id="tblwrap" hidden>
+      <table>
+        <thead><tr><th>Time</th><th>mg in system</th><th>Zone</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SHELF -->
+  <section class="card">
+    <h2>The shelf <span class="plain">· drag onto the day to place it at an exact time</span></h2>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <!-- LOG -->
+  <section class="card log">
+    <h2>On the day</h2>
+    <ul id="logList"></ul>
+    <p class="empty" id="logEmpty">Nothing placed yet. Drag something from the shelf onto the chart above.</p>
+    <div class="totalrow">
+      <span style="color:var(--muted)">Total drunk</span>
+      <b id="totalMg">0 mg</b>
+    </div>
+  </section>
+
+  <!-- LAST CALL -->
+  <section class="card">
+    <h2>Last call <span class="plain">· the latest you could add one and still be under threshold at bedtime</span></h2>
+    <div class="row" id="lastCallRow"></div>
+  </section>
+
+  <h2 class="sectiontitle">How it actually works</h2>
+
+  <!-- ANATOMY -->
+  <section class="card">
+    <h2>Anatomy of one drink <span class="plain" id="anatomySub"></span></h2>
+    <div class="chartwrap">
+      <svg id="anatomy" class="chart" role="img" aria-label="A single caffeine dose rising to a peak then halving each half-life"></svg>
+    </div>
+    <div class="prose">
+      <p>Caffeine doesn't hit instantly and it doesn't switch off. It's absorbed from your gut over
+      roughly half an hour (<span class="term">peaking about 45 minutes in</span>) and from there
+      your liver clears it at a steady <em>proportional</em> rate.</p>
+      <p>That's what a <span class="term">half-life</span> means: every <b id="halfWord">5 hours</b>, whatever is
+      left gets cut in half. Not a fixed number of mg. A fixed <em>fraction</em>. So the tail is long.
+      An afternoon drink is still a quarter of itself at bedtime, which is exactly the part people miss.</p>
+      <p>What it's doing in there: caffeine doesn't add energy, it <b>blocks adenosine</b>, the molecule
+      that accumulates while you're awake and makes you feel sleepy. The tiredness keeps building
+      underneath; you just stop receiving the message. When the caffeine clears, it's all still waiting.</p>
+    </div>
+  </section>
+
+  <!-- SLEEP THRESHOLD -->
+  <section class="card">
+    <h2>How much can you have on board and still sleep?</h2>
+    <div class="thrbox">
+      <div class="rangehead" style="margin-bottom:8px">
+        <label for="thrSlider" style="margin:0;font-size:12.5px;color:var(--ink-2);font-weight:600">Your sleep threshold</label>
+        <span id="thrBig">50 mg</span>
+      </div>
+      <input type="range" id="thrSlider" min="10" max="150" step="5">
+      <div class="bands" id="thrBands"></div>
+      <p class="equiv" id="thrEquiv"></p>
+    </div>
+    <div class="prose">
+      <p>Falling asleep isn't the same as sleeping well. In a controlled trial, 400 mg of
+      caffeine (a large coffee) measurably disrupted sleep even when it was taken
+      <b>six hours before bed</b>, costing about an hour of sleep the drinkers didn't notice
+      losing. Caffeine suppresses <span class="term">deep, slow-wave sleep</span> first, and
+      that's the part you can't feel going missing.</p>
+      <p>So the threshold isn't "the level where I can't drop off". Most people can fall
+      asleep on far more than that. It's the level where caffeine stops eating your sleep
+      <em>quality</em>. Under <b>50 mg</b> at lights-out is a sane default: about a strong cup
+      of tea still circulating. Sensitive, or waking at 3 a.m. a lot? Try 25. Genuinely
+      sleep like a rock? 100 is defensible.</p>
+      <p id="thrBackwards"></p>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="card">
+    <h2>What's actually in what <span class="plain">· typical serving, mg of caffeine</span></h2>
+    <div class="chartwrap">
+      <svg id="compare" class="chart" role="img" aria-label="Caffeine content of common drinks, ranked"></svg>
+    </div>
+    <p class="prose" style="margin-top:14px">Highlighted bars are on your day. Real servings vary a lot,
+    a coffee shop drip can hit 200 mg, and a home espresso is often weaker than the 63 mg standard.
+    Treat these as ballpark, not gospel.</p>
+  </section>
+
+  <!-- HALF-LIFE WHAT-IF -->
+  <section class="card">
+    <h2>Does your clearance rate matter? <span class="plain">· the same day, three different metabolisms</span></h2>
+    <div class="chartwrap">
+      <svg id="whatif" class="chart" role="img" aria-label="The same day simulated at 4, 5 and 7 hour caffeine half-lives"></svg>
+    </div>
+    <div class="hintrow" id="whatifLegend"></div>
+    <p class="prose" style="margin-top:14px" id="whatifNote"></p>
+  </section>
+
+</div>
+
+<div id="dragghost"></div>
+<div id="toast"></div>
+
+<!-- SETTINGS -->
+<dialog id="settings">
+  <form method="dialog" class="dlg">
+    <h3>Your numbers</h3>
+    <p class="note">These frame the day and set how fast you burn caffeine off.</p>
+    <div class="field"><label for="setWake">Day starts</label><input type="time" id="setWake"></div>
+    <div class="field"><label for="setBed">Target bedtime</label><input type="time" id="setBed"></div>
+    <div class="field">
+      <div class="rangehead"><label for="setHalf" style="margin:0">Your caffeine half-life</label><span id="halfOut">5 h</span></div>
+      <input type="range" id="setHalf" min="3" max="9" step="0.25">
+      <div class="hint">Typical adult ≈ 5 h. Smokers clear faster (≈3.5 h); hormonal birth control or pregnancy can push it past 10 h. If you sleep worse than this predicts, raise it.</div>
+    </div>
+    <div class="field">
+      <div class="rangehead"><label for="setThr" style="margin:0">Sleep threshold</label><span id="thrOut">50 mg</span></div>
+      <input type="range" id="setThr" min="10" max="150" step="5">
+      <div class="hint">How much you can have on board and still fall asleep fine. Lower = stricter.</div>
+    </div>
+    <div class="field">
+      <div class="rangehead"><label for="setCap" style="margin:0">Daily cap</label><span id="capOut">400 mg</span></div>
+      <input type="range" id="setCap" min="100" max="800" step="25">
+      <div class="hint">400 mg/day is the usual healthy-adult guideline.</div>
+    </div>
+    <div class="dlgfoot">
+      <button class="btn primary" value="save">Save</button>
+      <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" type="button" id="clearDay">Clear the day</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- CUSTOM -->
+<dialog id="customDlg">
+  <form method="dialog" class="dlg">
+    <h3>Custom drink</h3>
+    <p class="note">Anything not on the shelf.</p>
+    <div class="field"><label for="cName">Name</label><input type="text" id="cName" placeholder="Cold brew"></div>
+    <!-- step must be 1: with min=1 and step=5 the browser only accepts 1, 6, 11 … -->
+    <div class="field"><label for="cMg">Caffeine (mg)</label><input type="number" id="cMg" min="1" max="1000" step="1" value="100"></div>
+    <div class="field"><label for="cTime">Time</label><input type="time" id="cTime"></div>
+    <div class="dlgfoot">
+      <button class="btn primary" value="add">Place it</button>
+      <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   MODEL
+   One-compartment PK with first-order absorption (Bateman),
+   normalised so a dose peaks at its own mg value ~45 min in.
+   ============================================================ */
+const KA = 5.0, MIN = 1/60;
+
+const ZONES = [
+  { max:  40, name:'Clear',     v:'--z0' },
+  { max: 120, name:'Warm',      v:'--z1' },
+  { max: 250, name:'Locked in', v:'--z2' },
+  { max: 400, name:'Jittery',   v:'--z3' },
+  { max: Infinity, name:'Too much', v:'--z4' },
+];
+
+const DRINKS = [
+  { n:'Coffee',          mg: 95  },
+  { n:'White Monster',   mg:150  },
+  { n:'Double espresso', mg:126  },
+  { n:'Espresso',        mg: 63  },
+  { n:'Monster (green)', mg:160  },
+  { n:'Red Bull',        mg: 80  },
+  { n:'Cold brew',       mg:155  },
+  { n:'Instant coffee',  mg: 62  },
+  { n:'Black tea',       mg: 47  },
+  { n:'Green tea',       mg: 28  },
+  { n:'Matcha',          mg: 70  },
+  { n:'Coke',            mg: 34  },
+  { n:'Pre-workout',     mg:200  },
+  { n:'Dark chocolate',  mg: 24  },
+];
+
+const DEFAULTS = { wake: 7*60, bed: 22*60, half: 5, thr: 50, cap: 400 };
+const KEY = 'caffeine-lab-v2';
+
+// First run lands on a worked example rather than an empty page, every panel
+// below is only meaningful with something on the day. (Must be declared before
+// `let S = load()` runs, not merely before load() is defined.)
+const STARTER = [
+  { id:'s1', name:'Coffee',        mg: 95, t: 8*60 },
+  { id:'s2', name:'Coffee',        mg: 95, t:11*60 },
+  { id:'s3', name:'White Monster', mg:150, t:16*60 },
+];
+
+let S = load();
+let scrubT = null;
+let dragPinId = null;
+let placing = null;               // {name, mg, moved} while dragging from the shelf
+
+function load(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(KEY));
+    if (raw && raw.settings && Array.isArray(raw.day))
+      return { settings: Object.assign({}, DEFAULTS, raw.settings), day: raw.day };
+  }catch(e){/* absent or corrupt, start fresh */}
+  return { settings:{...DEFAULTS}, day: STARTER.map(d => ({...d})) };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const day = () => S.day;
+
+/* time */
+const pad = n => String(n).padStart(2,'0');
+const hhmm = m => { const x=((Math.round(m)%1440)+1440)%1440; return `${pad(Math.floor(x/60))}:${pad(x%60)}`; };
+const label = m => m >= 1440 ? hhmm(m)+'⁺¹' : hhmm(m);
+const parseTime = v => { const [h,m]=String(v).split(':').map(Number); return (h||0)*60+(m||0); };
+function fmtDur(mins){
+  const m=Math.max(0,Math.round(mins)), h=Math.floor(m/60), r=m%60;
+  return !h ? `${r} min` : !r ? `${h} h` : `${h} h ${r} min`;
+}
+
+/* maths */
+const keOf = half => Math.LN2 / half;
+function peakFactor(half){
+  const k = keOf(half), tmax = Math.log(KA/k)/(KA-k);
+  return Math.exp(-k*tmax) - Math.exp(-KA*tmax);
+}
+function contribution(dose, t0, t, half){
+  half = half || S.settings.half;
+  if (t <= t0) return 0;
+  const h = (t-t0)*MIN, k = keOf(half);
+  return dose * (Math.exp(-k*h) - Math.exp(-KA*h)) / peakFactor(half);
+}
+function levelAt(t, list, half){
+  let s = 0;
+  for (const d of (list || day())) s += contribution(d.mg, d.t, t, half);
+  return s;
+}
+const bedMin = () => S.settings.bed <= S.settings.wake ? S.settings.bed + 1440 : S.settings.bed;
+
+function sleepSafeAt(half){
+  const arr = day();
+  if (!arr.length) return null;
+  const start = Math.max(...arr.map(d=>d.t)), thr = S.settings.thr;
+  for (let t = start; t <= start + 40*60; t++) if (levelAt(t, arr, half) <= thr) return t;
+  return null;
+}
+function lastCall(mg){
+  const bed = bedMin(), thr = S.settings.thr, base = levelAt(bed);
+  if (base > thr) return null;
+  const earliest = S.settings.wake;
+  if (earliest >= bed) return null;
+  if (base + contribution(mg, earliest, bed) > thr) return null;
+  let lo = earliest, hi = bed;                  // later ⇒ more left at bedtime, so it's monotonic
+  while (hi - lo > 1){
+    const mid = (lo+hi) >> 1;
+    if (base + contribution(mg, mid, bed) <= thr) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+const zoneOf = mg => ZONES.find(z => mg < z.max) || ZONES[ZONES.length-1];
+
+function domain(){
+  const arr = day(), bed = bedMin();
+  let x0 = Math.min(S.settings.wake, ...arr.map(d=>d.t)) - 45;
+  let x1 = bed + 90;
+  const safe = sleepSafeAt();
+  if (safe != null) x1 = Math.max(x1, safe + 45);
+  x0 = Math.max(0, Math.floor(x0/30)*30);
+  x1 = Math.ceil(x1/30)*30;
+  if (x1 - x0 < 13*60) x1 = x0 + 13*60;
+  return [x0, x1];
+}
+function samples(half){
+  const [x0,x1] = domain(), out = [];
+  for (let t = x0; t <= x1; t += 3) out.push([t, levelAt(t, null, half)]);
+  return out;
+}
+const peakOf = pts => pts.length ? pts.reduce((a,b)=> b[1]>a[1]?b:a) : [S.settings.wake,0];
+
+/* ============================================================
+   SVG HELPERS
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(tag, attrs, text){
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (text != null) n.textContent = text;
+  return n;
+}
+function frame(svg, h){
+  const W = Math.max(280, svg.parentElement.clientWidth);
+  svg.setAttribute('width', W); svg.setAttribute('height', h);
+  svg.setAttribute('viewBox', `0 0 ${W} ${h}`);
+  svg.innerHTML = '';
+  return W;
+}
+function yAxis(svg, plot, yMax, step){
+  for (let v = 0; v <= yMax; v += step){
+    const y = plot.y + plot.h - v/yMax*plot.h;
+    svg.appendChild(el('line',{x1:plot.x,x2:plot.x+plot.w,y1:y,y2:y,
+      stroke: v===0 ? cssv('--axis') : cssv('--grid'), 'stroke-width':1}));
+    svg.appendChild(el('text',{x:plot.x-9,y:y+4,'text-anchor':'end',fill:cssv('--muted'),
+      'font-size':10.5,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, v));
+  }
+}
+
+/* ============================================================
+   MAIN CHART
+   ============================================================ */
+let geom = null;
+
+function renderChart(){
+  const svg = $('chart');
+  const AXIS = 26, TOP = 24;
+  const W = frame(svg, (window.innerWidth < 520 ? 236 : 288) + AXIS + TOP);
+  const H = +svg.getAttribute('height');
+  const plot = { x:40, y:TOP, w:W-40-16, h:H-TOP-AXIS };
+  const [x0,x1] = domain();
+  const pts = samples();
+  const dataMax = pts.length ? Math.max(...pts.map(p=>p[1])) : 0;
+  const yMax = Math.max(120, Math.ceil(Math.max(dataMax*1.18, 160)/50)*50);
+  const sx = t => plot.x + (t-x0)/(x1-x0)*plot.w;
+  const sy = v => plot.y + plot.h - Math.min(v,yMax)/yMax*plot.h;
+  geom = { sx, sy, x0, x1, plot, W, yMax };
+
+  /* gradient tied to the heat ramp */
+  const defs = el('defs');
+  const mk = (id, op) => {
+    const g = el('linearGradient',{id, gradientUnits:'userSpaceOnUse', x1:0,y1:sy(0),x2:0,y2:sy(yMax)});
+    [[0,'--z0'],[40,'--z0'],[120,'--z1'],[250,'--z2'],[400,'--z3'],[yMax,'--z4']].forEach(([v,c])=>{
+      if (v > yMax) return;
+      g.appendChild(el('stop',{offset:(v/yMax*100)+'%','stop-color':cssv(c),'stop-opacity':op}));
+    });
+    return g;
+  };
+  defs.appendChild(mk('gLine',1));
+  const ga = mk('gArea',1); ga.setAttribute('id','gArea');
+  [...ga.childNodes].forEach((s,i)=> s.setAttribute('stop-opacity', 0.10 + i*0.07));
+  defs.appendChild(ga);
+  svg.appendChild(defs);
+
+  yAxis(svg, plot, yMax, yMax<=200?50:yMax<=400?100:150);
+  svg.appendChild(el('text',{x:plot.x-9,y:plot.y-10,'text-anchor':'end',fill:cssv('--muted'),
+    'font-size':10,'font-family':'system-ui,sans-serif'},'mg'));
+
+  const hourStep = (x1-x0) > 16*60 || W < 520 ? 180 : 120;
+  for (let t = Math.ceil(x0/hourStep)*hourStep; t <= x1; t += hourStep){
+    svg.appendChild(el('line',{x1:sx(t),x2:sx(t),y1:plot.y,y2:plot.y+plot.h,stroke:cssv('--grid'),'stroke-width':1}));
+    svg.appendChild(el('text',{x:sx(t),y:plot.y+plot.h+16,'text-anchor':'middle',fill:cssv('--muted'),
+      'font-size':10.5,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, hhmm(t)));
+  }
+
+  /* ghost curves, each drink on its own */
+  const sorted = day().slice().sort((a,b)=>a.t-b.t);
+  sorted.forEach(d => {
+    let p = '';
+    for (let t = Math.max(x0, d.t-3); t <= x1; t += 6){
+      const v = contribution(d.mg, d.t, t);
+      p += `${p?'L':'M'} ${sx(t).toFixed(1)} ${sy(v).toFixed(1)} `;
+    }
+    svg.appendChild(el('path',{d:p,fill:'none',stroke:cssv('--accent'),
+      'stroke-width':1.5,'stroke-opacity':.34,'stroke-linecap':'round'}));
+  });
+
+  /* total */
+  if (pts.length){
+    let a = `M ${sx(pts[0][0]).toFixed(1)} ${sy(0).toFixed(1)}`;
+    pts.forEach(p => a += ` L ${sx(p[0]).toFixed(1)} ${sy(p[1]).toFixed(1)}`);
+    a += ` L ${sx(pts[pts.length-1][0]).toFixed(1)} ${sy(0).toFixed(1)} Z`;
+    svg.appendChild(el('path',{d:a,fill:'url(#gArea)'}));
+    let l = '';
+    pts.forEach((p,i)=> l += `${i?'L':'M'} ${sx(p[0]).toFixed(1)} ${sy(p[1]).toFixed(1)} `);
+    svg.appendChild(el('path',{d:l,fill:'none',stroke:'url(#gLine)','stroke-width':2,
+      'stroke-linejoin':'round','stroke-linecap':'round'}));
+  }
+
+  /* threshold */
+  const thr = S.settings.thr;
+  if (thr <= yMax){
+    svg.appendChild(el('line',{x1:plot.x,x2:plot.x+plot.w,y1:sy(thr),y2:sy(thr),
+      stroke:'#fff','stroke-opacity':.42,'stroke-width':2,'stroke-dasharray':'5 5'}));
+    svg.appendChild(el('text',{x:plot.x+5,y:sy(thr)-7,fill:cssv('--ink-2'),
+      'font-size':10.5,'font-family':'system-ui,sans-serif'},`sleep threshold ${thr} mg`));
+  }
+
+  /* bedtime */
+  const bed = bedMin();
+  if (bed >= x0 && bed <= x1){
+    const atBed = levelAt(bed), ok = atBed <= thr;
+    svg.appendChild(el('line',{x1:sx(bed),x2:sx(bed),y1:plot.y-4,y2:plot.y+plot.h,
+      stroke: ok?cssv('--ok'):cssv('--bad'),'stroke-width':2,'stroke-opacity':.85}));
+    const near = sx(bed) > plot.x+plot.w-96;
+    svg.appendChild(el('text',{x:sx(bed)+(near?-7:7),y:plot.y-9,'text-anchor':near?'end':'start',
+      fill: ok?cssv('--ok'):cssv('--bad'),'font-size':11,'font-weight':600,
+      'font-family':'system-ui,sans-serif'},`bedtime ${hhmm(bed)} · ${Math.round(atBed)} mg`));
+  }
+
+  /* scrub crosshair */
+  if (scrubT != null && scrubT >= x0 && scrubT <= x1){
+    const v = levelAt(scrubT);
+    svg.appendChild(el('line',{x1:sx(scrubT),x2:sx(scrubT),y1:plot.y,y2:plot.y+plot.h,
+      stroke:'#fff','stroke-opacity':.30,'stroke-width':2}));
+    svg.appendChild(el('circle',{cx:sx(scrubT),cy:sy(v),r:5,fill:cssv('--ink'),
+      stroke:cssv('--surface'),'stroke-width':2}));
+  }
+
+  /* pins */
+  sorted.forEach((d,i) => {
+    const x = sx(d.t), top = sy(levelAt(d.t+45));
+    const g = el('g',{class:'pin','data-id':d.id,style:'cursor:grab'});
+    g.appendChild(el('line',{x1:x,x2:x,y1:plot.y+plot.h,y2:Math.min(top,plot.y+plot.h)-4,
+      stroke:cssv('--accent'),'stroke-width':2,'stroke-opacity':.55}));
+    const cy = Math.min(top, plot.y+plot.h) - 15;
+    g.appendChild(el('circle',{cx:x,cy,r:11,fill:cssv('--surface'),stroke:cssv('--accent'),'stroke-width':2}));
+    g.appendChild(el('text',{x,y:cy+4,'text-anchor':'middle',fill:cssv('--accent'),
+      'font-size':11,'font-weight':700,'font-family':'system-ui,sans-serif'}, String(i+1)));
+    g.appendChild(el('rect',{x:x-16,y:cy-18,width:32,height:36,fill:'transparent'}));
+    g.appendChild(el('title',{},`${d.name} · ${d.mg} mg · ${hhmm(d.t)} · drag to retime`));
+    svg.appendChild(g);
+  });
+
+  svg.appendChild(el('rect',{x:plot.x,y:plot.y,width:plot.w,height:plot.h,fill:'transparent',id:'hit'}));
+
+  /* keep the scrubber in range */
+  const sc = $('scrubber');
+  sc.min = x0; sc.max = x1; sc.step = 5;
+  if (scrubT == null) scrubT = Math.round(peakOf(pts)[0]/5)*5;
+  scrubT = Math.min(x1, Math.max(x0, scrubT));
+  sc.value = scrubT;
+}
+
+function renderScrub(){
+  const t = scrubT ?? S.settings.wake;
+  const v = levelAt(t), z = zoneOf(v);
+  $('scrubTime').textContent = label(t);
+  $('scrubMg').textContent = `${Math.round(v)} mg`;
+  $('scrubZone').textContent = z.name;
+  $('scrubZone').style.color = cssv(z.v);
+  const parts = day().slice().sort((a,b)=>a.t-b.t)
+    .map(d => ({ d, v: contribution(d.mg, d.t, t) }))
+    .filter(x => x.v >= 1);
+  $('scrubFrom').innerHTML = parts.length
+    ? 'from ' + parts.map(x => `${x.d.name} <b style="color:var(--ink-2)">${Math.round(x.v)}</b>`).join(' · ')
+    : '';
+}
+
+/* ============================================================
+   VERDICT · LAST CALL · SHELF · LOG · TABLE
+   ============================================================ */
+function renderVerdict(){
+  const arr = day(), bed = bedMin(), thr = S.settings.thr;
+  const atBed = levelAt(bed), safe = sleepSafeAt();
+  const pts = samples(), peak = pts.length ? Math.max(...pts.map(p=>p[1])) : 0;
+  const total = arr.reduce((s,d)=>s+d.mg,0);
+  const hero = $('hero'), sub = $('verdictSub');
+
+  $('statPeak').innerHTML = `${Math.round(peak)}<small>mg</small>`;
+  $('statTotal').innerHTML = `${total}<small>mg</small>`;
+
+  if (!arr.length){
+    $('verdictLabel').textContent = 'Nothing on the day yet';
+    hero.className = 'hero ok';
+    hero.innerHTML = `All clear`;
+    sub.innerHTML = `The day runs <b>${label(S.settings.wake)}</b> to <b>${label(bed)}</b>, and you'd need to be under <b>${thr} mg</b> to sleep. Drag a drink onto the chart to see what it does.`;
+    return;
+  }
+  if (atBed <= thr){
+    $('verdictLabel').textContent = 'Under threshold at';
+    hero.className = 'hero ok';
+    hero.innerHTML = `${label(safe)} <span class="unit">clean by bedtime</span>`;
+    sub.innerHTML = `At <b>${label(bed)}</b> you'd still have <b>${Math.round(atBed)} mg</b> on board. <b>${Math.round(thr-atBed)} mg</b> under the line.`;
+  } else {
+    $('verdictLabel').textContent = 'Still wired at bedtime';
+    hero.className = 'hero bad';
+    hero.innerHTML = `${Math.round(atBed)} <span class="unit">mg at ${label(bed)}</span>`;
+    sub.innerHTML = `<b>${Math.round(atBed-thr)} mg</b> over the line. ` + (safe != null
+      ? `You drop under <b>${thr} mg</b> at <b>${label(safe)}</b>, ${fmtDur(safe-bed)} late.`
+      : `You don't get under ${thr} mg at all tonight.`);
+  }
+}
+
+function renderLastCall(){
+  const bed = bedMin(), thr = S.settings.thr, atBed = levelAt(bed), row = $('lastCallRow');
+  if (atBed > thr){
+    row.innerHTML = `<p class="empty" style="margin:0">You're already <b style="color:var(--bad)">${Math.round(atBed-thr)} mg</b> over at ${label(bed)}, nothing more fits. Drag a pin earlier and watch this change.</p>`;
+    return;
+  }
+  const fits = DRINKS.map(d => ({d, t:lastCall(d.mg)})).filter(x => x.t != null)
+    .sort((a,b) => b.d.mg - a.d.mg).slice(0,4);
+  row.innerHTML = fits.length
+    ? fits.map(({d,t}) => `<span class="chip"><i class="dot"></i>${d.n} <b>until ${hhmm(t)}</b></span>`).join('')
+    : `<p class="empty" style="margin:0">Only <b>${Math.round(thr-atBed)} mg</b> of headroom left at ${label(bed)}. Nothing on the shelf fits.</p>`;
+}
+
+function renderShelf(){
+  $('shelf').innerHTML = DRINKS.map(d => {
+    const t = lastCall(d.mg);
+    return `<button class="drink" data-mg="${d.mg}" data-n="${d.n}">
+      <div class="n">${d.n}</div><div class="m">${d.mg} mg</div>
+      ${t==null?'':`<div class="lc">until ${hhmm(t)}</div>`}</button>`;
+  }).join('') + `<button class="drink add" id="customBtn"><div class="n">+ Custom</div></button>`;
+}
+
+function renderLog(){
+  const arr = day().slice().sort((a,b)=>a.t-b.t);
+  $('logEmpty').hidden = arr.length > 0;
+  $('logList').innerHTML = arr.map((d,i)=>`
+    <li><span class="pinno">${i+1}</span>
+      <input type="time" value="${hhmm(d.t)}" data-id="${d.id}" class="tin" aria-label="Time for ${d.name}">
+      <span class="nm">${d.name}</span><span class="mg">${d.mg} mg</span>
+      <button class="del" data-id="${d.id}" aria-label="Remove ${d.name}">×</button></li>`).join('');
+  const total = arr.reduce((s,d)=>s+d.mg,0), over = total > S.settings.cap;
+  $('totalMg').innerHTML = `<span class="${over?'over':''}">${total} mg</span>` +
+    (over ? ` <span style="font-size:12px;color:var(--muted);font-weight:400">· ${total-S.settings.cap} over the ${S.settings.cap} mg guideline</span>` : '');
+}
+
+function renderTable(){
+  const [x0,x1] = domain();
+  let rows = '';
+  for (let t = Math.ceil(x0/60)*60; t <= x1; t += 60){
+    const v = levelAt(t);
+    rows += `<tr><td>${label(t)}</td><td>${Math.round(v)} mg</td><td class="z">${zoneOf(v).name}</td></tr>`;
+  }
+  $('tbody').innerHTML = rows;
+}
+
+/* ============================================================
+   LEARN LAYER
+   ============================================================ */
+function renderAnatomy(){
+  const svg = $('anatomy');
+  const big = day().slice().sort((a,b)=>b.mg-a.mg)[0];
+  const dose = big ? big.mg : 150;
+  const name = big ? big.name : 'a White Monster';
+  const half = S.settings.half;
+  $('anatomySub').textContent = `${name}, ${dose} mg, at a ${half} h half-life`;
+  $('halfWord').textContent = `${half} hours`;
+
+  const AXIS = 26, TOP = 30;
+  const W = frame(svg, 220 + AXIS + TOP);
+  const H = +svg.getAttribute('height');
+  const plot = { x:40, y:TOP, w:W-40-22, h:H-TOP-AXIS };
+  const hours = half * 4.4;
+  const yMax = Math.ceil(dose*1.15/25)*25;
+  const sx = h => plot.x + h/hours*plot.w;
+  const sy = v => plot.y + plot.h - Math.min(v,yMax)/yMax*plot.h;
+
+  yAxis(svg, plot, yMax, Math.ceil(yMax/4/25)*25);
+  for (let h = 0; h <= hours; h += half){
+    svg.appendChild(el('line',{x1:sx(h),x2:sx(h),y1:plot.y,y2:plot.y+plot.h,
+      stroke:cssv('--grid'),'stroke-width':1}));
+    svg.appendChild(el('text',{x:sx(h),y:plot.y+plot.h+16,'text-anchor':'middle',
+      fill:cssv('--muted'),'font-size':10.5,'font-family':'system-ui,sans-serif'},
+      h===0 ? 'drink' : `+${+(h).toFixed(2)} h`));
+  }
+
+  /* curve */
+  let a = `M ${sx(0)} ${sy(0)}`, l = '';
+  for (let h = 0; h <= hours; h += hours/300){
+    const v = contribution(dose, 0, h*60, half);
+    a += ` L ${sx(h).toFixed(1)} ${sy(v).toFixed(1)}`;
+    l += `${l?'L':'M'} ${sx(h).toFixed(1)} ${sy(v).toFixed(1)} `;
+  }
+  a += ` L ${sx(hours)} ${sy(0)} Z`;
+  svg.appendChild(el('path',{d:a,fill:cssv('--accent'),'stroke':'none','fill-opacity':.12}));
+  svg.appendChild(el('path',{d:l,fill:'none',stroke:cssv('--accent'),'stroke-width':2,'stroke-linecap':'round'}));
+
+  /* peak marker */
+  const k = keOf(half), tmaxH = Math.log(KA/k)/(KA-k);
+  svg.appendChild(el('circle',{cx:sx(tmaxH),cy:sy(dose),r:4.5,fill:cssv('--accent'),
+    stroke:cssv('--surface'),'stroke-width':2}));
+  svg.appendChild(el('text',{x:sx(tmaxH)+9,y:sy(dose)-9,fill:cssv('--ink'),'font-size':11.5,
+    'font-weight':650,'font-family':'system-ui,sans-serif'},`peak ${dose} mg · ~${Math.round(tmaxH*60)} min in`));
+
+  /* halving markers */
+  for (let i = 1; i*half <= hours; i++){
+    const h = tmaxH + i*half, v = dose/Math.pow(2,i);
+    if (h > hours) break;
+    svg.appendChild(el('circle',{cx:sx(h),cy:sy(v),r:4,fill:cssv('--surface'),
+      stroke:cssv('--accent'),'stroke-width':2}));
+    svg.appendChild(el('text',{x:sx(h),y:sy(v)-11,'text-anchor':'middle',fill:cssv('--ink-2'),
+      'font-size':11,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, `${Math.round(v)} mg`));
+  }
+
+  /* threshold */
+  const thr = S.settings.thr;
+  if (thr <= yMax){
+    svg.appendChild(el('line',{x1:plot.x,x2:plot.x+plot.w,y1:sy(thr),y2:sy(thr),
+      stroke:'#fff','stroke-opacity':.34,'stroke-width':2,'stroke-dasharray':'5 5'}));
+    svg.appendChild(el('text',{x:plot.x+plot.w,y:sy(thr)-7,'text-anchor':'end',
+      fill:cssv('--muted'),'font-size':10.5,'font-family':'system-ui,sans-serif'},`sleep threshold`));
+  }
+}
+
+const BANDS = [
+  { max: 30,  name:'Strict',  note:'sensitive sleepers, or you wake in the night' },
+  { max: 75,  name:'Default', note:'a sane starting point for most people' },
+  { max: 1e9, name:'Loose',   note:'you genuinely sleep through anything' },
+];
+function renderThreshold(){
+  const thr = S.settings.thr, half = S.settings.half;
+  $('thrBig').textContent = `${thr} mg`;
+  $('thrSlider').value = thr;
+
+  const band = BANDS.find(b => thr <= b.max);
+  $('thrBands').innerHTML = BANDS.map(b =>
+    `<div class="band${b===band?' on':''}"><b>${b.name}</b>${b.note}</div>`).join('');
+
+  // put the number in familiar terms
+  const near = DRINKS.slice().sort((a,b)=>Math.abs(a.mg-thr)-Math.abs(b.mg-thr))[0];
+  $('thrEquiv').innerHTML =
+    `<b style="color:var(--ink-2)">${thr} mg</b> is about the caffeine in ${/^[aeiou]/i.test(near.n)?'an':'a'} <b style="color:var(--ink-2)">${near.n.toLowerCase()}</b> (${near.mg} mg), that's how much can still be circulating when you turn the light off.`;
+
+  // hours for a 200 mg hit to fall under the threshold, at the user's half-life
+  const hrs = Math.log(200/thr)/Math.LN2 * half;
+  const h = Math.round(hrs*2)/2;
+  $('thrBackwards').innerHTML =
+    `Working backwards: at your <b>${trim(half)} h</b> half-life, a <b>200 mg</b> hit (a pre-workout, or two
+     strong coffees) takes about <b>${trim(h)} hours</b> to fall under ${thr} mg. That's the real reason the
+     advice is "nothing after 2 p.m.": not that afternoon caffeine is special, but that the tail is much
+     longer than it feels while you're drinking it.`;
+}
+
+function renderCompare(){
+  const svg = $('compare');
+  const rows = DRINKS.slice().sort((a,b)=>b.mg-a.mg);
+  const rowH = 24, gap = 6;
+  const W = frame(svg, rows.length*(rowH+gap) + 14);
+  const labW = Math.min(132, Math.max(96, W*0.32));
+  const plot = { x:labW, y:8, w:W-labW-46 };
+  const max = Math.max(...rows.map(r=>r.mg));
+  const inPlay = new Set(day().map(d=>d.name));
+
+  rows.forEach((r,i) => {
+    const y = plot.y + i*(rowH+gap);
+    const on = inPlay.has(r.n);
+    const w = Math.max(3, r.mg/max*plot.w);
+    svg.appendChild(el('text',{x:labW-11,y:y+rowH/2+4,'text-anchor':'end',
+      fill: on ? cssv('--ink') : cssv('--ink-2'),'font-size':12,
+      'font-weight': on ? 650 : 400,'font-family':'system-ui,sans-serif'}, r.n));
+    // 4px rounded data-end, square at the baseline
+    const rad = 4;
+    svg.appendChild(el('path',{
+      d:`M ${plot.x} ${y} H ${plot.x+w-rad} a ${rad} ${rad} 0 0 1 ${rad} ${rad} V ${y+rowH-rad} a ${rad} ${rad} 0 0 1 ${-rad} ${rad} H ${plot.x} Z`,
+      fill: on ? cssv('--accent') : cssv('--hl2'), 'fill-opacity': on ? .95 : .38 }));
+    svg.appendChild(el('text',{x:plot.x+w+9,y:y+rowH/2+4,fill: on?cssv('--ink'):cssv('--muted'),
+      'font-size':11.5,'font-weight': on?650:400,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, r.mg));
+  });
+}
+
+function renderWhatIf(){
+  const svg = $('whatif');
+  const AXIS = 26, TOP = 22;
+  const W = frame(svg, (window.innerWidth < 520 ? 178 : 214) + AXIS + TOP);
+  const H = +svg.getAttribute('height');
+  const plot = { x:40, y:TOP, w:W-40-30, h:H-TOP-AXIS };
+  const [x0,x1] = domain();
+  const mine = S.settings.half;
+  // Anchored to YOUR setting rather than three fixed numbers, and the middle line
+  // is emphasised, three equal-weight blues on a dark ground don't separate.
+  const HALVES = [
+    { h: Math.max(2.5, +(mine-1.5).toFixed(2)), c:'--hl1', w:2,   op:.9,  tag:'faster' },
+    { h: mine,                                   c:'--accent', w:3, op:1,  tag:'yours'  },
+    { h: Math.min(12, +(mine+2).toFixed(2)),     c:'--hl3', w:2,   op:.95, tag:'slower' },
+  ];
+
+  $('whatifLegend').innerHTML = HALVES.map(s =>
+    `<span class="key"><i class="sw" style="background:${cssv(s.c)};opacity:${s.op}"></i> ${trim(s.h)} h · ${s.tag}</span>`).join('');
+
+  if (!day().length){
+    svg.appendChild(el('text',{x:W/2,y:H/2,'text-anchor':'middle',fill:cssv('--muted'),
+      'font-size':12.5,'font-family':'system-ui,sans-serif'},'Place a drink to compare metabolisms'));
+    $('whatifNote').textContent = '';
+    return;
+  }
+
+  const series = HALVES.map(s => Object.assign({}, s, { pts: samples(s.h) }));
+  const yMax = Math.max(120, Math.ceil(Math.max(...series.flatMap(s=>s.pts.map(p=>p[1])))*1.15/50)*50);
+  const sx = t => plot.x + (t-x0)/(x1-x0)*plot.w;
+  const sy = v => plot.y + plot.h - Math.min(v,yMax)/yMax*plot.h;
+
+  yAxis(svg, plot, yMax, yMax<=200?50:yMax<=400?100:150);
+  const hourStep = 180;
+  for (let t = Math.ceil(x0/hourStep)*hourStep; t <= x1; t += hourStep){
+    svg.appendChild(el('line',{x1:sx(t),x2:sx(t),y1:plot.y,y2:plot.y+plot.h,stroke:cssv('--grid'),'stroke-width':1}));
+    svg.appendChild(el('text',{x:sx(t),y:plot.y+plot.h+16,'text-anchor':'middle',fill:cssv('--muted'),
+      'font-size':10.5,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, hhmm(t)));
+  }
+
+  const thr = S.settings.thr;
+  if (thr <= yMax){
+    svg.appendChild(el('line',{x1:plot.x,x2:plot.x+plot.w,y1:sy(thr),y2:sy(thr),
+      stroke:'#fff','stroke-opacity':.34,'stroke-width':2,'stroke-dasharray':'5 5'}));
+  }
+  const bed = bedMin();
+  if (bed >= x0 && bed <= x1)
+    svg.appendChild(el('line',{x1:sx(bed),x2:sx(bed),y1:plot.y,y2:plot.y+plot.h,
+      stroke:cssv('--ink-2'),'stroke-width':1.5,'stroke-opacity':.5}));
+
+  series.forEach(s => {
+    let l = '';
+    s.pts.forEach((p,i)=> l += `${i?'L':'M'} ${sx(p[0]).toFixed(1)} ${sy(p[1]).toFixed(1)} `);
+    svg.appendChild(el('path',{d:l,fill:'none',stroke:cssv(s.c),'stroke-width':s.w,
+      'stroke-opacity':s.op,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    // direct end-label, the legend below carries identity too
+    const last = s.pts[s.pts.length-1];
+    svg.appendChild(el('text',{x:sx(last[0])+6,y:sy(last[1])+4,fill:cssv('--ink-2'),
+      'font-size':10.5,'font-weight':600,'font-family':'system-ui,sans-serif',
+      style:'font-variant-numeric:tabular-nums'}, `${trim(s.h)} h`));
+  });
+
+  const at = series.map(s => ({ h:s.h, tag:s.tag, v: levelAt(bed, null, s.h) }));
+  const spread = Math.round(at[2].v - at[0].v);
+  $('whatifNote').innerHTML =
+    `Same drinks, same times. At <b>${label(bed)}</b> the ${trim(at[0].h)} h version is down to <b>${Math.round(at[0].v)} mg</b>, ` +
+    `yours sits at <b>${Math.round(at[1].v)} mg</b>, and the ${trim(at[2].h)} h version is still carrying <b>${Math.round(at[2].v)} mg</b>, ` +
+    `<b>${spread} mg</b> apart on identical drinking, purely on physiology. ` +
+    `Which is the point: your own clearance rate moves the answer more than any single drink you reschedule, ` +
+    `and it's the one number here you can only find by testing it against your own sleep.`;
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function renderQuickset(){
+  $('bedQuick').value = hhmm(S.settings.bed);
+  $('thrQuick').value = S.settings.thr;
+}
+function renderAll(){
+  renderChart(); renderScrub(); renderVerdict(); renderQuickset(); renderLastCall();
+  renderShelf(); renderLog(); renderTable(); renderAnatomy(); renderThreshold();
+  renderCompare(); renderWhatIf();
+}
+function renderLive(){   // everything that moves while dragging a pin
+  renderChart(); renderScrub(); renderVerdict(); renderLastCall(); renderShelf();
+  renderLog(); renderTable(); renderWhatIf(); renderAnatomy(); renderCompare();
+}
+function addDose(name, mg, t){
+  const at = Math.round(t/5)*5;
+  day().push({ id:'d'+Math.random().toString(36).slice(2,9), name, mg, t: at });
+  // park the scrubber on the new drink's peak, dropping it and reading "0 mg"
+  // (true, but only at the instant you drank it) tells you nothing
+  scrubT = at + 45;
+  save(); renderAll();
+}
+function defaultTime(){
+  const arr = day();
+  if (!arr.length) return S.settings.wake + 60;
+  return Math.min(Math.max(...arr.map(d=>d.t)) + 180, bedMin() - 60);
+}
+function toast(m){
+  const t = $('toast'); t.textContent = m; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 1900);
+}
+function timeFromClientX(clientX){
+  const r = $('chart').getBoundingClientRect();
+  const { x0, x1, plot, W } = geom;
+  const px = (clientX - r.left) * (W / r.width);
+  return Math.min(x1, Math.max(x0, Math.round((x0 + (px-plot.x)/plot.w*(x1-x0))/5)*5));
+}
+function overPlot(x, y){
+  const r = $('chart').getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+
+/* --- drag a drink from the shelf onto the day --- */
+const ghost = $('dragghost');
+$('shelf').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.drink');
+  if (!b || b.id === 'customBtn') return;
+  placing = { name:b.dataset.n, mg:+b.dataset.mg, moved:false };
+  ghost.textContent = `${placing.name} · ${placing.mg} mg`;
+  ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px';
+  try{ b.setPointerCapture(e.pointerId); }catch(err){/* capture is a nicety, not required */}
+  e.preventDefault();
+});
+addEventListener('pointermove', e => {
+  if (!placing) return;
+  placing.moved = true;
+  ghost.style.opacity = 1;
+  ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px';
+  if (overPlot(e.clientX, e.clientY)){
+    const t = timeFromClientX(e.clientX);
+    ghost.textContent = `${placing.name} · ${placing.mg} mg → ${hhmm(t)}`;
+    scrubT = t; renderChart(); renderScrub();
+  } else {
+    ghost.textContent = `${placing.name} · ${placing.mg} mg`;
+  }
+});
+addEventListener('pointerup', e => {
+  if (!placing) return;
+  const p = placing; placing = null;
+  ghost.style.opacity = 0;
+  if (p.moved && overPlot(e.clientX, e.clientY)){
+    const t = timeFromClientX(e.clientX);
+    addDose(p.name, p.mg, t);
+    toast(`${p.name} placed at ${hhmm(Math.round(t/5)*5)}`);
+  } else if (!p.moved){
+    const t = defaultTime();
+    addDose(p.name, p.mg, t);
+    toast(`${p.name} at ${hhmm(Math.round(t/5)*5)}, drag it to move`);
+  }
+});
+$('shelf').addEventListener('click', e => {
+  if (e.target.closest('#customBtn')){
+    $('cTime').value = hhmm(defaultTime());
+    $('customDlg').showModal();
+  }
+});
+$('customDlg').addEventListener('close', () => {
+  if ($('customDlg').returnValue !== 'add') return;
+  const n = ($('cName').value || 'Custom').trim();
+  const mg = Math.max(1, Math.min(1000, +$('cMg').value || 100));
+  addDose(n, mg, parseTime($('cTime').value || hhmm(defaultTime())));
+  $('cName').value = '';
+});
+
+/* --- drag pins / scrub on the chart --- */
+const svgEl = $('chart');
+svgEl.addEventListener('pointerdown', e => {
+  const g = e.target.closest('.pin');
+  if (g){ dragPinId = g.dataset.id; svgEl.setPointerCapture(e.pointerId); }
+  else { scrubT = timeFromClientX(e.clientX); svgEl.setPointerCapture(e.pointerId);
+         svgEl._scrubbing = true; renderChart(); renderScrub(); }
+  e.preventDefault();
+});
+svgEl.addEventListener('pointermove', e => {
+  if (dragPinId){
+    const d = day().find(x => x.id === dragPinId);
+    if (!d) return;
+    const t = timeFromClientX(e.clientX);
+    if (t !== d.t){ d.t = t; scrubT = t; renderLive(); }
+  } else if (svgEl._scrubbing){
+    scrubT = timeFromClientX(e.clientX);
+    renderChart(); renderScrub();
+  }
+});
+function endDrag(){
+  if (dragPinId){ dragPinId = null; save(); renderAll(); }
+  svgEl._scrubbing = false;
+}
+svgEl.addEventListener('pointerup', endDrag);
+svgEl.addEventListener('pointercancel', endDrag);
+
+$('scrubber').addEventListener('input', e => {
+  scrubT = +e.target.value; renderChart(); renderScrub();
+});
+
+/* --- log --- */
+$('logList').addEventListener('input', e => {
+  if (!e.target.classList.contains('tin')) return;
+  const d = day().find(x => x.id === e.target.dataset.id);
+  if (!d) return;
+  d.t = parseTime(e.target.value); save();
+  renderChart(); renderScrub(); renderVerdict(); renderLastCall();
+  renderShelf(); renderTable(); renderAnatomy(); renderCompare(); renderWhatIf();
+});
+$('logList').addEventListener('click', e => {
+  const b = e.target.closest('.del');
+  if (!b) return;
+  S.day = day().filter(x => x.id !== b.dataset.id);
+  save(); renderAll();
+});
+
+/* --- inline bedtime / threshold, and the threshold slider in the explainer --- */
+$('bedQuick').addEventListener('input', e => {
+  if (!e.target.value) return;
+  S.settings.bed = parseTime(e.target.value);
+  save(); renderAll();
+});
+$('thrQuick').addEventListener('input', e => {
+  const v = +e.target.value;
+  if (!v || v < 5 || v > 200) return;
+  S.settings.thr = v; save(); renderAll();
+});
+$('thrSlider').addEventListener('input', e => {
+  S.settings.thr = +e.target.value; save(); renderAll();
+});
+
+/* --- table --- */
+$('toggleTable').addEventListener('click', () => {
+  const w = $('tblwrap'), open = w.hasAttribute('hidden');
+  w.toggleAttribute('hidden', !open);
+  $('toggleTable').textContent = open ? 'Hide table view' : 'Show table view';
+  $('toggleTable').setAttribute('aria-expanded', String(open));
+});
+
+/* --- settings --- */
+const dlg = $('settings');
+$('openSettings').addEventListener('click', () => {
+  const s = S.settings;
+  $('setWake').value = hhmm(s.wake); $('setBed').value = hhmm(s.bed);
+  $('setHalf').value = s.half; $('halfOut').textContent = trim(s.half)+' h';
+  $('setThr').value = s.thr;   $('thrOut').textContent = s.thr+' mg';
+  $('setCap').value = s.cap;   $('capOut').textContent = s.cap+' mg';
+  dlg.showModal();
+});
+const trim = n => (+n).toFixed(2).replace(/\.?0+$/,'');
+$('setHalf').addEventListener('input', e => $('halfOut').textContent = trim(e.target.value)+' h');
+$('setThr').addEventListener('input',  e => $('thrOut').textContent  = e.target.value+' mg');
+$('setCap').addEventListener('input',  e => $('capOut').textContent  = e.target.value+' mg');
+$('clearDay').addEventListener('click', () => {
+  S.day = []; scrubT = null; save(); renderAll(); dlg.close('cancel'); toast('Day cleared');
+});
+dlg.addEventListener('close', () => {
+  if (dlg.returnValue !== 'save') return;
+  S.settings.wake = parseTime($('setWake').value);
+  S.settings.bed  = parseTime($('setBed').value);
+  S.settings.half = +$('setHalf').value;
+  S.settings.thr  = +$('setThr').value;
+  S.settings.cap  = +$('setCap').value;
+  save(); renderAll();
+});
+
+let rt;
+addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(renderAll, 130); });
+
+renderAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+---
+/**
+ * /transcribe, write-up for the local live transcription and translation tool.
+ *
+ * There is no live demo on purpose: the thing runs a Whisper model and a Qwen
+ * model on a local GPU, which a static site cannot do. That constraint is the
+ * point of the project, so the page says so rather than hiding it.
+ */
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { site, projects } from '../data/site';
+import light from '../assets/projects/transcribe/light.png';
+import dark from '../assets/projects/transcribe/dark.png';
+
+const project = projects.find((p) => p.slug === 'transcribe')!;
+const title = `Live Transcription · ${site.name}`;
+const description =
+  'A local speech-to-text and translation tool. Talk, and see your words half a second later. The audio never leaves the machine.';
+
+const facts = [
+  { k: 'Mouth to grey text', v: '~560 ms' },
+  { k: 'Pause to settled text', v: '~1.0 s' },
+  { k: 'Transcription', v: 'large-v3-turbo, faster-whisper' },
+  { k: 'Translation', v: 'qwen3:8b via Ollama' },
+  { k: 'Hardware tested', v: 'RTX 5060 Laptop, 8 GB' },
+  { k: 'Audio uploaded', v: 'None' },
+];
+---
+
+<Base title={title} description={description}>
+  <section class="page page--article">
+    <a class="page__back" href="/projects/">← All projects</a>
+    <h1 class="page__title">{project.name}</h1>
+    <p class="page__tagline">{project.tagline}</p>
+
+    <div class="page__meta">
+      <span class:list={['state', `state--${project.state}`]}>{project.stateLabel}</span>
+      <ul class="proj__tags" style="margin:0;padding:0;">
+        {project.tags.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+
+    <div class="prose">
+      <p>
+        I wanted a transcript of my own speech that appeared while I was still
+        talking, and I did not want the audio going to a cloud service to get it.
+        So this runs entirely on my own machine. You press start, you talk, and
+        the words land on a browser page about half a second later.
+      </p>
+
+      <p>
+        The interesting part is what happens to a sentence before it settles.
+        Finished text is black. The working draft is grey with a blinking cursor,
+        and it keeps rewriting itself as more words arrive. A real example from a
+        test run:
+      </p>
+
+      <pre><code>I want to create a new project
+I want to create a lot of things
+I want to create a live trans-
+I want to create a live transcriber using a local model, and later
+  turn it into a new model
+I want to create a live transcriber using a local model, and later
+  turn it into a live translator.        &lt;- committed</code></pre>
+
+      <p>
+        A sentence turns black once you pause for about 0.7 seconds. Every
+        committed line is written to a timestamped session file straight away, so
+        a crash, a closed tab or a three hour conversation can never lose the
+        text. The page only holds the last 400 lines on screen. The file keeps
+        everything.
+      </p>
+
+      <h3>It translates too</h3>
+
+      <p>
+        The second column is a live translation. English in, Chinese out, or the
+        other way around, and it handles a conversation where both languages are
+        being spoken at once. Translation arrives 300 to 500 ms after the line is
+        already on screen, so it never holds up the transcript.
+      </p>
+
+      <pre><code>[07:26:53] EN  So this is a project I have been thinking about for a while.
+[07:26:53] ZH&gt; 这个项目我一直在考虑。
+[07:27:01] ZH  你今天晚上想吃什么？我们可以叫外卖。
+[07:27:02] EN&gt; What do you want to eat tonight? We can order delivery.</code></pre>
+
+      <p>
+        <code>&gt;</code> marks a machine translation. Copy gives you both
+        columns tab separated, so it pastes into a spreadsheet as an aligned
+        bilingual transcript.
+      </p>
+
+      <h3>Why Qwen and not a translation model</h3>
+
+      <p>
+        The obvious choice was NLLB-200, a model built for translation. I
+        measured both. NLLB is faster, but its vocabulary is missing common
+        Chinese characters. 酱, as in 酱油 (soy sauce), is not in it at all, and
+        it truncates sentences. A general model with a good vocabulary beat the
+        specialist, which was not the result I expected.
+      </p>
+
+      <h3>Numbers</h3>
+    </div>
+
+    <div class="facts">
+      {facts.map((f) => (
+        <div class="fact">
+          <p class="fact__k">{f.k}</p>
+          <p class="fact__v">{f.v}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="prose" style="margin-top:40px;">
+      <p>
+        A full ten second clip transcribes in 263 ms, which is 39 times faster
+        than real time. The Whisper pass is flat at about 220 ms no matter how
+        long the buffer is. Both models together sit at roughly 6.8 GB of the
+        8 GB card, which works but leaves little spare.
+      </p>
+
+      <h3>Screens</h3>
+    </div>
+
+    <div class="shots">
+      <figure class="shot">
+        <Image src={light} alt="Live Transcription in light mode, English and Chinese side by side" widths={[600, 1000]} sizes="(max-width: 700px) 100vw, 46vw" />
+        <figcaption>Light mode</figcaption>
+      </figure>
+      <figure class="shot">
+        <Image src={dark} alt="Live Transcription in dark mode" widths={[600, 1000]} sizes="(max-width: 700px) 100vw, 46vw" />
+        <figcaption>Dark mode</figcaption>
+      </figure>
+    </div>
+
+    <div class="prose" style="margin-top:44px;">
+      <h3>Why there is no demo button</h3>
+      <p>
+        This page is a write-up rather than a live tool, and that is deliberate.
+        The whole design depends on a Whisper model and a Qwen model sitting on a
+        GPU next to you. Put it behind a web server and you have rebuilt exactly
+        the thing I was trying to avoid: your voice going somewhere else. So it
+        stays local, and this page shows you what it does.
+      </p>
+      <p>
+        If you want to run it, or you want something like it inside your own
+        team, get in touch and I will send you the repo.
+      </p>
+      <p>
+        <a class="btn btn--solid" href={site.contact} data-track="coffee" data-track-location="transcribe">
+          Ask me about it
+        </a>
+      </p>
+    </div>
+  </section>
+</Base>

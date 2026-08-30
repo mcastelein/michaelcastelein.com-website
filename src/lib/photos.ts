@@ -4,7 +4,7 @@ import type { ImageMetadata } from 'astro';
  * Photo resolution.
  *
  * Drop image files into src/assets/photos/<category>/ and they appear on the
- * site automatically — no config, no imports, no list to maintain. Astro
+ * site automatically, no config, no imports, no list to maintain. Astro
  * optimises them at build time (WebP + responsive widths).
  *
  * The FILENAME BECOMES THE CAPTION, so name files in words rather than

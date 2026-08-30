@@ -1,0 +1,67 @@
+---
+/**
+ * One project block. Shared by the home page and /projects so a project is
+ * never described in two places.
+ *
+ * The block is an <article>, not an <a>. The title carries the real link and a
+ * stretched ::after makes the whole block clickable, which leaves the source-repo
+ * link underneath still usable. Most blocks link straight out to the real site.
+ */
+import { projectHref, type Project } from '../data/site';
+
+interface Props {
+  project: Project;
+  /** h2 on a page where the card is the main content, h3 inside a section. */
+  level?: 2 | 3;
+}
+
+const { project: p, level = 3 } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+
+const primary = projectHref(p);
+const isExternal = (u?: string) => !!u && /^https?:\/\//.test(u);
+const ext = (u?: string) =>
+  isExternal(u) ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+
+/* Only show the repo separately when it is not already the block's own link. */
+const showSource = !!p.repo && primary !== p.repo;
+const goLabel = primary === p.repo ? 'View the code' : 'Open';
+
+/* For a block that leaves the site, name the destination. Someone should know
+   where a click is taking them before they take it. */
+const host = isExternal(primary) && primary !== p.repo ? new URL(primary!).host : null;
+---
+
+<article class="proj">
+  <div class="proj__head">
+    <Heading class="proj__name">
+      {primary ? (
+        <a class="proj__link" href={primary} {...ext(primary)}
+           data-track="project" data-track-project={p.slug}>{p.name}</a>
+      ) : p.name}
+    </Heading>
+    <span class:list={['state', `state--${p.state}`]}>{p.stateLabel}</span>
+  </div>
+
+  <p class="proj__tagline">{p.tagline}</p>
+  <p class="proj__body">{p.body}</p>
+
+  <ul class="proj__tags">
+    {p.tags.map((t) => <li>{t}</li>)}
+  </ul>
+
+  {(primary || showSource) && (
+    <div class="proj__foot">
+      {primary && (
+        <span class="proj__go">
+          {goLabel} →
+          {host && <em class="proj__host">{host}</em>}
+        </span>
+      )}
+      {showSource && (
+        <a class="proj__src" href={p.repo} target="_blank" rel="noopener noreferrer"
+           data-track="project-source" data-track-project={p.slug}>Source</a>
+      )}
+    </div>
+  )}
+</article>

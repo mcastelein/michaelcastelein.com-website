@@ -4,7 +4,7 @@ import { photoAt } from '../lib/photos';
 
 /**
  * One photo slot. Renders the real optimised image if Michael has dropped a file
- * into src/assets/photos/<category>/, and a labelled placeholder if not — so
+ * into src/assets/photos/<category>/, and a labelled placeholder if not, so
  * every layout is built at full fidelity before a single photo exists, and
  * tells him exactly what to put where.
  */
@@ -20,7 +20,7 @@ interface Props {
   widths?: number[];
   sizes?: string;
   class?: string;
-  /** Treat as decoration — skips the caption and empties alt text. */
+  /** Treat as decoration, skips the caption and empties alt text. */
   decorative?: boolean;
   loading?: 'lazy' | 'eager';
 }

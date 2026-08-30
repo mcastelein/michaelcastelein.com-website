@@ -1,4 +1,4 @@
-/* Shared reset + placeholder styling. Deliberately tiny — each art direction
+/* Shared reset + placeholder styling. Deliberately tiny, each art direction
    owns its own palette, type and layout so the four don't bleed into each other. */
 
 *,
@@ -25,7 +25,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   outline-offset: 3px;
 }
 
-/* Placeholder marker — every [[bracketed]] item in the content renders like this
+/* Placeholder marker, every [[bracketed]] item in the content renders like this
    so Michael can find all of them at a glance. Works on light and dark. */
 mark.todo {
   background: rgba(255, 206, 0, 0.22);

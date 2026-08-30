@@ -1,0 +1,47 @@
+---
+/**
+ * /projects, the index of everything I have built and can show.
+ *
+ * Cards read from the `projects` array in src/data/site.ts. To add one, add an
+ * entry there. A project with no href and no repo renders as a plain card so
+ * nothing dead is clickable.
+ */
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site, projects, coffee } from '../data/site';
+
+const title = `Projects · ${site.name}`;
+const description =
+  'Products and tools I have built: IELTSBoost, a Mandarin learning app, a caffeine sandbox, a local transcription tool, and personalised gift sites.';
+---
+
+<Base title={title} description={description}>
+  <section class="page">
+    <p class="rubric">Projects</p>
+    <h1 class="page__title">What I have built.</h1>
+    <p class="page__tagline">
+      Products, tools, and things that started as a problem I had and got out of
+      hand. Anything marked live you can open right now.
+    </p>
+  </section>
+
+  <section class="section" style="border-top:0;padding-top:0;">
+    <div class="projects">
+      {projects.map((pr) => <ProjectCard project={pr} level={2} />)}
+    </div>
+  </section>
+
+  <section class="coffee">
+    <div class="coffee__inner">
+      <p class="rubric rubric--light">Get in touch</p>
+      <h2>{coffee.headline}</h2>
+      <p class="coffee__body">
+        If you want one of these for your own problem, or you spotted something
+        broken, say hello.
+      </p>
+      <a class="btn btn--light btn--lg" href={site.contact} data-track="coffee" data-track-location="projects">
+        {site.contactLabel}
+      </a>
+    </div>
+  </section>
+</Base>
