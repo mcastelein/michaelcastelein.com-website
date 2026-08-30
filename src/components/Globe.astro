@@ -85,7 +85,7 @@ const points = bases.map((b) => ({
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
     const world = new THREE.Group();
-    // Tilt so the northern hemisphere — where all four homes are — faces the viewer.
+    // Tilt so the northern hemisphere, where all four homes are, faces the viewer.
     world.rotation.x = 0.32;
     scene.add(world);
 
@@ -291,6 +291,14 @@ const points = bases.map((b) => ({
       if (!labelEls.size) return;
       const w = host.clientWidth;
       const h = host.clientHeight;
+
+      /* Project first, then resolve collisions. A fixed alternating offset was
+         not enough: Chaozhou and Kunming are 1000 km apart, which at this globe
+         size puts their pills on top of each other for most of the rotation.
+         So place them, then push overlapping pairs apart along y. */
+      type Placed = { el: HTMLElement; x: number; y: number; half: number; tall: number };
+      const placed: Placed[] = [];
+
       for (const m of markers) {
         const el = labelEls.get(m.pt.id);
         if (!el) continue;
@@ -304,12 +312,35 @@ const points = bases.map((b) => ({
         const toCam = camera.position.clone().sub(world3).normalize();
         const facing = world3.clone().normalize().dot(toCam) > 0.08;
         el.style.opacity = facing ? '1' : '0';
+        if (!facing) continue;
 
         const v = world3.clone().project(camera);
-        // Nudge alternate labels apart — Chaozhou and Kunming sit close together.
-        const dy = m.idx % 2 === 0 ? -14 : 14;
-        el.style.transform =
-          `translate(-50%,-50%) translate(${((v.x + 1) / 2) * w}px, ${((-v.y + 1) / 2) * h + dy}px)`;
+        placed.push({
+          el,
+          x: ((v.x + 1) / 2) * w,
+          y: ((-v.y + 1) / 2) * h,
+          half: el.offsetWidth / 2,
+          tall: el.offsetHeight,
+        });
+      }
+
+      /* Top to bottom, keeping a full pill height plus a little air between any
+         two whose horizontal spans actually overlap. y is the pill's centre
+         (the transform is -50%,-50%), so the gap has to clear the whole
+         height, not half of it. */
+      placed.sort((a, b) => a.y - b.y);
+      for (let i = 1; i < placed.length; i++) {
+        const cur = placed[i];
+        for (let j = 0; j < i; j++) {
+          const prev = placed[j];
+          const overlapX = Math.abs(cur.x - prev.x) < cur.half + prev.half + 6;
+          const gap = Math.max(prev.tall, cur.tall) + 8;
+          if (overlapX && cur.y - prev.y < gap) cur.y = prev.y + gap;
+        }
+      }
+
+      for (const q of placed) {
+        q.el.style.transform = `translate(-50%,-50%) translate(${q.x}px, ${q.y}px)`;
       }
     };
 
