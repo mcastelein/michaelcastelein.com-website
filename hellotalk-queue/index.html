@@ -177,6 +177,11 @@ body.zh-only .side.enside{display:none}
 .gate button[disabled]{filter:grayscale(.5) brightness(.8);box-shadow:none}
 .gate .msg{margin:14px 0 0;font-size:13.5px;line-height:1.6;color:var(--cyan-ink)}
 .gate .msg.bad{color:#ffb3bd}
+.gate .alt{margin:14px 0 0;text-align:center}
+.gate .alt button{min-height:0;background:none;box-shadow:none;border:0;padding:4px;
+  color:var(--ink-2);font-size:13px;font-weight:400;text-decoration:underline;
+  text-underline-offset:3px}
+.gate .alt button[disabled]{opacity:.5}
 .gate .fine{margin-top:20px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
 </style>
 </head>
@@ -286,7 +291,9 @@ body.zh-only .side.enside{display:none}
   }
 
   window.QUEUE_STORE = {
-    label: "Not signed in — changes are not being saved",
+    // Shown only when a save fails. It reads as a session problem because
+    // that is what it almost always is: the gate blocks every other path.
+    label: "Not saved — your session may have expired. Reload and sign in again.",
 
     attach: function(D){ DATA = D; },
 
@@ -315,43 +322,70 @@ body.zh-only .side.enside{display:none}
       root.innerHTML =
         '<div class="gate">'
       +   '<h1>HelloTalk Post Queue</h1>'
-      +   '<p>Private. Sign in with your email and a one-time link comes back to this page.</p>'
+      +   '<p>Private. Sign in to load your marks and notes.</p>'
       +   '<form id="gate-form">'
-      +     '<input id="gate-email" type="email" inputmode="email" autocomplete="email" '
+      +     '<input id="gate-email" type="email" inputmode="email" autocomplete="username" '
       +       'placeholder="you@example.com" required>'
-      +     '<button type="submit">Email me a sign-in link</button>'
+      +     '<input id="gate-pw" type="password" autocomplete="current-password" '
+      +       'placeholder="Password" required>'
+      +     '<button type="submit">Sign in</button>'
       +   '</form>'
       +   '<p class="msg" id="gate-msg" hidden></p>'
+      +   '<p class="alt"><button type="button" id="gate-otp">Email me a one-time link instead</button></p>'
       +   '<p class="fine">Marks, notes and order live in Supabase behind row '
       +     'level security. No session, no rows.</p>'
       + '</div>';
 
       var form = document.getElementById("gate-form");
       var email = document.getElementById("gate-email");
+      var pw = document.getElementById("gate-pw");
       var msg = document.getElementById("gate-msg");
       var btn = form.querySelector("button");
+      var otpBtn = document.getElementById("gate-otp");
 
       function say(text, bad){
         msg.textContent = text;
         msg.className = "msg" + (bad ? " bad" : "");
         msg.hidden = false;
       }
+      function busy(on){ btn.disabled = on; otpBtn.disabled = on; }
+
+      // A fresh session has to re-read the board, so just reload: boot() then
+      // finds the session and loads the rows. Simpler than re-running start().
+      function signedIn(){ location.reload(); }
 
       form.addEventListener("submit", function(e){
         e.preventDefault();
         var addr = email.value.trim();
-        if(!addr) return;
-        btn.disabled = true;
+        if(!addr || !pw.value) return;
+        busy(true);
+        say("Signing in…");
+        client.auth.signInWithPassword({email: addr, password: pw.value}).then(function(res){
+          busy(false);
+          if(res.error){ say(res.error.message, true); return; }
+          signedIn();
+        }, function(err){
+          busy(false);
+          say((err && err.message) || "Could not sign in", true);
+        });
+      });
+
+      // Kept because it works and needs no remembered password — it just
+      // depends on the email arriving, which is why it is not the default.
+      otpBtn.addEventListener("click", function(){
+        var addr = email.value.trim();
+        if(!addr){ say("Type your email first, then tap this.", true); email.focus(); return; }
+        busy(true);
         say("Sending…");
         client.auth.signInWithOtp({
           email: addr,
           options: {emailRedirectTo: location.href.split("#")[0]}
         }).then(function(res){
-          btn.disabled = false;
+          busy(false);
           if(res.error){ say(res.error.message, true); return; }
           say("Check " + addr + ". Open the link on this device — it signs you in and comes straight back here.");
         }, function(err){
-          btn.disabled = false;
+          busy(false);
           say((err && err.message) || "Could not send the link", true);
         });
       });
