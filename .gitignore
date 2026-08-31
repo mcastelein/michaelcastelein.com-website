@@ -24,3 +24,7 @@ Thumbs.db
 
 # playwright mcp scratch
 .playwright-mcp/
+
+# session notes (this repo is public, keep working notes out of it)
+local.md
+next_time_tasks.md
