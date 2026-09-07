@@ -177,7 +177,6 @@
     <button data-mode="mix">mixed</button>
   </div>
   <div class="spacer"></div>
-  <button class="chip on" id="autoBtn">&#128266; auto</button>
   <button class="chip" id="gridBtn">progress</button>
   <button class="chip" id="resetBtn">reset</button>
 </div>
@@ -274,7 +273,7 @@ let attempted = false, tries = 0;
 function load(){
   let s = null;
   try{ s = JSON.parse(localStorage.getItem(KEY) || "null"); }catch(e){}
-  if(!s || !s.cards) s = {cards:{}, seen:0, right:0, streak:0, best:0, mode:"p2b", auto:true};
+  if(!s || !s.cards) s = {cards:{}, seen:0, right:0, streak:0, best:0, mode:"p2b"};
   DATA.forEach(function(d){
     if(!s.cards[d.z]) s.cards[d.z] = {box:1, right:0, wrong:0};
   });
@@ -432,7 +431,6 @@ function nextCard(){
     box.appendChild(b);
   });
 
-  if(S.auto) setTimeout(function(){ speak(cur.z); }, 120);
   drawStats();
   drawBoard();
 }
@@ -569,10 +567,6 @@ function drawGrid(){
 el("sayBtn").onclick = function(){ speak(cur.z); };
 el("sayBtn2").onclick = function(){ speak(cur.z); };
 el("nextBtn").onclick = function(){ nextCard(); };
-el("autoBtn").onclick = function(){
-  S.auto = !S.auto; save();
-  el("autoBtn").className = "chip" + (S.auto ? " on" : "");
-};
 el("gridBtn").onclick = function(){
   const g = el("grid");
   g.className = g.className.indexOf("show") > -1 ? "grid" : "grid show";
@@ -602,7 +596,6 @@ document.addEventListener("keydown", function(e){
 Array.prototype.forEach.call(el("modeSeg").children, function(b){
   b.className = b.dataset.mode === S.mode ? "on" : "";
 });
-el("autoBtn").className = "chip" + (S.auto ? " on" : "");
 preload();
 nextCard();
 drawGrid();
