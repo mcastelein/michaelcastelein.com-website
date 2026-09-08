@@ -323,7 +323,7 @@ body.sheet-open{overflow:hidden}
 
   function load(){
     return Promise.all([
-      client.from("queue_state").select("post_id,status,notes,version,posted_at,scheduled_for,sort_order"),
+      client.from("queue_state").select("post_id,status,notes,version,posted_at,scheduled_for,sort_order,photos"),
       client.from("queue_ideas").select("id,body,created_at").order("created_at", {ascending:true})
     ]).then(function(res){
       var rows = fail(res[0]).data || [];
@@ -336,6 +336,10 @@ body.sheet-open{overflow:hidden}
           version: r.version, postedAt: r.posted_at,
           scheduledFor: r.scheduled_for
         };
+        // Only set `photos` when there is a real pick. queue.js treats the key's
+        // absence as "use the suggested set", so an empty array would read as
+        // "he deliberately chose nothing".
+        if(Array.isArray(r.photos) && r.photos.length) state[r.post_id].photos = r.photos;
       });
 
       var order = rows.slice().sort(function(a, b){
@@ -365,7 +369,8 @@ body.sheet-open{overflow:hidden}
         version: s.version || null,
         posted_at: s.postedAt || null,
         scheduled_for: s.scheduledFor || null,
-        sort_order: i
+        sort_order: i,
+        photos: (s.photos && s.photos.length) ? s.photos : null
       };
     });
     if(!rows.length) return Promise.resolve();
