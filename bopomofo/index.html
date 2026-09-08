@@ -32,7 +32,7 @@
   h1{font-size:17px; margin:0; letter-spacing:.02em}
   .sub{font-size:12px; color:var(--muted)}
   .bar{width:100%; max-width:560px; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
-  .seg{display:flex; background:var(--card); border:1px solid var(--line);
+  .seg{display:flex; flex-wrap:wrap; background:var(--card); border:1px solid var(--line);
     border-radius:10px; overflow:hidden; box-shadow:var(--shadow)}
   .seg button{border:0; background:transparent; color:var(--muted); font:inherit;
     font-size:12px; padding:7px 11px; cursor:pointer}
@@ -48,6 +48,8 @@
   .askLabel{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
   .prompt{font-size:76px; line-height:1.15; margin:10px 0 2px; font-weight:600}
   .prompt.small{font-size:52px}
+  .prompt.tap{cursor:pointer; user-select:none}
+  .prompt.tap:hover{opacity:.72}
   .hint{font-size:14px; color:var(--muted); min-height:20px}
   .tries{font-size:13px; color:var(--bad); min-height:18px; margin-top:2px}
   .say{margin-top:14px; display:inline-flex; align-items:center; gap:8px;
@@ -174,6 +176,7 @@
   <div class="seg" id="modeSeg">
     <button data-mode="p2b" class="on">pinyin &rarr; ㄅ</button>
     <button data-mode="b2p">ㄅ &rarr; pinyin</button>
+    <button data-mode="a2b">&#128266; &rarr; ㄅ</button>
     <button data-mode="mix">mixed</button>
   </div>
   <div class="spacer"></div>
@@ -269,6 +272,7 @@ const MAXBOX = 6;
 let S = load();
 let cur = null, opts = [], answered = false, lastId = null, seq = 0;
 let attempted = false, tries = 0;
+const DIRS = ["p2b", "b2p", "a2b"];
 
 function load(){
   let s = null;
@@ -341,12 +345,12 @@ function preload(){
   });
 }
 
-function speak(sym){
+function speak(sym, onBlocked){
   const a = cache[sym];
   if(!a) return;
   try{ a.pause(); a.currentTime = 0; }catch(e){}
   const p = a.play();
-  if(p && p.catch) p.catch(function(){});
+  if(p && p.catch) p.catch(function(){ if(onBlocked) onBlocked(); });
 }
 
 /* ---------- srs pick ---------- */
@@ -402,21 +406,26 @@ function nextCard(){
   tries = 0;
   seq++;
   cur = pick();
-  dir = S.mode === "mix" ? (Math.random() < 0.5 ? "p2b" : "b2p") : S.mode;
+  dir = S.mode === "mix" ? DIRS[Math.floor(Math.random() * DIRS.length)] : S.mode;
   opts = shuffle(distractors(cur).concat([cur]));
 
   el("reveal").className = "reveal";
   el("tries").textContent = "";
-  el("askLabel").textContent = dir === "p2b" ? "which bopomofo?" : "which pinyin?";
+  el("askLabel").textContent = dir === "b2p" ? "which pinyin?" : "which bopomofo?";
 
   if(dir === "p2b"){
     el("prompt").textContent = cur.p;
     el("prompt").className = "prompt small";
     el("hint").textContent = "sounds like  " + cur.s;
-  }else{
+  }else if(dir === "b2p"){
     el("prompt").textContent = cur.z;
     el("prompt").className = "prompt zh";
     el("hint").textContent = "";
+  }else{
+    // sound first: the clip IS the question, so playing it gives nothing away
+    el("prompt").textContent = "🔊";
+    el("prompt").className = "prompt tap";
+    el("hint").textContent = "listen, then pick the symbol";
   }
 
   const box = el("opts");
@@ -425,11 +434,19 @@ function nextCard(){
     const b = document.createElement("button");
     b.className = "opt";
     b.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="big ' +
-      (dir === "p2b" ? "zh" : "") + '">' +
-      (dir === "p2b" ? o.z : o.p) + '</span>';
+      (dir === "b2p" ? "" : "zh") + '">' +
+      (dir === "b2p" ? o.p : o.z) + '</span>';
     b.onclick = function(){ answer(i); };
     box.appendChild(b);
   });
+
+  // The ONLY autoplay in the app. Allowed here because the clip is the question,
+  // not the answer. Never add one to the other modes.
+  if(dir === "a2b"){
+    setTimeout(function(){
+      speak(cur.z, function(){ el("hint").textContent = "tap the speaker to play"; });
+    }, 120);
+  }
 
   drawStats();
   drawBoard();
@@ -565,6 +582,7 @@ function drawGrid(){
 
 /* ---------- controls ---------- */
 el("sayBtn").onclick = function(){ speak(cur.z); };
+el("prompt").onclick = function(){ if(dir === "a2b") speak(cur.z); };
 el("sayBtn2").onclick = function(){ speak(cur.z); };
 el("nextBtn").onclick = function(){ nextCard(); };
 el("gridBtn").onclick = function(){
