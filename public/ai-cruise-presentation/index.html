@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>If You Can Describe It, You Can Build It &middot; NC17</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%9B%B3%3C/text%3E%3C/svg%3E">
+<style>
+/* ------------------------------------------------------------------
+   AI CRUISE NC17 - TALK DECK  (v2: 4 categories, 2 demos each)
+   1280x720 fixed stage, scaled to fit any projector.
+   Dark on purpose: the demo clips are terminal recordings, so there is
+   no white flash when a clip starts. No web fonts - must work offline.
+------------------------------------------------------------------- */
+:root{
+  --bg:#0a0e14;
+  --stage:#0c1219;
+  --surface:#141c26;
+  --surface-2:#1b2532;
+  --line:#26323f;
+  --ink:#eaf0f6;
+  --ink-soft:#9db0c2;
+  --ink-faint:#61748a;
+  --accent:#4da3ff;
+  --accent-deep:#1d6fd0;
+  --accent-soft:#12253c;
+  --warm:#ffb454;
+  --warm-soft:#2a2013;
+  --good:#4ade80;
+  --purple:#d0a8ee;
+  --mono:"Cascadia Code","JetBrains Mono",Consolas,ui-monospace,monospace;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--bg);font-family:var(--sans);color:var(--ink);overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+
+/* ---------- stage ---------- */
+#fit{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1280px;height:720px;flex:none;transform-origin:center center;
+  background:var(--stage);box-shadow:0 24px 80px rgba(0,0,0,.6);overflow:hidden}
+.slide{position:absolute;inset:0;display:none;padding:48px 64px 62px}
+.slide.active{display:flex;flex-direction:column}
+.slide .inner{flex:1;display:flex;flex-direction:column;min-height:0}
+.inner.center{justify-content:center}
+
+/* ---------- type ---------- */
+.kicker{font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:18px}
+.kicker.warm{color:var(--warm)}
+h1{font-size:70px;line-height:1.02;font-weight:800;letter-spacing:-.03em}
+h2{font-size:46px;line-height:1.08;font-weight:800;letter-spacing:-.025em}
+h3{font-size:22px;font-weight:750;letter-spacing:-.01em}
+.big{font-size:54px;line-height:1.1;font-weight:800;letter-spacing:-.03em}
+.sub{font-size:22px;color:var(--ink-soft);line-height:1.45;margin-top:20px;max-width:900px}
+.sub b{color:var(--ink);font-weight:700}
+.mono{font-family:var(--mono)}
+.hl{color:var(--warm)}
+.hl-b{color:var(--accent)}
+.strike{text-decoration:line-through;text-decoration-thickness:6px;
+  text-decoration-color:#e5484d;opacity:.55}
+
+/* ---------- sparse bullet list ---------- */
+ul.pts{list-style:none;margin-top:34px;display:flex;flex-direction:column;gap:20px}
+ul.pts li{font-size:30px;font-weight:650;line-height:1.25;letter-spacing:-.015em;
+  padding-left:34px;position:relative;color:var(--ink)}
+ul.pts li::before{content:"";position:absolute;left:0;top:.55em;width:14px;height:3px;
+  background:var(--accent);border-radius:2px}
+ul.pts.sm li{font-size:23px}
+
+/* ---------- cards ---------- */
+.cards{display:grid;gap:18px}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px 22px}
+.card .n{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:block}
+.card h3{color:var(--ink);font-size:25px}
+.card p{font-size:15.5px;color:var(--ink-soft);margin-top:10px;line-height:1.4}
+.card.warm .n{color:var(--warm)}
+.card.warm{border-color:#3a2e18;background:linear-gradient(180deg,var(--warm-soft),var(--surface))}
+
+/* ---------- demo head ---------- */
+.demo-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;flex:none}
+.demo-head .tag{font-family:var(--mono);font-size:11.5px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+  border:1px solid #1f3a5c;padding:6px 11px;border-radius:7px;white-space:nowrap}
+.demo-head .tag.t-content{color:#8fc4ff;background:#12253c;border-color:#1f3a5c}
+.demo-head .tag.t-data{color:#86e0ae;background:#132a20;border-color:#1e4433}
+.demo-head .tag.t-learn{color:#ffce8a;background:#2a2013;border-color:#4a3820}
+.demo-head .tag.t-pres{color:#d0a8ee;background:#241a2e;border-color:#3d2a4d}
+.demo-head h2{font-size:36px}
+
+/* ---------- split: you type | you get ---------- */
+.split{flex:1;min-height:0;display:grid;grid-template-columns:46fr 54fr;gap:20px}
+.split.wide-left{grid-template-columns:54fr 46fr}
+.pane{min-height:0;display:flex;flex-direction:column}
+.pane__h{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px;flex:none}
+.pane__h.go{color:var(--good)}
+
+/* ---------- the real Claude Code terminal, rebuilt ----------
+   Matched to Michael's actual window (v2.1.267, Opus high effort, bypass
+   permissions on, 9 agents) so the mock on screen is not visibly a mock.
+   Colours sampled from the terminal, not from this deck's palette. */
+.term{flex:1;min-height:0;display:flex;flex-direction:column;background:#0c0c0c;
+  border:1px solid #2a2a2a;border-radius:9px;overflow:hidden;
+  font-family:var(--mono)}
+
+/* header: logo + version + effort + cwd */
+.term__top{flex:none;display:flex;gap:14px;align-items:flex-start;padding:15px 16px 13px}
+.crab{flex:none;width:46px;height:29px;display:block}
+.term__id{min-width:0;font-size:12.5px;line-height:1.5}
+.term__id .nm{color:#e8e8e8;font-weight:800}
+.term__id .v{color:#7a7a7a;margin-left:7px}
+.term__id .dim{color:#7a7a7a;display:block;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+
+/* transcript area. Each finished turn moves up into here, so the panel plays
+   a conversation rather than one big prompt. Bottom-aligned, like scrollback. */
+.term__mid{flex:1;min-height:0;padding:2px 16px 0;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;gap:13px}
+/* A turn appears instantly, with NO fade. This is deliberate and hard-won:
+   every animated approach could strand a turn invisible on stage.
+     - class toggle in requestAnimationFrame: raced the transition
+     - animation with fill-mode:both: held the 0% frame whenever animations
+       did not tick, so every turn rendered at opacity 0
+     - animation without fill-mode: the LAST turn's animation never advances
+       once the page goes idle (nothing else is repainting), leaving it at 0
+   Real terminal output appears instantly anyway, so there is nothing to gain
+   and a blank panel in front of 120 people to lose. Do not add a fade here. */
+.turn .tq{color:#e8e8e8;font-size:var(--tfs,16px);line-height:1.45;
+  display:flex;gap:9px;align-items:flex-start}
+.turn .tq .ask{color:#8a8a8a;font-weight:700;flex:none}
+.turn .ta{margin-top:6px;padding-left:25px;font-size:13.5px;line-height:1.6;
+  color:#a9a9a9}
+.turn .ta .g{color:#63b863}
+.turn .ta .dim{color:#7a7a7a}
+
+/* THE INPUT BOX. The prompt types itself in here, character by character,
+   and the box grows to fit exactly like the real one. */
+.term__in{flex:none;margin:12px 12px 0;border:1px solid #3a3a3a;border-radius:5px;
+  padding:9px 12px;display:flex;align-items:flex-start;gap:10px;
+  background:#0f0f0f;transition:border-color .3s}
+.term__in.typing{border-color:#5a5a5a}
+.term__in .chev{color:#8a8a8a;font-weight:700;font-size:16px;flex:none;
+  line-height:1.5}
+.term__in .field{min-width:0;flex:1;font-size:var(--tfs,16px);line-height:1.5}
+.type{color:#e8e8e8;white-space:pre-wrap;word-break:break-word;display:inline}
+.cur{display:inline-block;width:8px;height:1.02em;background:#e8e8e8;
+  vertical-align:text-bottom;margin-left:1px;animation:blink 1s steps(1) infinite}
+.cur.done{animation:blink 1.2s steps(1) infinite;opacity:.45}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* the two status lines */
+.term__st{flex:none;display:flex;justify-content:space-between;align-items:center;
+  gap:12px;padding:8px 13px 0;font-size:11.5px;color:#6e6e6e;min-width:0}
+.term__st .l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.term__st .rc{color:#4f9d4f;flex:none}
+.term__byp{flex:none;padding:3px 13px 11px;font-size:11.5px;color:#6e6e6e;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.term__byp .arw2{color:#d98263;margin-right:5px}
+.term__byp .on2{color:#d98263;font-weight:700}
+
+/* ---------- media ---------- */
+.media{flex:1;min-height:0;border-radius:12px;border:1px solid var(--line);
+  background:#05080c;overflow:hidden;position:relative;display:flex;
+  align-items:center;justify-content:center}
+.media video,.media img{width:100%;height:100%;object-fit:contain;display:block}
+.media .mph{text-align:center;color:var(--ink-faint);padding:18px}
+.media .mph .icon{font-size:38px;display:block;margin-bottom:12px;opacity:.5}
+.media .mph .fn{font-family:var(--mono);font-size:13.5px;color:var(--accent);margin-top:7px}
+.media .mph .what{font-size:14px;max-width:440px;margin:11px auto 0;line-height:1.5}
+
+/* ---------- tool chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px;flex:none}
+.chip{font-family:var(--mono);font-size:13px;font-weight:700;padding:7px 12px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink-soft)}
+.chip b{color:var(--accent);font-weight:800}
+.chip.key{border-color:#3a2e18;background:var(--warm-soft);color:var(--warm)}
+
+/* ---------- recipe: steps become a skill ---------- */
+.recipe{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.steps{display:flex;flex-direction:column;gap:11px}
+.step{display:flex;align-items:center;gap:16px;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 11px 11px 0;padding:14px 20px}
+.step .sn{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--accent);
+  width:22px;flex:none}
+.step .st{font-size:23px;font-weight:650;letter-spacing:-.01em}
+.becomes{display:flex;align-items:center;gap:18px;margin-top:4px}
+.becomes .arw{font-size:30px;color:var(--warm);flex:none;line-height:1}
+.skillbox{flex:1;display:flex;align-items:center;gap:18px;padding:18px 24px;border-radius:13px;
+  background:linear-gradient(90deg,var(--warm-soft),var(--surface));border:1px solid #3a2e18}
+.skillbox .cmd{font-family:var(--mono);font-size:27px;font-weight:800;color:var(--warm)}
+.skillbox .cap{font-size:16px;color:var(--ink-soft);line-height:1.35}
+
+/* ---------- project wall ---------- */
+.wall{display:grid;grid-template-columns:repeat(8,1fr);gap:9px;margin-top:8px}
+.tile{aspect-ratio:1.75;border-radius:9px;background:var(--surface);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:10.5px;font-weight:650;line-height:1.2;padding:6px;color:var(--ink-soft)}
+.tile.k-job{background:#2a1a1a;border-color:#4a2a2a;color:#ff9a9a}
+.tile.k-content{background:#12253c;border-color:#1f3a5c;color:#8fc4ff}
+.tile.k-data{background:#132a20;border-color:#1e4433;color:#86e0ae}
+.tile.k-learn{background:#2a2013;border-color:#4a3820;color:#ffce8a}
+.tile.k-pres{background:#241a2e;border-color:#3d2a4d;color:#d0a8ee}
+.legend{display:flex;gap:22px;margin-top:18px;font-size:14px;color:var(--ink-faint);flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;
+  vertical-align:middle}
+
+/* ---------- gallery of trip decks ---------- */
+.gal{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(2,1fr);gap:13px}
+.gcard{min-height:0;display:flex;flex-direction:column;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gcard .gimg{flex:1;min-height:0;background:#05080c;display:flex;align-items:center;
+  justify-content:center;color:var(--ink-faint);font-size:12px;text-align:center;padding:10px}
+.gcard .gimg img{width:100%;height:100%;object-fit:cover;display:block}
+.gcard .gt{flex:none;padding:12px 14px;font-size:15px;font-weight:700;line-height:1.25}
+.gcard .gt small{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  font-weight:600;margin-top:5px;letter-spacing:.04em}
+
+/* ---------- interactive checklist ---------- */
+.checks{display:flex;flex-direction:column;gap:16px;margin-top:30px}
+.chk{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--line);
+  border-radius:13px;padding:20px 24px;cursor:pointer;transition:.18s;user-select:none}
+.chk:hover{border-color:var(--accent);background:var(--surface-2)}
+.chk .box{width:30px;height:30px;flex:none;border-radius:8px;border:2px solid var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;font-size:19px;color:transparent;
+  transition:.18s;font-weight:800}
+.chk.on .box{background:var(--good);border-color:var(--good);color:#06200f}
+.chk .t{font-size:26px;font-weight:680;letter-spacing:-.015em}
+.chk.on .t{color:var(--ink-soft)}
+
+/* ---------- footer / chrome ---------- */
+.footer{position:absolute;left:64px;right:64px;bottom:20px;display:flex;
+  justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-faint);
+  font-family:var(--mono);letter-spacing:.06em;z-index:5}
+.footer b{color:var(--accent);font-weight:700}
+#bar{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);
+  transition:width .3s ease;z-index:6}
+
+/* ---------- overview ---------- */
+#ov{position:fixed;inset:0;background:rgba(6,9,13,.97);z-index:60;display:none;
+  padding:34px;overflow:auto}
+#ov.on{display:block}
+#ov h4{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin-bottom:18px;font-family:var(--mono)}
+.ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:13px}
+.ovc{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px;
+  cursor:pointer;transition:.15s}
+.ovc:hover,.ovc.cur{border-color:var(--accent);background:var(--surface-2)}
+.ovc .num{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:800}
+.ovc .ttl{font-size:14.5px;font-weight:700;margin-top:7px;line-height:1.25}
+.ovc .tm{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:8px}
+
+/* ---------- speaker notes ---------- */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;background:#070b10;
+  border-top:2px solid var(--accent);padding:20px 26px 22px;overflow:auto;z-index:50;
+  display:none;box-shadow:0 -14px 40px rgba(0,0,0,.6)}
+#notes.on{display:block}
+#notes .nh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+#notes .nt{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);font-weight:800}
+#notes .clock{font-family:var(--mono);font-size:13px;color:var(--warm);font-weight:800}
+#notes ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+#notes li{font-size:15.5px;line-height:1.45;color:var(--ink-soft);padding-left:20px;
+  position:relative}
+#notes li::before{content:"\25B8";position:absolute;left:0;color:var(--accent);font-size:12px;top:3px}
+#notes li b{color:var(--ink);font-weight:700}
+#notes li.do{color:var(--warm)}
+#notes li.do::before{content:"\2691";color:var(--warm)}
+
+/* ---------- notepad ---------- */
+#pad{position:fixed;right:22px;top:22px;width:330px;height:60vh;background:#070b10;
+  border:1px solid var(--accent);border-radius:14px;z-index:55;display:none;
+  flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.7)}
+#pad.on{display:flex}
+#pad .padh{padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:800}
+#pad textarea{flex:1;background:transparent;border:0;outline:0;resize:none;padding:16px;
+  color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.6}
+
+/* ---------- control bar ---------- */
+#ctl{position:fixed;right:18px;bottom:16px;display:flex;gap:8px;z-index:58;opacity:.28;
+  transition:opacity .2s}
+#ctl:hover{opacity:1}
+#ctl button{background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:8px 11px;border-radius:8px;cursor:pointer;transition:.15s}
+#ctl button:hover{border-color:var(--accent);color:var(--accent)}
+#ctl button.on{background:var(--accent);border-color:var(--accent);color:#04101f}
+
+#timer{position:fixed;left:18px;top:16px;z-index:58;font-family:var(--mono);font-size:26px;
+  font-weight:800;color:var(--warm);background:rgba(7,11,16,.9);border:1px solid var(--line);
+  padding:8px 15px;border-radius:10px;display:none;letter-spacing:.04em}
+#timer.on{display:block}
+#timer.over{color:#ff6b6b;border-color:#ff6b6b}
+
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70;display:none}
+#confetti.on{display:block}
+
+#help{position:fixed;inset:0;background:rgba(6,9,13,.96);z-index:80;display:none;
+  align-items:center;justify-content:center}
+#help.on{display:flex}
+#help .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:34px 40px;max-width:560px}
+#help h4{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:20px}
+#help table{width:100%;border-collapse:collapse}
+#help td{padding:7px 0;font-size:15px;color:var(--ink-soft)}
+#help td:first-child{font-family:var(--mono);color:var(--warm);font-weight:800;width:120px}
+</style>
+</head>
+<body>
+
+<div id="fit"><div id="stage"><div id="bar"></div></div></div>
+
+<div id="ov"><h4>Overview &middot; click a slide to jump</h4><div class="ovgrid" id="ovgrid"></div></div>
+
+<div id="notes">
+  <div class="nh"><span class="nt">Speaker notes</span><span class="clock" id="nclock"></span></div>
+  <ul id="nlist"></ul>
+</div>
+
+<div id="pad">
+  <div class="padh">Notepad &middot; scratch</div>
+  <textarea id="padtext" placeholder="Audience questions, names, ideas..."></textarea>
+</div>
+
+<div id="timer">20:00</div>
+<canvas id="confetti"></canvas>
+
+<div id="help"><div class="box">
+  <h4>Keyboard</h4>
+  <table>
+    <tr><td>&larr; &rarr; / Space</td><td>Previous / next slide</td></tr>
+    <tr><td>N</td><td>Speaker notes on / off</td></tr>
+    <tr><td>O</td><td>Overview grid</td></tr>
+    <tr><td>P</td><td>Notepad</td></tr>
+    <tr><td>T</td><td>Start / pause the countdown</td></tr>
+    <tr><td>R</td><td>Reset the timer</td></tr>
+    <tr><td>F</td><td>Fullscreen</td></tr>
+    <tr><td>C</td><td>Fire the confetti</td></tr>
+    <tr><td>Y</td><td>Replay the typing on this slide</td></tr>
+    <tr><td>?</td><td>This help</td></tr>
+    <tr><td>Esc</td><td>Close any panel</td></tr>
+  </table>
+</div></div>
+
+<div id="ctl">
+  <button id="bNotes">NOTES&nbsp;N</button>
+  <button id="bOv">GRID&nbsp;O</button>
+  <button id="bPad">PAD&nbsp;P</button>
+  <button id="bTimer">TIMER&nbsp;T</button>
+  <button id="bHelp">?</button>
+</div>
+
+<script>
+/* =================================================================
+   BUILDING BLOCKS
+   ================================================================= */
+
+/* the "you get" pane.
+   Three states, best available wins:
+     1. media/<file>       the real clip, once recorded  -> autoplaying loop
+     2. media/<still>      a real screenshot, if given   -> shown meanwhile
+     3. the text placeholder                             -> nothing exists yet
+   So a slide with a still is already presentable, not a placeholder. */
+const mediaSlot = (file, what, still) => `
+  <div class="media" data-media="${file}"${still?` data-still="${still}"`:""}>
+    <div class="mph">
+      <span class="icon">&#9654;</span>
+      <div>clip not added yet</div>
+      <div class="fn">media/${file}</div>
+      <div class="what">${what}</div>
+    </div>
+  </div>`;
+
+/* The Claude Code critter, as pixel art. 16x10 grid of 1px rects, scaled by
+   the viewBox, so it stays crisp at any projector size and needs no image file. */
+const CRAB = (() => {
+  const g = [
+    "..##........##..",
+    ".####......####.",
+    ".##############.",
+    "################",
+    "###..######..###",
+    "################",
+    "################",
+    ".##############.",
+    "..###..##..###..",
+    "...##..##..##..."
+  ];
+  let r = "";
+  g.forEach((row,y) => {
+    let x = 0;
+    while (x < row.length) {
+      if (row[x] === "#") {
+        let w = 0;
+        while (row[x+w] === "#") w++;          /* merge runs into one rect */
+        r += `<rect x="${x}" y="${y}" width="${w}" height="1"/>`;
+        x += w;
+      } else x++;
+    }
+  });
+  return `<svg class="crab" viewBox="0 0 16 10" fill="#d98263"
+            shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+})();
+
+/* the "you type" pane: Michael's actual Claude Code window.
+   Plays a CONVERSATION. Each turn types itself into the input box, then moves
+   up into the transcript with its reply, and the next turn starts. That is how
+   the tool is actually used, and it keeps every prompt short and plain.
+     cwd   = the folder, shown in the header and in the status line
+     turns = [{ask, out}]  ask is typed; out is the reply (html, optional) */
+const term = (cwd, turns) => `
+  <div class="term" data-turns="${encodeURIComponent(JSON.stringify(turns))}">
+    <div class="term__top">
+      ${CRAB}
+      <div class="term__id">
+        <div><span class="nm">Claude Code</span><span class="v">v2.1.267</span></div>
+        <span class="dim">Opus with high effort &middot; Claude Team</span>
+        <span class="dim">${cwd}</span>
+      </div>
+    </div>
+    <div class="term__mid"></div>
+    <div class="term__in">
+      <span class="chev">&#8250;</span>
+      <span class="field"><span class="type"></span><span class="cur"></span></span>
+    </div>
+    <div class="term__st">
+      <span class="l">${cwd} &nbsp;|&nbsp; Opus 5 &nbsp;|&nbsp; effort:high</span>
+      <span class="rc">/rc</span>
+    </div>
+    <div class="term__byp">
+      <span class="arw2">&#9656;&#9656;</span><span class="on2">bypass permissions on</span>
+      (shift+tab to cycle) &middot; &larr; 9 agents
+    </div>
+  </div>`;
+
+/* a full "you type / you get" slide */
+const split = ({tag, tagClass, title, cwd, turns, file, what, still, chips, wideLeft}) => `
+  <div class="inner">
+    <div class="demo-head"><span class="tag ${tagClass||""}">${tag}</span><h2>${title}</h2></div>
+    <div class="split${wideLeft?" wide-left":""}">
+      <div class="pane">
+        <div class="pane__h">${turns.length>1?"you just talk to it":"you type this"}</div>
+        ${term(cwd, turns)}
+        ${chips ? `<div class="chips">${chips}</div>` : ""}
+      </div>
+      <div class="pane">
+        <div class="pane__h go">you get this</div>
+        ${mediaSlot(file, what, still)}
+      </div>
+    </div>
+  </div>`;
+
+/* =================================================================
+   SLIDE DATA
+   Each slide: { id, title (overview label), time, html, notes[] }
+   notes[] entries starting with "!" render as an orange DO-THIS line.
+   ================================================================= */
+
+/* ------------------------------------------------------------------
+   TALK LENGTH. The NC17 speaker guide says a Talk is "20 minutes total,
+   including a brief introduction and short Q&A at the end", with "~2 minutes"
+   of Q&A. Michael's slot was recorded elsewhere as 25 minutes. Until Dori
+   confirms which applies, this is the ONE place to change it: every per-slide
+   target and the on-stage countdown scale from it automatically.
+   ------------------------------------------------------------------- */
+const TALK_MIN  = 20;   // <-- change to 25 if the longer slot is confirmed
+const QA_MIN    = 2;    // Q&A is inside TALK_MIN, per the guide
+const BASE_MIN  = 20;   // the at: values below were authored against this
+
+const SCALE = TALK_MIN / BASE_MIN;
+const mmss  = sec => {
+  const t = Math.round(sec * SCALE);
+  return Math.floor(t/60) + ":" + String(t%60).padStart(2,"0");
+};
+
+const SLIDES = [
+
+/* ============ OPEN ============================================== */
+/* 0 */
+{
+  id:"title", title:"Title + who I am", at:0,
+  html:`<div class="inner center">
+    <div class="kicker">Nomad Cruise 17 &middot; AI Edition</div>
+    <h1>If you can describe it,<br>you can build it.</h1>
+    <div class="sub" style="font-size:26px;margin-top:34px">
+      Michael Castelein &nbsp;<span style="color:var(--ink-faint)">&middot;</span>&nbsp;
+      <span style="color:var(--ink-faint)">Data &amp; AI Lead, Agency Founder</span>
+    </div>
+  </div>`,
+  notes:[
+    "Say it plainly: <b>\"I'm Michael. I do data science and AI for a living.\"</b> That is the whole intro.",
+    "No thanks, no agenda, no CV. Straight in.",
+    "!Hold about 15 seconds, then move.",
+    "!You mentioned a <b>tellusplay page</b> as the opener. Tell Claude what that is and it becomes this slide instead.",
+    "Room is <b>120 people, 70% beginners</b>."
+  ]
+},
+/* 1 */
+{
+  id:"badname", title:"The name is the problem", at:15,
+  html:`<div class="inner center">
+    <div class="kicker">The problem</div>
+    <h1>Claude <span class="strike">Code</span></h1>
+    <ul class="pts" style="margin-top:44px">
+      <li>Worst product name in AI.</li>
+      <li>It is not <span class="hl">just</span> a coding tool.</li>
+      <li>It is a computer that does what you describe.</li>
+    </ul>
+  </div>`,
+  notes:[
+    "The name turns people off before they try it. Name that out loud.",
+    "Borrowable line: <b>\"To engineers, code is the goal. To me, code is a means to an end.\"</b>",
+    "!Do not say \"you don't need a terminal\". It plants the fear."
+  ]
+},
+/* 2 */
+{
+  id:"map", title:"The 4 categories", at:60,
+  html:`<div class="inner center">
+    <div class="kicker">The map</div>
+    <h2 style="margin-bottom:30px">Four categories, two demos each</h2>
+    <div class="cards c4">
+      <div class="card"><span class="n">01</span><h3>Presentation</h3><p>Trip pages and slide decks. Anything you show someone.</p></div>
+      <div class="card"><span class="n">02</span><h3>Content</h3><p>Editing video, and stealing formats off YouTube.</p></div>
+      <div class="card"><span class="n">03</span><h3>Data</h3><p>A report from your data, then turned into a reusable skill.</p></div>
+      <div class="card"><span class="n">04</span><h3>Learning</h3><p>Tools that teach you something.</p></div>
+    </div>
+    <div class="sub" style="margin-top:30px;font-size:20px">
+      Every demo is the same two pictures: <b>what I typed</b>, and <b>what came out</b>.
+    </div>
+  </div>`,
+  notes:[
+    "Say: <b>\"There are so many things you can do with this. I picked four categories, two examples each.\"</b>",
+    "Promise the shape out loud: prompt on the left, result on the right, every single time. It makes the next 18 minutes easy to follow.",
+    "!Time check: you should be at about 1:20 leaving this slide."
+  ]
+},
+
+/* ============ 01 PRESENTATION =================================== */
+/* 3 */
+{
+  id:"p1", title:"Presentation 1 - Trip page", at:100,
+  html: split({
+    tag:"01 Presentation", tagClass:"t-pres",
+    title:"Every trip becomes a page.",
+    cwd:"~/Travel/Trips/china-post-wedding",
+    turns:[
+      {ask:"we have 11 days in china after the wedding. what should we actually do?",
+       out:'Guangxi first, then Guangdong. The karst country is worth 5 nights, Guilin 2, Guangzhou 3.<br>All of it works by train, no flights. <span class="dim">Want me to check the rail times?</span>'},
+      {ask:"yes. and make it a page i can send my family",
+       out:'<span class="g">created</span> index.html <span class="dim">+ 20 images</span><br><span class="dim">Karst Mountains to Canton &middot; 11 days &middot; 8 travellers</span>'}
+    ],
+    file:"01-trip-page.mp4",
+    what:"Payoff first: the Karst Mountains to Canton hero, scrolling. Then the prompt. Then the page building."
+  }),
+  notes:[
+    "<b>Start here on purpose.</b> Everyone in this room plans trips. They will get it before you finish the sentence.",
+    "Scroll it live if the clip is not ready. The Li River hero does the work for you.",
+    "!Record: 01-trip-page.mp4. Show the finished page in the first 3 seconds.",
+    "!Replace the prompt text with what you actually typed. Edit the <b>text:</b> field on this slide.",
+    "!Strip the em dashes out of the trip decks before projecting them."
+  ]
+},
+/* 4 */
+{
+  id:"p1b", title:"Presentation 1b - What it takes", at:180,
+  html:`<div class="inner">
+    <div class="demo-head"><span class="tag t-pres">01 Presentation</span><h2>What it actually takes.</h2></div>
+    <div class="gal">
+      <div class="gcard"><div class="gimg" data-img="trips/china.jpg">Karst hero</div>
+        <div class="gt">Karst Mountains to Canton<small>11 DAYS &middot; BY TRAIN</small></div></div>
+      <div class="gcard"><div class="gimg" data-img="trips/dolomites.jpg">Dolomites hero</div>
+        <div class="gt">The Pale Mountains Loop<small>4 NIGHTS &middot; 1,000 KM</small></div></div>
+      <div class="gcard"><div class="gimg" data-img="trips/bilbao.jpg">Bilbao hero</div>
+        <div class="gt">The Long Way to Biscay<small>ROTTERDAM TO BILBAO &middot; BY TENT</small></div></div>
+      <div class="gcard"><div class="gimg" data-img="trips/semois.jpg">Semois hero</div>
+        <div class="gt">Semois<small>ONE WEEKEND</small></div></div>
+    </div>
+    <div class="chips">
+      <span class="chip">a folder</span>
+      <span class="chip">booking emails</span>
+      <span class="chip">a few photos</span>
+      <span class="chip key">one paragraph of what you want</span>
+      <span class="chip"><b>~20 min</b></span>
+    </div>
+  </div>`,
+  notes:[
+    "Flip fast. Four pages, ten seconds. The point is <b>volume</b>, not any one page.",
+    "Then the honest answer to the question they are all thinking: this is what it costs.",
+    "Say: <b>\"No template. No designer. I described it and checked it.\"</b>",
+    "!Drop four hero screenshots into <b>media/trips/</b> as china.jpg, dolomites.jpg, bilbao.jpg, semois.jpg. They swap in automatically."
+  ]
+},
+/* 5 */
+{
+  id:"p2", title:"Presentation 2 - This deck", at:230,
+  html: split({
+    tag:"01 Presentation", tagClass:"t-pres",
+    title:"You are looking at one right now.",
+    cwd:"~/Projects/ai-cruise/01_output/talk-deck",
+    turns:[
+      {ask:"i'm giving a talk on a cruise ship. there's no wifi. what do i use for slides?",
+       out:'One HTML file. No PowerPoint, no internet, runs off a USB stick.<br><span class="dim">I can put speaker notes and a countdown in it too.</span>'},
+      {ask:"ok build it",
+       out:'<span class="g">created</span> index.html <span class="dim">&middot; 16 slides &middot; 0 dependencies</span>'}
+    ],
+    file:"02-this-deck.mp4",
+    what:"Press O for the grid and C for the confetti on camera. That is the moment that lands."
+  }),
+  notes:[
+    "Point at the screen. <b>\"This. What you are looking at. One file, no PowerPoint.\"</b>",
+    "Live bit that always lands: press <b>O</b> for the grid, then <b>C</b> for confetti. Do it now.",
+    "!Record: 02-this-deck.mp4.",
+    "!Paste your real prompt into the <b>text:</b> field."
+  ]
+},
+
+/* ============ 02 CONTENT ======================================== */
+/* 6 */
+{
+  id:"c1", title:"Content 1 - Video editing", at:300,
+  html: split({
+    tag:"02 Content", tagClass:"t-content",
+    title:"It edits the video for you.",
+    cwd:"~/Projects/video-editing/ski-trip",
+    turns:[
+      {ask:"i filmed 41 clips today. can you turn them into something i can post?",
+       out:'Yes. I need <b>ffmpeg</b> to do the cutting and <b>whisper</b> for the captions.<br><span class="dim">Vertical, for Reels?</span>'},
+      {ask:"yeah. keep the best 40 seconds and add captions",
+       out:'<span class="g">ffmpeg</span> 41 clips <span class="dim">&rarr;</span> 0:38 <span class="dim">&middot; 1080x1920 &middot; captions burned in</span>'}
+    ],
+    file:"03-video-editing.mp4",
+    what:"Payoff first: the finished captioned vertical video. Then the prompt. Then sped-up terminal doing the cuts.",
+    chips:'<span class="chip">it needs</span><span class="chip key">ffmpeg</span><span class="chip key">whisper</span><span class="chip">that is it</span>'
+  }),
+  notes:[
+    "Biggest one in the talk. Give it the most air.",
+    "Say the chain out loud: <b>record &rarr; iCloud &rarr; pull to computer &rarr; cut &rarr; caption &rarr; post</b>.",
+    "The chips answer the question everyone asks: <b>\"what do I have to install?\"</b> Two things.",
+    "!Record: 03-video-editing.mp4. Finished video in the first 3 seconds.",
+    "!Confirm the real tool list before the talk. If you also use something else, add a chip."
+  ]
+},
+/* 7 */
+{
+  id:"c2", title:"Content 2 - Steal a format", at:420,
+  html: split({
+    tag:"02 Content", tagClass:"t-content",
+    title:"Take a YouTuber apart.",
+    cwd:"~/Projects/yapping",
+    turns:[
+      {ask:"why do this guy's videos feel so much snappier than mine?",
+       out:'<span class="g">yt-dlp</span> downloaded it. 23 edit moves in 90 seconds:<br><span class="dim">zoom punch x9 &middot; pop-up x6 &middot; click sfx x8 &middot; no cut longer than 2.1s</span>'},
+      {ask:"do the same to my footage",
+       out:'<span class="g">applied</span> 23 moves <span class="dim">&middot; same pacing &middot; my own clips</span>'}
+    ],
+    file:"04-style-steal.mp4",
+    what:"Reference video on the left, your version on the right, same moves. 15 seconds is enough.",
+    chips:'<span class="chip key">yt-dlp</span><span class="chip">downloads any video</span><span class="chip">free</span>'
+  }),
+  notes:[
+    "Frame it honestly: <b>steal the format, never the content.</b> Say that out loud, it protects you.",
+    "This is the one people will write down. Spell <b>yt-dlp</b> on the slide and say it slowly.",
+    "Works on TikTok too. Say so, half the room is on TikTok.",
+    "!Record: 04-style-steal.mp4. Split screen, reference vs yours."
+  ]
+},
+
+/* ============ 03 DATA =========================================== */
+/* 8 */
+{
+  id:"d1", title:"Data 1 - A report from your data", at:520,
+  html: split({
+    tag:"03 Data", tagClass:"t-data",
+    title:"Point it at your data. Ask in English.",
+    cwd:"~/Projects/meridian-demo",
+    turns:[
+      {ask:"what's actually going on with our falls numbers?",
+       out:'<span class="g">read</span> falls_aug.csv <span class="dim">&middot; 83 events &middot; 612 residents</span><br>Down 14% on July. But two communities hold 46% of it,<br>and their peak is 04:00 to 08:00.'},
+      {ask:"put that in a report i can send out every month",
+       out:'<span class="g">created</span> index.html <span class="dim">&middot; 4 charts &middot; 0 dependencies</span>'}
+    ],
+    file:"05-report.mp4",
+    what:"Payoff: the finished report scrolling. Then the prompt. Then it rebuilding.",
+    still:"apps/report.jpg",
+    chips:'<span class="chip">spreadsheet</span><span class="chip">database</span><span class="chip">CSV</span><span class="chip">an API</span>'
+  }),
+  notes:[
+    "Do <b>not</b> go technical here. You said so yourself. One sentence: it reads whatever your data lives in.",
+    "Say the safety line early and plainly: <b>\"This is the shape of my actual day job. Every number and name on it is invented.\"</b> The red banner across the top says so too.",
+    "The chips answer \"would it work on mine?\". Point at them, do not explain them.",
+    "Real page: <b>01_output/demo-report/index.html</b>. Scroll it live if you want; the charts have working tooltips.",
+    "!Do NOT use the renovation tracker (mortgage) or any real client data.",
+    "!Record: 05-report.mp4. Until then the still is the real report, so this slide already works."
+  ]
+},
+/* 9 */
+{
+  id:"d2", title:"Data 2 - That was a skill", at:620,
+  html:`<div class="inner">
+    <div class="demo-head"><span class="tag t-data">03 Data</span><h2>Do it once. Then name it.</h2></div>
+    <div class="recipe">
+      <div class="steps">
+        <div class="step"><span class="sn">01</span><span class="st">Grab the data from this table.</span></div>
+        <div class="step"><span class="sn">02</span><span class="st">Get rid of the duplicates.</span></div>
+        <div class="step"><span class="sn">03</span><span class="st">Output the report.</span></div>
+        <div class="step"><span class="sn">04</span><span class="st">Email it to me.</span></div>
+      </div>
+      <div class="becomes">
+        <span class="arw">&#8595;</span>
+        <div class="skillbox">
+          <span class="cmd">/monthly-report</span>
+          <span class="cap">That is a skill.<br>Four sentences in a file. Nothing fancier than that.</span>
+        </div>
+      </div>
+    </div>
+  </div>`,
+  notes:[
+    "<b>The most useful slide in the talk.</b> Beginners think a skill is a big technical thing. Kill that.",
+    "Read the four steps out loud, plainly. Then: <b>\"Save that. Give it a name. Now it is a skill.\"</b>",
+    "Then the payoff line: <b>\"Next month I type the name. That is the whole job.\"</b>",
+    "!Rename /monthly-report to whatever your real one is called."
+  ]
+},
+/* 10 */
+{
+  id:"d3", title:"Data 3 - Run it again", at:700,
+  html: split({
+    tag:"03 Data", tagClass:"t-data",
+    title:"Next month, this is the whole job.",
+    cwd:"~/Projects/ml-ventures",
+    turns:[
+      {ask:"/monthly-report",
+       out:'<span class="dim">running skill</span> monthly-report<br><span class="dim">read</span> falls_sep.csv <span class="dim">&middot; deduped 61 rows</span><br><span class="dim">created</span> index.html <span class="dim">&middot; sent</span><br><br><span class="g">done</span> <span class="dim">&middot; 40 seconds</span>'}
+    ],
+    file:"06-run-skill.mp4",
+    what:"One short command, then the whole thing runs on its own. Under 15 seconds.",
+    wideLeft:true
+  }),
+  notes:[
+    "Let the typing finish, then say nothing for two seconds. The shortness IS the point.",
+    "This is also the natural place to mention that skills can be <b>downloaded from the internet</b> and dropped in a folder. One sentence, do not go deeper.",
+    "!Record: 06-run-skill.mp4. Very short."
+  ]
+},
+
+/* ============ 04 LEARNING ======================================= */
+/* 11 */
+{
+  id:"l1", title:"Learning 1 - Bopomofo trainer", at:760,
+  html: split({
+    tag:"04 Learning", tagClass:"t-learn",
+    title:"Nobody would ever build this for me.",
+    cwd:"~/Projects/bopomofo-app",
+    turns:[
+      {ask:"how do i learn to read bopomofo?",
+       out:'There are 37 symbols. Drilling them with audio is the fastest way,<br>and you only really need the ones you keep missing.'},
+      {ask:"build me that then. bring back the ones i get wrong",
+       out:'<span class="g">created</span> index.html <span class="dim">&middot; 37 symbols &middot; 37 audio files</span><br><span class="dim">weakest-first queue &middot; progress saved locally</span>'}
+    ],
+    file:"07-learning-tool.mp4",
+    what:"The trainer in use: pick a symbol, hear it, watch the weakest-first list reorder.",
+    still:"apps/bopomofo.jpg",
+    chips:'<span class="chip">37 symbols</span><span class="chip key">wrong ones come back sooner</span>'
+  }),
+  notes:[
+    "Warmest demo. Travel crowd plus language learning. This one connects.",
+    "The point: <b>nobody would ever build this for you. Now you do not need them to.</b>",
+    "There is no market for a Dutch American learning Taiwanese phonetics. That is exactly why it exists.",
+    "!Record: 07-learning-tool.mp4. The still already shows the real app, so this slide works now."
+  ]
+},
+/* 12 */
+{
+  id:"l2", title:"Learning 2 - Caffeine Lab", at:840,
+  html: split({
+    tag:"04 Learning", tagClass:"t-learn",
+    title:"Or learn how your own body works.",
+    cwd:"~/Projects/caffeine-tracking",
+    turns:[
+      {ask:"how does caffeine work in my body?",
+       out:'You absorb it over about 45 minutes, then it halves every 5 hours or so.<br>A 2pm coffee is still a quarter of the way in you at bedtime.'},
+      {ask:"ok i want to build a dashboard that helps me understand this and see how much i can have so it doesn't affect my sleep",
+       out:'<span class="g">created</span> index.html<br><span class="dim">one-compartment model &middot; drag to retime &middot; 14 drinks</span>'}
+    ],
+    file:"08-learning-two.mp4",
+    what:"Drag a coffee later in the day and watch the bedtime number climb. That is the whole demo.",
+    still:"apps/caffeine.jpg",
+    chips:'<span class="chip key">113 mg still in the blood at 22:00</span>'
+  }),
+  notes:[
+    "Drag one drink on camera. The bedtime number moves. That single interaction is the demo.",
+    "Line that lands: <b>\"I did not want an app that tells me what I drank. I wanted to understand the thing.\"</b>",
+    "!<b>THIS IS THE CUT SLIDE.</b> If the timer says you are behind at 17:00, skip it. Nobody will know.",
+    "!Record: 08-learning-two.mp4, or just scroll the real page.",
+    "!Strip the 34 em dashes out of the caffeine page before it goes on a screen or on your site."
+  ]
+},
+
+/* ============ CLOSE ============================================= */
+/* 13 */
+{
+  id:"runs", title:"Adhoc / Hook / Schedule", at:910,
+  html:`<div class="inner center">
+    <div class="kicker">Then it stops needing you</div>
+    <h2 style="margin-bottom:34px">Three ways a job runs</h2>
+    <div class="cards c3">
+      <div class="card"><span class="n">Adhoc</span><h3>You run it.</h3><p>You ask, it does the thing.</p></div>
+      <div class="card"><span class="n">Hook</span><h3>Something runs it.</h3><p>A file lands, an email arrives.</p></div>
+      <div class="card warm"><span class="n">Schedule</span><h3>The clock runs it.</h3><p>Monday 9am, forever.</p></div>
+    </div>
+  </div>`,
+  notes:[
+    "Only extra framework in the talk. Two minutes, no more.",
+    "Tie back: the monthly report is a <b>Schedule</b>. Everything else you showed was <b>Adhoc</b>.",
+    "!Time check: about 20 minutes gone. Close now."
+  ]
+},
+/* 14 */
+{
+  id:"close", title:"Pick one chore", at:980,
+  html:`<div class="inner center">
+    <div class="kicker warm">Monday morning</div>
+    <h2 style="margin-bottom:6px">Pick one chore you already hate.</h2>
+    <div class="checks">
+      <div class="chk"><div class="box">&#10003;</div><div class="t">It happens more than once.</div></div>
+      <div class="chk"><div class="box">&#10003;</div><div class="t">You can describe it in a sentence.</div></div>
+      <div class="chk"><div class="box">&#10003;</div><div class="t">You can tell when it went wrong.</div></div>
+    </div>
+  </div>`,
+  notes:[
+    "Click each line as you say it. Three clicks, three beats.",
+    "This is the one thing they act on. Make it feel small.",
+    "Callback: <b>\"That is exactly what the monthly report was.\"</b>"
+  ]
+},
+/* 15 */
+{
+  id:"end", title:"Giveaway + confetti", at:1040,
+  html:`<div class="inner center">
+    <div class="kicker">Take this with you</div>
+    <h1 style="font-size:58px">31 things to try<br>this week.</h1>
+    <div class="sub" style="font-size:24px">PLACEHOLDER: QR code or short link to the starter kit</div>
+    <div class="sub mono" style="font-size:18px;color:var(--ink-faint);margin-top:40px">
+      Michael Castelein &middot; find me at dinner
+    </div>
+  </div>`,
+  notes:[
+    "!Add the QR code or short link. This is the whole reason to give a talk.",
+    "Confetti fires by itself when you land here. Press C to fire it again.",
+    "Then stop talking and take questions. Do not summarise."
+  ]
+}
+];
+
+/* =================================================================
+   ENGINE
+   ================================================================= */
+const stage=document.getElementById("stage");
+const bar=document.getElementById("bar");
+let cur=0, timerOn=false, tLeft=TALK_MIN*60, tHandle=null, typeHandle=null;
+
+/* build slides */
+SLIDES.forEach((s,i)=>{
+  const el=document.createElement("div");
+  el.className="slide"; el.id="s"+i;
+  el.innerHTML=s.html+`<div class="footer"><span>${s.id}</span><span><b>${i+1}</b> / ${SLIDES.length}</span></div>`;
+  stage.appendChild(el);
+});
+
+/* overview */
+const ovg=document.getElementById("ovgrid");
+SLIDES.forEach((s,i)=>{
+  const c=document.createElement("div"); c.className="ovc"; c.dataset.i=i;
+  c.innerHTML=`<div class="num">${String(i+1).padStart(2,"0")}</div>
+    <div class="ttl">${s.title}</div><div class="tm">${mmss(s.at)}</div>`;
+  c.onclick=()=>{go(i);toggle("ov",false);};
+  ovg.appendChild(c);
+});
+
+/* checkbox behaviour */
+stage.addEventListener("click",e=>{
+  const c=e.target.closest(".chk"); if(c) c.classList.toggle("on");
+});
+
+/* ---- the typewriter ----
+   Types the prompt out character by character, then fades in the output.
+   Speeds up on long prompts so no slide ever types for more than ~4.5s. */
+/* Plays the conversation in one terminal panel.
+   Every run bumps typeGen; any run whose generation is stale aborts, so
+   clicking through slides fast can never leave two conversations interleaving. */
+let typeGen = 0;
+
+function runTyper(slideEl){
+  typeGen++;
+  const gen = typeGen;
+  if(typeHandle){clearInterval(typeHandle);typeHandle=null;}
+
+  const term = slideEl.querySelector(".term");
+  if(!term) return;
+  const turns = JSON.parse(decodeURIComponent(term.dataset.turns));
+  const mid   = slideEl.querySelector(".term__mid");
+  const box   = slideEl.querySelector(".term__in");
+  const field = slideEl.querySelector(".field");
+  const t     = slideEl.querySelector(".type");
+  const caret = slideEl.querySelector(".cur");
+  const byp   = slideEl.querySelector(".term__byp");
+
+  const turnHTML = (turn) =>
+    `<div class="turn"><div class="tq"><span class="ask">&gt;</span><span>${turn.ask}</span></div>` +
+    (turn.out?`<div class="ta">${turn.out}</div>`:"") + `</div>`;
+
+  /* FIT PASS. The tallest moment is every turn sitting in the transcript, so
+     lay that out and step the size down until the status lines are back inside
+     the window. Measured: the panel breaks past ~600 chars at 16px, so without
+     this a long conversation would shove the status bar out of the terminal. */
+  mid.innerHTML = turns.map(turnHTML).join("");
+  t.textContent = "";
+  let fs = 16;
+  term.style.setProperty("--tfs", fs+"px");
+  while(fs>10.5 && byp.getBoundingClientRect().bottom > term.getBoundingClientRect().bottom+1){
+    fs -= 0.5;
+    term.style.setProperty("--tfs", fs+"px");
+  }
+  mid.innerHTML = "";
+
+  box.classList.remove("typing");
+  caret.classList.remove("done");
+
+  /* type one turn, then move it up into the transcript, then the next */
+  const playTurn = (n) => {
+    if(gen!==typeGen) return;
+    if(n>=turns.length){ caret.classList.add("done"); return; }
+    const ask = turns[n].ask;
+    t.textContent = "";
+    box.classList.add("typing");
+    const step = Math.max(1, Math.ceil(ask.length/120));
+    let i = 0;
+    typeHandle = setInterval(()=>{
+      if(gen!==typeGen){ clearInterval(typeHandle); typeHandle=null; return; }
+      i += step;
+      t.textContent = ask.slice(0,i);
+      if(i >= ask.length){
+        clearInterval(typeHandle); typeHandle=null;
+        setTimeout(()=>{                       /* "enter": it moves up */
+          if(gen!==typeGen) return;
+          box.classList.remove("typing");
+          t.textContent = "";
+          mid.insertAdjacentHTML("beforeend", turnHTML(turns[n]));
+          setTimeout(()=>playTurn(n+1), turns[n].out ? 900 : 400);
+        }, 480);
+      }
+    }, 22);
+  };
+  playTurn(0);
+}
+
+function go(n){
+  cur=Math.max(0,Math.min(SLIDES.length-1,n));
+  const slides=[...stage.querySelectorAll(".slide")];
+  slides.forEach((el,i)=>el.classList.toggle("active",i===cur));
+  [...ovg.children].forEach((el,i)=>el.classList.toggle("cur",i===cur));
+  bar.style.width=((cur+1)/SLIDES.length*100)+"%";
+  renderNotes();
+  const v=stage.querySelector(".slide.active video");
+  stage.querySelectorAll("video").forEach(x=>{if(x!==v)x.pause();});
+  if(v){v.currentTime=0;v.play().catch(()=>{});}
+  runTyper(slides[cur]);
+  if(SLIDES[cur].id==="end") fireConfetti();
+}
+
+function renderNotes(){
+  const list=document.getElementById("nlist");
+  list.innerHTML=SLIDES[cur].notes.map(n=>{
+    const doIt=n.startsWith("!");
+    return `<li class="${doIt?"do":""}">${doIt?n.slice(1):n}</li>`;
+  }).join("");
+  document.getElementById("nclock").textContent="target "+mmss(SLIDES[cur].at);
+  if(document.getElementById("notes").classList.contains("on")) requestAnimationFrame(fit);
+}
+
+function toggle(id,force){
+  const el=document.getElementById(id);
+  const on = force===undefined ? !el.classList.contains("on") : force;
+  el.classList.toggle("on",on);
+  const map={notes:"bNotes",ov:"bOv",pad:"bPad"};
+  if(map[id]) document.getElementById(map[id]).classList.toggle("on",on);
+  if(id==="notes") requestAnimationFrame(fit);
+  return on;
+}
+
+/* ---- timer ---- */
+function paintTimer(){
+  const m=Math.floor(Math.abs(tLeft)/60), s=Math.abs(tLeft)%60;
+  const el=document.getElementById("timer");
+  el.textContent=(tLeft<0?"-":"")+m+":"+String(s).padStart(2,"0");
+  el.classList.toggle("over",tLeft<0);
+}
+function toggleTimer(){
+  const el=document.getElementById("timer");
+  el.classList.add("on");
+  document.getElementById("bTimer").classList.toggle("on",!timerOn);
+  if(timerOn){clearInterval(tHandle);timerOn=false;}
+  else{timerOn=true;tHandle=setInterval(()=>{tLeft--;paintTimer();},1000);}
+}
+paintTimer();
+
+/* ---- confetti ---- */
+const cv=document.getElementById("confetti"), cx=cv.getContext("2d");
+let parts=[],cAnim=null;
+function fireConfetti(){
+  cv.width=innerWidth;cv.height=innerHeight;cv.classList.add("on");
+  const cols=["#4da3ff","#ffb454","#4ade80","#d0a8ee","#ff9a9a"];
+  parts=Array.from({length:170},()=>({
+    x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.5,
+    w:6+Math.random()*7, h:9+Math.random()*11,
+    vy:2.4+Math.random()*3.4, vx:-1.4+Math.random()*2.8,
+    r:Math.random()*Math.PI, vr:-0.14+Math.random()*0.28,
+    c:cols[(Math.random()*cols.length)|0]
+  }));
+  if(cAnim) cancelAnimationFrame(cAnim);
+  step();
+}
+function step(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  let alive=false;
+  parts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=0.035;
+    if(p.y<cv.height+40) alive=true;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);
+    cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();
+  });
+  if(alive) cAnim=requestAnimationFrame(step);
+  else cv.classList.remove("on");
+}
+
+/* ---- scale to fit (leaves room for the notes panel when it is open) ---- */
+function fit(){
+  const pad=40;
+  const nEl=document.getElementById("notes");
+  const nH = nEl.classList.contains("on") ? nEl.offsetHeight : 0;
+  const avail = innerHeight - nH - pad;
+  const k=Math.min((innerWidth-pad)/1280, avail/720);
+  stage.style.transform="scale("+Math.max(k,.15)+")";
+  document.getElementById("fit").style.paddingBottom = nH+"px";
+  document.getElementById("ctl").style.bottom = (nH?nH+14:16)+"px";
+}
+addEventListener("resize",fit);
+
+/* ---- keys ---- */
+addEventListener("keydown",e=>{
+  if(document.activeElement && document.activeElement.id==="padtext" && e.key!=="Escape") return;
+  const k=e.key.toLowerCase();
+  if(k==="arrowright"||k===" "||k==="pagedown"){e.preventDefault();go(cur+1);}
+  else if(k==="arrowleft"||k==="pageup"){e.preventDefault();go(cur-1);}
+  else if(k==="n"){toggle("notes");}
+  else if(k==="o"){toggle("ov");}
+  else if(k==="p"){const on=toggle("pad"); if(on) document.getElementById("padtext").focus();}
+  else if(k==="t"){toggleTimer();}
+  else if(k==="r"){tLeft=TALK_MIN*60;paintTimer();}
+  else if(k==="c"){fireConfetti();}
+  else if(k==="y"){runTyper(stage.querySelector(".slide.active"));}
+  else if(k==="f"){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+  else if(k==="?"||k==="/"){toggle("help");}
+  else if(k==="home"){go(0);}
+  else if(k==="end"){go(SLIDES.length-1);}
+  else if(k==="escape"){["notes","ov","pad","help"].forEach(x=>toggle(x,false));}
+});
+
+document.getElementById("bNotes").onclick=()=>toggle("notes");
+document.getElementById("bOv").onclick=()=>toggle("ov");
+document.getElementById("bPad").onclick=()=>{const on=toggle("pad");if(on)document.getElementById("padtext").focus();};
+document.getElementById("bTimer").onclick=toggleTimer;
+document.getElementById("bHelp").onclick=()=>toggle("help");
+document.getElementById("help").onclick=()=>toggle("help",false);
+
+/* ---- fill each media pane with the best thing that exists ----
+   A still (if declared) goes in first so the slide is never empty, then the
+   clip replaces it if the file is there. Clip always wins. */
+document.querySelectorAll(".media[data-media]").forEach(m=>{
+  if(m.dataset.still){
+    const img=new Image();
+    img.onload=()=>{ if(!m.querySelector("video")){m.innerHTML="";m.appendChild(img);} };
+    img.src="media/"+m.dataset.still;
+  }
+  const probe=document.createElement("video");
+  probe.muted=true;probe.preload="metadata";probe.src="media/"+m.dataset.media;
+  probe.onloadedmetadata=()=>{
+    m.innerHTML="";
+    probe.controls=false;probe.loop=true;probe.playsInline=true;
+    m.appendChild(probe);
+    if(m.closest(".slide").classList.contains("active")) probe.play().catch(()=>{});
+  };
+});
+
+/* ---- swap in any trip screenshot that actually exists ---- */
+document.querySelectorAll(".gimg[data-img]").forEach(g=>{
+  const src="media/"+g.dataset.img;
+  const probe=new Image();
+  probe.onload=()=>{g.textContent="";g.appendChild(probe);};
+  probe.src=src;
+});
+
+fit(); go(0);
+</script>
+</body>
+</html>
