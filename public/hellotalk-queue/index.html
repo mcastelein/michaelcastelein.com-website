@@ -215,6 +215,9 @@ body.zh-only .side.enside{display:none}
 .dpost b{display:block;min-width:0;font-family:var(--mono);font-size:10px;color:var(--blue-ink)}
 .dpost span{min-width:0;font-size:10px;line-height:1.3;color:var(--ink-2);overflow-wrap:anywhere;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dpost{cursor:grab}
+.dpost:active{cursor:grabbing}
+.dpost.picked{border-color:var(--cyan);box-shadow:var(--glow-cyan)}
 .dpost.done{background:var(--cyan-soft);border-color:var(--cyan)}
 .dpost.done b{color:var(--cyan-ink)}
 .dpost .tick{display:block;min-width:0;margin-top:2px;font-family:var(--mono);font-size:8.5px;
@@ -635,6 +638,37 @@ function postOnDay(day){
   ordered().forEach(function(p){ if(!hit && scheduleDay(p) === day) hit = p; });
   return hit;
 }
+// The day a post sits on is stored in two different fields depending on its
+// status, so every move has to go through here or the two drift apart.
+function setDay(id, day){
+  var s = st(id);
+  if(s.status === "posted") s.postedAt = day;
+  else s.scheduledFor = day;
+}
+// Move a post onto a day. Returns true, or the reason it was refused. The
+// reason comes back as a string rather than going straight to pill(), because
+// the caller renders afterwards and render() rebuilds the pill empty.
+function place(id, day){
+  var sitting = postOnDay(day);
+  if(sitting && sitting.id === id) return true;
+  var self = byId(id);
+  if(!self) return "That post is not on the board.";
+  var from = scheduleDay(self);
+  if(sitting){
+    // Two posts, two days: trade them. Dragging one onto another used to
+    // silently throw the second one back into the tray.
+    if(from){ setDay(sitting.id, from); }
+    // Dragged in from the tray, so there is no day to trade back. A waiting
+    // post may be bumped, a posted one may not: that would lose the date it
+    // actually went out on.
+    else if(st(sitting.id).status === "posted"){
+      return "That day already holds a posted post. Move that one first.";
+    }
+    else { setDay(sitting.id, null); }
+  }
+  setDay(id, day);
+  return true;
+}
 // Waiting posts with no day yet, in queue order. This is the tray.
 function unscheduled(){
   return ordered().filter(function(p){
@@ -851,7 +885,11 @@ function calendar(){
       + '<span class="dnum">' + (+cell.date.slice(8)) + '</span>';
     if(p){
       var posted = s.status === 'posted';
-      h += '<div class="dpost' + (posted ? ' done' : '') + '">'
+      // Draggable and pickable even when posted. A posted date is often just
+      // wrong, and before this the only way to correct one was to unmark the
+      // post, move it, and mark it again.
+      h += '<div class="dpost' + (posted ? ' done' : '') + (UI.pick === p.id ? ' picked' : '') + '"'
+        + ' draggable="true" data-pick="' + esc(p.id) + '">'
         + '<b>' + esc(p.id) + '</b>'
         + '<span>' + esc(p.title) + '</span>'
         + (posted ? '<i class="tick">posted</i>'
@@ -862,7 +900,8 @@ function calendar(){
   });
 
   h += '</div></div>';
-  h += '<p class="hint calfoot">One post a day is the target. Posted days are locked to the day they went out.</p>';
+  h += '<p class="hint calfoot">One post a day is the target. Tap or drag a post already on a day to move it, '
+    + 'posted ones included. Two posts trade days.</p>';
   return h;
 }
 
@@ -1310,17 +1349,18 @@ document.addEventListener("click", function(e){
   if(e.target.closest("button")) return;
   var day = cell.dataset.day;
   if(UI.pick){
-    var sitting = postOnDay(day);
-    if(sitting && st(sitting.id).status === "posted") return;
-    if(sitting) st(sitting.id).scheduledFor = null;
-    st(UI.pick).scheduledFor = day;
+    // Tapping the picked post again just puts it down, with nothing to save.
+    var here = postOnDay(day);
+    if(here && here.id === UI.pick){ UI.pick = null; render(); return; }
+    var why = place(UI.pick, day);
+    if(why !== true){ render(); pill(why, true); return; }
     UI.pick = null;
     render();
     save();
     return;
   }
   var p = postOnDay(day);
-  if(p && st(p.id).status !== "posted"){ UI.pick = p.id; render(); }
+  if(p){ UI.pick = p.id; render(); }
 });
 
 /* ---------- drag a post onto a day (laptop only, tapping covers phones) ---------- */
@@ -1346,13 +1386,12 @@ document.addEventListener("drop", function(e){
   var cell = e.target.closest ? e.target.closest(".day") : null;
   if(!cell || !UI.pick) return;
   e.preventDefault();
-  var day = cell.dataset.day, sitting = postOnDay(day);
-  if(sitting && st(sitting.id).status === "posted"){ UI.pick = null; render(); return; }
-  if(sitting) st(sitting.id).scheduledFor = null;
-  st(UI.pick).scheduledFor = day;
+  var day = cell.dataset.day;
+  var why = place(UI.pick, day);
   UI.pick = null;
   render();
-  save();
+  if(why === true) save();
+  else pill(why, true);
 });
 
 document.addEventListener("input", function(e){
