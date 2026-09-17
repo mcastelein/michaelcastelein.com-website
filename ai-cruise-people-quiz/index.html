@@ -459,6 +459,15 @@ function describe(p){
   return [p.role, p.company].filter(Boolean).join(" · ");
 }
 
+// nameGroup is a hint about the first name, "f", "m" or "x" for names that
+// read either way. It exists only so the wrong answers in a photo quiz are
+// plausible. A missing or "x" value pairs with anything.
+function sameNameGroup(a, b){
+  var x = a.nameGroup, y = b.nameGroup;
+  if(!x || !y || x === "x" || y === "x"){ return true; }
+  return x === y;
+}
+
 // A link written as "www.linkedin.com/in/x", with no scheme, is treated by
 // the browser as a path on this site and 404s. Trim it and give it one.
 function linkUrl(raw){
@@ -478,7 +487,7 @@ var TYPES = {
     prompt:"Who is this?",
     subject: function(p){ return faceHTML(p); },
     label: function(p){ return p.name; },
-    layout:"list"
+    layout:"list", matchGroup:true
   },
   nameFace: {
     icon:"🖼️", title:"Name to photo", blurb:"See a name, pick the face.",
@@ -489,7 +498,7 @@ var TYPES = {
         (describe(p) ? '<div style="color:var(--ink-faint);font-size:14px">' + esc(describe(p)) + '</div>' : "");
     },
     label: function(p){ return p.name; },
-    layout:"photos"
+    layout:"photos", matchGroup:true
   },
   nameRole: {
     icon:"💼", title:"Name to job", blurb:"See a name, pick what they do.",
@@ -658,6 +667,17 @@ function makeQuestion(modeKey, excludeId, forced){
     var pool_ = shuffle(eligibleAll(k).filter(function(o){
       return o.id !== person.id && t.label(o);
     }));
+    // In the photo quizzes the wrong names have to be plausible for the face
+    // on screen. One woman's name among three men's gives the answer away
+    // without you knowing anybody. Same-group names go first; the rest are
+    // only used if there are not enough to fill four choices.
+    if(t.matchGroup){
+      var same = [], other = [];
+      pool_.forEach(function(o){
+        (sameNameGroup(person, o) ? same : other).push(o);
+      });
+      pool_ = same.concat(other);
+    }
     for(var di = 0; di < pool_.length && decoys.length < 3; di++){
       var lab = t.label(pool_[di]);
       if(used[lab]){ continue; }
