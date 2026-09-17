@@ -73,11 +73,11 @@ button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
 .qhead{display:flex; align-items:center; gap:12px; margin-bottom:14px}
 .qhead .count{font-size:13px; color:var(--ink-faint); white-space:nowrap}
 .qcard{
-  background:var(--card); border:1px solid var(--line); border-radius:22px; padding:22px;
+  background:var(--card); border:1px solid var(--line); border-radius:22px; padding:16px;
   box-shadow:var(--shadow); margin-bottom:16px;
 }
-.prompt{font-size:13px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.09em; margin-bottom:14px}
-.subject{display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center}
+.prompt{font-size:13px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.09em; margin-bottom:10px}
+.subject{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center}
 .face{
   width:190px; height:190px; border-radius:20px; object-fit:cover; background:var(--card-2);
   border:1px solid var(--line); display:block;
@@ -87,14 +87,21 @@ button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
   display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:800; color:var(--ink-faint);
 }
 .subject .big{font-size:clamp(22px,4.4vw,30px); font-weight:800; letter-spacing:-.02em}
+/* The face being asked about also gives ground on a short screen. */
+.subject .face,.subject .face-fallback{width:min(190px,17vh); height:min(190px,17vh)}
+/* In the name-to-something modes the photo is only a reminder of who this is,
+   so it runs as a thumbnail and leaves the height for the answers. */
+.subject .face.mini,.subject .face-fallback.mini{width:min(104px,11vh); height:min(104px,11vh);
+  border-radius:14px; font-size:30px}
 
-.options{display:grid; gap:10px; grid-template-columns:1fr}
-/* Square photo tiles get tall fast on a wide screen, so the photo grid is
-   capped and centred rather than filling the card. */
-.options.grid2{grid-template-columns:repeat(2,1fr); max-width:520px; margin:0 auto}
+.options{display:grid; gap:8px; grid-template-columns:1fr}
+/* Four square photos across one row on a wide screen. Stacking them 2x2 made
+   the card taller than a laptop window; a single row is the same information
+   in a third of the height. Narrow screens fall back to 2x2 below. */
+.options.grid2{grid-template-columns:repeat(4,1fr); margin:0 auto; max-width:740px}
 .opt{
   display:flex; align-items:center; gap:12px; text-align:left; width:100%;
-  background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 15px;
+  background:var(--card); border:1px solid var(--line); border-radius:14px; padding:11px 15px;
   transition:.12s; font-size:15px;
 }
 .opt:hover:not(.locked){border-color:var(--accent); background:var(--card-2)}
@@ -123,13 +130,42 @@ button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
 }
 .typewrap input:focus{outline:none; border-color:var(--accent)}
 
-.feedback{margin-top:16px; border-radius:16px; padding:15px 17px; border:1px solid var(--line); background:var(--card)}
+.feedback{margin-top:12px; border-radius:16px; padding:13px 16px; border:1px solid var(--line); background:var(--card)}
 .feedback.ok{border-color:var(--good)} .feedback.no{border-color:var(--bad)}
-.feedback .verdict{font-weight:800; margin-bottom:8px}
+/* Verdict and Next share a row, so the panel stays short. */
+.fb-head{display:flex; align-items:center; gap:14px; justify-content:space-between}
+/* One line, always. A long name used to wrap this row and make the panel
+   taller than the space reserved for it. */
+.feedback .verdict{font-weight:800; min-width:0; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis}
 .feedback.ok .verdict{color:var(--good)} .feedback.no .verdict{color:var(--bad)}
-.facts{display:flex; flex-direction:column; gap:5px; font-size:14px; color:var(--ink-dim)}
+.fb-head .btn{flex:none}
+.facts{display:flex; flex-direction:column; gap:3px; font-size:13.5px; color:var(--ink-dim); margin-top:8px}
 .facts b{color:var(--ink); font-weight:600}
-.feedback .actions{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap}
+/* One line per fact. A wrapping talk title would make this panel a different
+   height every question, which is what made the layout jump. The full text is
+   on the Browse screen. */
+.facts > div{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.45}
+
+/* ---------- quiz fills the window, never grows it ----------
+   Answering used to append the feedback panel below the card, which made the
+   document taller, threw up a scrollbar and put the Next button under the
+   fold. Now the quiz screen is exactly one viewport tall: the card takes the
+   space that is left and the feedback sits in its own row beneath it. */
+body.fixed-height{overflow:hidden}
+body.fixed-height .wrap{height:100dvh; display:flex; flex-direction:column; padding:14px 16px 14px}
+/* Mid-question the header is just orientation, so it gives up its subtitle
+   and some size. That is roughly 30px back for the question itself. */
+body.fixed-height .brand .sub{display:none}
+body.fixed-height h1{font-size:clamp(20px,3.4vw,26px)}
+body.fixed-height .topbar{margin-bottom:12px}
+body.fixed-height #quiz{flex:1; min-height:0; display:flex; flex-direction:column}
+body.fixed-height #quiz .qcard{flex:1; min-height:0; overflow-y:auto; margin-bottom:0}
+/* The feedback row is reserved before it has anything in it, so answering
+   does not resize the card underneath. Nothing moves, nothing pops up.
+   158px covers the tallest it can be: its 12px margin, a verdict row and
+   three one-line facts. */
+body.fixed-height #qFeedback{flex:none; min-height:min(158px, 21vh)}
 
 /* ---------- results ---------- */
 .score{font-size:54px; font-weight:800; letter-spacing:-.03em; line-height:1}
@@ -175,10 +211,14 @@ button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
 .gate-msg{min-height:20px; margin-top:12px; font-size:13px; color:var(--bad)}
 .gate-msg.busy{color:var(--ink-faint)}
 
+/* Four across needs real width. Below this the photos go back to 2x2, and
+   the vh cap keeps both rows on screen. */
+@media (max-width:820px){
+  .options.grid2{grid-template-columns:repeat(2,1fr); max-width:min(440px,44vh)}
+}
 @media (max-width:560px){
   .stats{grid-template-columns:1fr 1fr}
-  .options.grid2{grid-template-columns:1fr 1fr}
-  .face,.face-fallback{width:150px; height:150px}
+  .subject .face,.subject .face-fallback{width:min(150px,19vh); height:min(150px,19vh)}
 }
 </style>
 </head>
@@ -345,12 +385,13 @@ function initials(name){
   var pick = words.length === 1 ? [words[0]] : [words[0], words[words.length - 1]];
   return pick.map(function(w){ return w.charAt(0); }).join("").toUpperCase();
 }
-function faceHTML(p){
+function faceHTML(p, extra){
+  var cls = extra ? " " + extra : "";
   if(p.photo){
-    return '<img class="face" src="' + esc(p.photo) + '" alt="' + esc(p.name) +
+    return '<img class="face' + cls + '" src="' + esc(p.photo) + '" alt="' + esc(p.name) +
       '" data-initials="' + esc(initials(p.name)) + '">';
   }
-  return '<div class="face-fallback">' + esc(initials(p.name)) + '</div>';
+  return '<div class="face-fallback' + cls + '">' + esc(initials(p.name)) + '</div>';
 }
 // A broken photo swaps itself for an initials tile, so a missing file
 // never leaves an empty hole in a card.
@@ -396,7 +437,7 @@ var TYPES = {
     icon:"💼", title:"Name to job", blurb:"See a name, pick what they do.",
     needs: function(p){ return !!describe(p); },
     prompt:"What do they do?",
-    subject: function(p){ return faceHTML(p) + '<div class="big">' + esc(p.name) + '</div>'; },
+    subject: function(p){ return faceHTML(p, "mini") + '<div class="big">' + esc(p.name) + '</div>'; },
     label: function(p){ return describe(p); },
     layout:"list"
   },
@@ -404,7 +445,7 @@ var TYPES = {
     icon:"🎤", title:"Name to talk", blurb:"See a name, pick their session.",
     needs: function(p){ return !!p.does; },
     prompt:"Which talk is theirs?",
-    subject: function(p){ return faceHTML(p) + '<div class="big">' + esc(p.name) + '</div>'; },
+    subject: function(p){ return faceHTML(p, "mini") + '<div class="big">' + esc(p.name) + '</div>'; },
     label: function(p){ return p.does; },
     layout:"list"
   },
@@ -412,7 +453,7 @@ var TYPES = {
     icon:"🌍", title:"Name to home", blurb:"See a name, pick where they are from.",
     needs: function(p){ return !!p.from; },
     prompt:"Where are they from?",
-    subject: function(p){ return faceHTML(p) + '<div class="big">' + esc(p.name) + '</div>'; },
+    subject: function(p){ return faceHTML(p, "mini") + '<div class="big">' + esc(p.name) + '</div>'; },
     label: function(p){ return p.from; },
     layout:"list"
   },
@@ -554,6 +595,9 @@ function show(id){
   });
   $("#navHome").classList.toggle("hidden", id === "home");
   $("#navBrowse").classList.toggle("hidden", id === "browse");
+  // Only the quiz is pinned to the window. Home and Browse are lists and
+  // should scroll normally.
+  document.body.classList.toggle("fixed-height", id === "quiz");
   window.scrollTo(0, 0);
 }
 
@@ -702,24 +746,23 @@ function finish(right, q){
 
   var p = q.person, rows = [];
   if(describe(p)){ rows.push('<div><b>Does:</b> ' + esc(describe(p)) + '</div>'); }
-  if(p.does){ rows.push('<div><b>Talk:</b> ' + esc(p.does) + '</div>'); }
   if(p.from){ rows.push('<div><b>From:</b> ' + esc(p.from) + '</div>'); }
+  if(p.does){ rows.push('<div><b>Talk:</b> ' + esc(p.does) + '</div>'); }
   if(p.hook){ rows.push('<div><b>Note:</b> ' + esc(p.hook) + '</div>'); }
-
-  // A miss drops them to box 1 and roughly triples their weight, so say so.
-  var c = progress[p.id];
-  if(!right && c && c.right + c.wrong > 1){
-    rows.push('<div><b>Record:</b> ' + c.right + ' right, ' + c.wrong +
-      ' wrong. Coming back soon.</div>');
-  }
+  // Three at most. The panel has a fixed slot on screen, and a variable
+  // number of rows is what made that slot change size between questions.
+  // Everything about a person is on the Browse screen anyway.
+  rows = rows.slice(0, 3);
 
   var last = state.i === state.length - 1;
   $("#qFeedback").innerHTML =
     '<div class="feedback ' + (right ? "ok" : "no") + '">' +
-      '<div class="verdict">' + (right ? "Correct" : "Not quite. It is " + esc(p.name)) + '</div>' +
-      '<div class="facts">' + rows.join("") + '</div>' +
-      '<div class="actions"><button class="btn btn-primary" id="nextBtn">' +
-        (last ? "See results" : "Next") + '</button></div>' +
+      '<div class="fb-head">' +
+        '<div class="verdict">' + (right ? "Correct" : "Not quite. It is " + esc(p.name)) + '</div>' +
+        '<button class="btn btn-primary" id="nextBtn">' +
+          (last ? "See results" : "Next") + '</button>' +
+      '</div>' +
+      (rows.length ? '<div class="facts">' + rows.join("") + '</div>' : "") +
     '</div>';
 
   var nb = $("#nextBtn");
