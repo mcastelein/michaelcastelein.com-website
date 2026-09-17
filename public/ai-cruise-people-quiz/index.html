@@ -111,7 +111,9 @@ button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
 }
 .opt.correct{border-color:var(--good); background:rgba(61,220,151,.12)}
 .opt.wrong{border-color:var(--bad); background:rgba(255,107,107,.12)}
-.opt.locked{cursor:default}
+/* Second line of defence against double scoring: an answered option cannot
+   be clicked at all. */
+.opt.locked{cursor:default; pointer-events:none}
 .opt-photo{flex-direction:column; align-items:stretch; padding:8px; gap:8px}
 /* Square, because the source photos are square crops centred on the face.
    A short wide tile would make the browser crop them again and take the top
@@ -165,7 +167,12 @@ body.fixed-height #quiz .qcard{flex:1; min-height:0; overflow-y:auto; margin-bot
    does not resize the card underneath. Nothing moves, nothing pops up.
    158px covers the tallest it can be: its 12px margin, a verdict row and
    three one-line facts. */
-body.fixed-height #qFeedback{flex:none; min-height:min(158px, 21vh)}
+/* A flat 152px, deliberately not a vh value. The panel is a button and up to
+   three single lines, so its height does not shrink with the window. Sizing
+   the reserve in vh made it too small on a short screen, and the card resized
+   on answering again. On a very short window the card scrolls a constant
+   amount instead, which at least never moves. */
+body.fixed-height #qFeedback{flex:none; min-height:164px}
 
 /* ---------- results ---------- */
 .score{font-size:54px; font-weight:800; letter-spacing:-.03em; line-height:1}
@@ -704,7 +711,8 @@ function normalise(s){
 
 function submitTyped(){
   var input = $("#typeIn");
-  if(!input || input.disabled){ return; }
+  if(!input || input.disabled || state.answered){ return; }
+  state.answered = true;
   var q = state.q;
   var given = normalise(input.value);
   if(!given){ return; }
@@ -718,6 +726,12 @@ function submitTyped(){
 }
 
 function answer(idx){
+  // The options stay on screen after they are answered so the colours can be
+  // read. Without this guard a second click scored again and wrote another
+  // right or wrong against the person, which threw the scheduling out too.
+  if(state.answered){ return; }
+  state.answered = true;
+
   var q = state.q;
   var t = TYPES[q.type];
   var right = t.label(q.options[idx]) === t.label(q.person);
@@ -771,6 +785,13 @@ function finish(right, q){
 }
 
 function next(){
+  // Clicking Next twice, or hitting Enter on the way through, would advance
+  // twice and silently skip a question.
+  var nb = $("#nextBtn");
+  if(nb){
+    if(nb.disabled){ return; }
+    nb.disabled = true;
+  }
   state.i++;
   if(state.i >= state.length){ return renderResults(); }
   nextQuestion();
@@ -782,6 +803,7 @@ function nextQuestion(){
   if(!q){ return renderResults(); }
   state.q = q;
   state.lastId = q.person.id;
+  state.answered = false;
   renderQuestion();
 }
 
@@ -791,7 +813,7 @@ function startRound(modeKey){
     return;
   }
   state = {mode:modeKey, length:ROUND_LEN, i:0, score:0, missed:[],
-           q:null, lastId:null, streak:0, bestStreak:0};
+           q:null, lastId:null, streak:0, bestStreak:0, answered:false};
   show("quiz");
   nextQuestion();
 }
