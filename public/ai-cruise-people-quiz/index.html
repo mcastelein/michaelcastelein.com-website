@@ -416,6 +416,14 @@ function describe(p){
   return [p.role, p.company].filter(Boolean).join(" · ");
 }
 
+// A link written as "www.linkedin.com/in/x", with no scheme, is treated by
+// the browser as a path on this site and 404s. Trim it and give it one.
+function linkUrl(raw){
+  var u = String(raw || "").trim();
+  if(!u){ return ""; }
+  return /^https?:\/\//i.test(u) ? u : "https://" + u.replace(/^\/+/, "");
+}
+
 /* ============================================================
    Question types. Each one declares the field it needs, so a type
    switches itself off when the people file cannot support it.
@@ -490,7 +498,10 @@ function pool(){
   if(poolFilter === "weak"){
     return ALL.filter(function(p){
       var c = progress[p.id];
-      return c && c.wrong > 0;
+      // Missed at least once and not yet mastered. Without the second half
+      // the list only ever grows, and someone you got wrong once in your
+      // first round is still called a weak spot twenty right answers later.
+      return c && c.wrong > 0 && c.box < MASTER_BOX;
     });
   }
   return ALL.filter(function(p){ return (p.tags || []).indexOf(poolFilter) !== -1; });
@@ -568,10 +579,22 @@ function makeQuestion(modeKey, excludeId){
   var options = null;
 
   if(t.layout !== "type"){
+    // Decoys must differ from the answer AND from each other. Plenty of
+    // people share a home city, and two identical options look broken and
+    // waste one of the four choices.
     var answer = t.label(person);
-    var decoys = sample(eligibleAll(k).filter(function(o){
-      return o.id !== person.id && t.label(o) && t.label(o) !== answer;
-    }), 3);
+    var used = {};
+    used[answer] = true;
+    var decoys = [];
+    var pool_ = shuffle(eligibleAll(k).filter(function(o){
+      return o.id !== person.id && t.label(o);
+    }));
+    for(var di = 0; di < pool_.length && decoys.length < 3; di++){
+      var lab = t.label(pool_[di]);
+      if(used[lab]){ continue; }
+      used[lab] = true;
+      decoys.push(pool_[di]);
+    }
     if(decoys.length < 3){ return null; }
     options = shuffle([person].concat(decoys));
   }
@@ -583,7 +606,9 @@ function makeQuestion(modeKey, excludeId){
 function troublemakers(limit){
   return pool().filter(function(p){
     var c = progress[p.id];
-    return c && c.right + c.wrong >= 2 && c.wrong > 0;
+    // Same rule as the Weak spots group: once someone is known, they stop
+    // being accused of catching you out.
+    return c && c.right + c.wrong >= 2 && c.wrong > 0 && c.box < MASTER_BOX;
   }).map(function(p){
     var c = progress[p.id];
     var n = c.right + c.wrong;
@@ -709,6 +734,22 @@ function normalise(s){
     .toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 }
 
+// How many people share a given surname. Built once, after the data is in.
+var surnameCounts = null;
+function surnameIsUnique(surname){
+  if(!surnameCounts){
+    surnameCounts = {};
+    ALL.forEach(function(p){
+      var bits = normalise(p.name).split(" ");
+      if(bits.length > 1){
+        var s = bits[bits.length - 1];
+        surnameCounts[s] = (surnameCounts[s] || 0) + 1;
+      }
+    });
+  }
+  return surnameCounts[surname] === 1;
+}
+
 function submitTyped(){
   var input = $("#typeIn");
   if(!input || input.disabled || state.answered){ return; }
@@ -718,8 +759,13 @@ function submitTyped(){
   if(!given){ return; }
   var want = normalise(q.person.name);
   var parts = want.split(" ");
-  // Full name counts, and so does the surname on its own. Nothing less.
-  var right = given === want || (parts.length > 1 && given === parts[parts.length - 1]);
+  // The full name always counts. A bare surname counts only when it belongs
+  // to one person: there are three Schmidts and two Wrobbels on board, and
+  // "Schmidt" does not tell you which one you are looking at.
+  var right = given === want;
+  if(!right && parts.length > 1 && given === parts[parts.length - 1]){
+    right = surnameIsUnique(parts[parts.length - 1]);
+  }
   input.disabled = true;
   $("#typeGo").disabled = true;
   finish(right, q);
@@ -878,7 +924,8 @@ function renderBrowse(){
     var mast = b >= MASTER_BOX ? "Known" : b > 0 ? "Learning" : "Not seen yet";
     if(n){ mast += " · " + c.right + " right, " + c.wrong + " wrong"; }
     var links = Object.keys(p.links || {}).map(function(k){
-      return '<a href="' + esc(p.links[k]) + '" target="_blank" rel="noopener">' + esc(k) + '</a>';
+      return '<a href="' + esc(linkUrl(p.links[k])) +
+        '" target="_blank" rel="noopener">' + esc(k) + '</a>';
     }).join(" ");
     return '<div class="pcard">' + faceHTML(p) +
       '<div class="body"><div class="nm">' + esc(p.name) + '</div>' +
