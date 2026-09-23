@@ -1143,14 +1143,15 @@ const BASE = [
       {ask:"Build me an HTML slide deck for a 20 minute talk. One self-contained file, no internet, no PowerPoint. It has to run off a USB stick on a projector I have never seen.",
        out:'A single HTML file with the styles, the scripts and the images inline, so nothing is fetched from the network.<br>Do you want speaker notes, and should the room be able to see them?'},
       {ask:"Speaker notes on my screen only. Add a countdown and a target time per slide.",
-       out:'Notes go to the second display, the room only ever sees the slide.<br><span class="dim">I will also fix the stage at 1280 by 720 and scale it to whatever projector turns up, so nothing reflows.</span>'},
+       out:'Not in one window. The notes sit in the same window as the slides, so a mirrored screen or a screen share shows them too.<br>Press N to toggle them. The slide scales up out of the way rather than being covered.<br><span class="dim">I will also fix the stage at 1280 by 720 and scale it to whatever projector turns up, so nothing reflows.</span>'},
       {ask:"Do it. Dark theme, and give me a grid view so I can jump between slides if I lose my place.",
-       out:'<span class="g">created</span> index.html <span class="dim">&middot; 33 screens &middot; 0 dependencies</span><br><span class="dim">N notes &middot; T countdown &middot; O grid</span>'}
+       out:'<span class="g">created</span> index.html <span class="dim">&middot; 34 screens &middot; 0 dependencies</span><br><span class="dim">N notes &middot; T clock &middot; G run it &middot; O grid</span>'}
     ]
   }),
   notes:[
     "Point at the screen when you say it. <b>\"This. What you are looking at right now.\"</b>",
-    "Turn 2 again: <b>it suggested the countdown, I did not ask for it.</b> That is the habit. Tell it the problem, not the feature list.",
+    "!<b>The notes are visible to the room whenever N is on.</b> That is true here, on a projector and on a screen share. Open them only when you mean to show them.",
+    "Turn 2: <b>it told me what it could not do before it built anything</b>, and it offered the fixed 1280 by 720 on its own. That is the habit. Tell it the problem, not the feature list.",
     "!Paste your real first prompt in here if you still have it."
   ]
 },
@@ -1162,7 +1163,7 @@ const BASE = [
     <div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center">
     <div class="cards c3">
       <div class="card"><span class="n">Press O</span><h3>The grid.</h3><p>Every slide at once. Click one to jump.</p></div>
-      <div class="card"><span class="n">Press N</span><h3>My notes.</h3><p>On my screen. Never on yours.</p></div>
+      <div class="card"><span class="n">Press N</span><h3>My notes.</h3><p>Target time, what to say, what to check.</p></div>
       <div class="card warm"><span class="n">T and G</span><h3>The clock.</h3><p>T shows it, G runs it. Counts down, then up in red.</p></div>
     </div>
     <div class="chips" style="margin-top:26px">
