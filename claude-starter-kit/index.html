@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Starter Kit · Things to make Claude Code do</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%8E%9B%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --ink: #16263a;
+    --ink-soft: #51637a;
+    --accent: #1565c0;
+    --accent-deep: #0d47a1;
+    --accent-light: #1e88e5;
+    --accent-soft: #e8f1fb;
+    --line: #dde6ef;
+    --good: #2e7d32;
+    --warn: #b45309;
+    --bad: #b3261e;
+    --term: #0f2740;
+    --term-line: #1e4060;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #0a1828; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  #stage { position: relative; width: 1280px; height: 720px; flex-shrink: 0; }
+
+  .slide {
+    position: absolute; inset: 0; width: 1280px; height: 720px;
+    background: var(--bg); color: var(--ink);
+    display: none; overflow: hidden;
+  }
+  .slide.active { display: block; }
+
+  .inner { width: 100%; height: 720px; padding: 38px 56px 44px 56px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .corner { position: absolute; bottom: 15px; left: 56px; font-size: 12px; color: var(--ink-soft); letter-spacing: .03em; z-index: 40; }
+  .corner b { color: var(--accent-deep); font-weight: 700; }
+
+  .kicker { display: inline-block; font-size: 12.5px; font-weight: 800; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 9px; }
+  h1 { font-size: 54px; line-height: 1.12; font-weight: 750; letter-spacing: -0.01em; }
+  h2 { font-size: 33px; line-height: 1.14; font-weight: 750; letter-spacing: -0.01em; color: var(--ink); }
+  .sub { font-size: 16.5px; color: var(--ink-soft); margin-top: 9px; margin-bottom: 20px; max-width: 1060px; line-height: 1.45; }
+
+  .cards { display: grid; gap: 16px; }
+  .cards.c2 { grid-template-columns: 1fr 1fr; }
+  .cards.c3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; box-shadow: 0 1px 3px rgba(22,38,58,.05); }
+  .card.focus { border-left: 4px solid var(--accent); }
+  .card h3 { font-size: 15.5px; font-weight: 750; margin-bottom: 7px; color: var(--accent-deep); line-height: 1.25; }
+  .card p { font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+  .card .em { color: var(--ink); font-weight: 650; }
+
+  .tagline { margin-top: 18px; padding: 15px 22px; border-left: 4px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 12px 12px 0;
+    font-size: 19px; font-weight: 650; color: var(--accent-deep); max-width: 1080px; line-height: 1.35; }
+  .note { margin-top: 14px; font-size: 14px; color: var(--ink-soft);
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; line-height: 1.5; }
+  .note b { color: var(--accent-deep); }
+
+  .glance { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+  .gcol { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px; border-top: 4px solid var(--accent); }
+  .gcol h3 { font-size: 13px; font-weight: 800; letter-spacing: .04em; color: var(--accent-deep); margin-bottom: 10px; font-family: "Cascadia Code","Consolas",monospace; }
+  .gcol li { list-style: none; font-size: 13.5px; line-height: 1.45; color: var(--ink-soft); padding-left: 14px; position: relative; margin-bottom: 7px; }
+  .gcol li:last-child { margin-bottom: 0; }
+  .gcol li::before { content: "\2022"; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+  /* copy-to-clipboard prompt block */
+  .copyblock { position: relative; margin-top: 18px; background: var(--term); border: 1px solid var(--term-line);
+    border-radius: 12px; padding: 17px 20px 15px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .copyblock .tag { position: absolute; top: -10px; left: 18px; font-size: 10px; font-weight: 800; letter-spacing: .12em;
+    text-transform: uppercase; padding: 3px 11px; border-radius: 999px; background: var(--accent); color: #fff; }
+  .copytext { font-family: "Cascadia Code","Consolas",ui-monospace,monospace; font-size: 12.5px; line-height: 1.62;
+    color: #d7e8fb; white-space: pre-wrap; margin: 0; padding-right: 96px; }
+  /* Prompts run 8-16 lines; the canvas doesn't move. Measured on the real 1280x720
+     canvas: only a 16-line prompt reaches the corner label, so only that one is
+     stepped down. Everything else keeps the standard size. */
+  .copytext.tight { font-size: 11.5px; line-height: 1.48; }
+  .copybtn { position: absolute; top: 13px; right: 14px; background: #1e4060; color: #d7e8fb; border: 1px solid #2d5580;
+    border-radius: 8px; padding: 7px 14px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
+    cursor: pointer; font-family: "Segoe UI", system-ui, sans-serif; }
+  .copybtn:hover { background: #2a5480; }
+  .copybtn.done { background: #1c5236; border-color: #2f7d51; color: #b7e8c8; }
+  /* Optional one-line install command sitting above the prompt, for an exercise
+     whose tool the reader may not have yet. Deliberately compact: it shares a
+     720px canvas with a prompt that can already run to 15 lines, so anything
+     with an install block also steps its prompt down (see promptClass). */
+  .installblock { margin-top: 12px; padding: 9px 16px 8px; }
+  .installblock .tag { top: -9px; left: 16px; font-size: 9.5px; padding: 2px 10px; }
+  .installblock .copytext { font-size: 12px; line-height: 1.3; padding-right: 86px; }
+  .installblock .copybtn { top: 7px; right: 12px; padding: 4px 10px; font-size: 10.5px; }
+  .inote { font-size: 11.5px; line-height: 1.4; color: var(--ink-soft); margin: 5px 0 0 2px; }
+  .inote code { font-family: "Cascadia Code","Consolas",ui-monospace,monospace; font-size: 11px; }
+
+  .mono { font-family: "Cascadia Code","Consolas",ui-monospace,monospace; }
+
+  /* ---- exercise-specific additions, built on the same tokens ---- */
+  .metarow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .zpill { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 5px 13px;
+    font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .zpill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .zpill.a { background: #e7f3ea; color: var(--good);   border: 1px solid #c7e6cd; }
+  .zpill.b { background: #fdf1e0; color: var(--warn);   border: 1px solid #f0d9b5; }
+  .zpill.c { background: #fdecea; color: var(--bad);    border: 1px solid #f5c6c0; }
+  .stnum { font-family: "Cascadia Code","Consolas",monospace; font-size: 12.5px; font-weight: 800;
+    letter-spacing: .1em; color: var(--accent); }
+  .stmeta { font-size: 12px; color: var(--ink-soft); letter-spacing: .02em; }
+  .stmeta b { color: var(--accent-deep); font-weight: 700; }
+  .duo { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-top: 16px; }
+  .duo .why h3 { color: var(--accent-deep); }
+  .duo .why p { font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+  .duo .why p b { color: var(--ink); font-weight: 700; }
+  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 4px; }
+  .lrow { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+    padding: 7px 10px 8px; display: flex; flex-direction: column; align-items: stretch; gap: 3px; }
+  .lhead { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .lrow .n { font-family: "Cascadia Code","Consolas",monospace; font-size: 11px; font-weight: 800; color: var(--accent); }
+  .lrow .t { font-size: 12px; font-weight: 650; color: var(--ink); line-height: 1.22; }
+  .lrow .out { font-family: "Cascadia Code","Consolas",monospace; font-size: 9.5px; line-height: 1.3;
+    color: var(--ink-soft); }
+  .lrow .need { font-size: 8.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
+  .lrow .need.a { background: #e7f3ea; color: var(--good); }
+  .lrow .need.b { background: #fdf1e0; color: var(--warn); }
+  .lrow .need.c { background: #fdecea; color: var(--bad); }
+
+  .slide.cover { background: radial-gradient(1100px 620px at 72% 18%, #1c4f86 0%, #0f3463 45%, #0a2348 100%); color: #fff; }
+  .slide.cover .inner { justify-content: center; }
+  .cover-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 46px 46px; opacity: .5; }
+  .cover .eye { position: relative; font-size: 13px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #8fc0f0; margin-bottom: 22px; }
+  .cover h1 { position: relative; font-size: 60px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; max-width: 1010px; color: #fff; }
+  .cover .csub { position: relative; font-size: 21px; color: #c4ddf5; margin-top: 18px; max-width: 900px; line-height: 1.4; }
+  .cover .cmd { position: relative; margin-top: 32px; display: inline-flex; align-items: center; gap: 12px; background: rgba(8,22,40,.6); border: 1px solid rgba(127,177,255,.35); border-radius: 10px; padding: 12px 18px; font-family: "Cascadia Code","Consolas",monospace; font-size: 15.5px; color: #d7e8fb; align-self: flex-start; }
+  .cover .cmdrow { position: relative; display: flex; flex-wrap: wrap; gap: 18px;
+    margin-top: 30px; align-self: flex-start; }
+  .cover .cmdblock { margin-top: 0; background: rgba(8,22,40,.72);
+    border-color: rgba(127,177,255,.35); padding: 15px 18px 13px; }
+  .cover .cmdblock .tag { background: var(--accent-light); }
+  .cover .cmdblock .copytext { font-size: 14.5px; line-height: 1.4; padding-right: 88px; }
+  .cover .cmdblock .copybtn { top: 11px; right: 12px; }
+  .cover .cnote { position: relative; margin-top: 16px; max-width: 760px;
+    font-size: 13.5px; line-height: 1.5; color: #8fb4d8; }
+  .cover .cmeta { position: relative; font-size: 15px; color: #9cc4ec; margin-top: 40px; }
+
+  #nav { position: absolute; bottom: 14px; right: 18px; z-index: 50; display: flex; gap: 8px; align-items: center; }
+  #nav button { width: 34px; height: 30px; border: 1px solid var(--line); background: #fff; color: var(--ink-soft); border-radius: 8px; cursor: pointer; font-size: 15px; }
+  #nav button:hover { background: var(--accent-soft); color: var(--accent-deep); }
+  #counter { font-size: 12.5px; color: var(--ink-soft); min-width: 48px; text-align: center; }
+  #progress { position: absolute; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 60; transition: width .25s ease; }
+
+  /* Confetti sits above every slide but must never eat a click, or the Copy
+     buttons under it stop working. pointer-events:none is load-bearing. */
+  #confetti { position: fixed; inset: 0; z-index: 300; pointer-events: none; display: none; }
+  #confetti.on { display: block; }
+  #overview { position: fixed; inset: 0; background: rgba(8,20,36,.95); z-index: 200; display: none; padding: 44px 60px; overflow: auto; }
+  #overview.on { display: block; }
+  #overview h4 { color: #8fc0f0; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 20px; }
+  #ovlist { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #ovlist div { color: #d7e8fb; font-size: 14px; padding: 9px 13px; border: 1px solid #1e4060; border-radius: 8px; cursor: pointer; }
+  #ovlist div:hover { background: #143352; }
+  #ovlist span { color: #6fb1ff; font-weight: 700; margin-right: 9px; }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: #fff !important; height: auto; display: block; overflow: visible; }
+    #stage { transform: none !important; width: 1280px; height: auto; position: static; }
+    #nav, #progress, #overview { display: none !important; }
+    .slide { display: block !important; position: relative; inset: auto; page-break-after: always; box-shadow: none; }
+    .slide.cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="stage">
+
+  <!-- 1 · COVER -->
+  <section class="slide cover">
+    <div class="cover-grid"></div>
+    <div class="inner">
+      <div class="eye">Claude Code Starter Kit</div>
+      <h1 id="coverTitle">Things to make Claude Code do.</h1>
+      <p class="csub"><span id="coverCount">Numbered folders</span>, and the list keeps growing. Each one holds a
+         realistic mess, one prompt to paste, and a README saying what should come out the
+         other side. Open a folder, paste the prompt, then look in <b>finished/run-01/</b>.</p>
+      <div class="cmdrow">
+        <div class="copyblock cmdblock">
+          <span class="tag">&#9612; 1 &middot; in your terminal</span>
+          <button class="copybtn">Copy</button>
+<pre class="copytext">cd claude-code-starter-kit</pre>
+        </div>
+        <div class="copyblock cmdblock">
+          <span class="tag">&#9612; 2 &middot; then start Claude</span>
+          <button class="copybtn">Copy</button>
+<pre class="copytext">claude --dangerously-skip-permissions</pre>
+        </div>
+      </div>
+      <div class="cnote">That flag lets Claude act without stopping to ask. Reasonable here,
+         because this folder is a sandbox and nothing in it matters &mdash; not something to
+         carry into a repo you care about.</div>
+      <div class="cmeta"><span id="coverZoneA">Most</span> need nothing installed · press <b>O</b> for the full list · press <b>C</b> for no reason at all</div>
+    </div>
+  </section>
+
+  <!-- 2 · HOW IT WORKS -->
+  <section class="slide">
+    <div class="inner">
+      <span class="kicker">The loop</span>
+      <h2>Three steps, repeated for every folder.</h2>
+      <p class="sub">There is nothing to configure and nothing to read first. Every exercise is
+         the same loop, and <span id="loopZoneA">most</span> need nothing installed at all.</p>
+      <div class="cards c3">
+        <div class="card focus">
+          <h3>1 &middot; Open the folder</h3>
+          <p><span class="em mono">cd 07-copy-your-writing-style</span> then
+             <span class="em mono">claude</span>. Open Claude Code <span class="em">inside the
+             exercise folder</span>, not at the top level &mdash; every prompt uses relative
+             paths like <span class="mono">raw/data</span>.</p>
+        </div>
+        <div class="card focus">
+          <h3>2 &middot; Paste the one prompt</h3>
+          <p>Each exercise has exactly one. It is on that exercise's slide with a
+             <span class="em">Copy</span> button, and in the folder's
+             <span class="em mono">README.md</span> if you would rather read than click.</p>
+        </div>
+        <div class="card focus">
+          <h3>3 &middot; Check what landed</h3>
+          <p>Everything goes to <span class="em mono">finished/run-01/</span>. The slide and the
+             README both list <span class="em">what you should see</span>, including real numbers
+             you can check the answer against.</p>
+        </div>
+      </div>
+      <div class="tagline"><span class="mono">raw/</span> is never modified, and your second
+        attempt goes in <span class="mono">run-02/</span> &mdash; not over the top of your
+        first.</div>
+      <div class="note"><b>Why that matters:</b> comparing <span class="mono">run-01</span> with
+        <span class="mono">run-02</span> after you have improved a prompt <b>is</b> the lesson
+        &mdash; and it is invisible if the second run overwrites the first. It also means
+        re-running can never destroy anything, so you will not hesitate to try a worse prompt on
+        purpose.</div>
+      <div class="note" style="margin-top:auto"><b>What it costs to start:</b> <span id="loopCost">most
+        of the list</span> need nothing but Claude Code. The rest name
+        a single install: Python (12, 18, 21), Node (13, 15), ffmpeg + Whisper (14), Git (16). Four need something
+        you own: Docker (19), a system of yours (20), your own scheduler (22), a hosting account
+        (23). Every command is in <span class="mono">SETUP.md</span>, and
+        <b>none of it is mine</b> &mdash; every exercise runs on your machine, under your
+        accounts.</div>
+    </div>
+    <div class="corner"><b>Claude Code Starter Kit</b> · the loop</div>
+  </section>
+
+  <!-- 3 · THE LIST, PART ONE -->
+  <section class="slide">
+    <div class="inner">
+      <span class="kicker">The list, at a glance</span>
+      <h2>What each exercise gives you.</h2>
+      <p class="sub">Four things per card: the number, what Claude does, <b>the file you end up
+         with</b>, and what it costs to start. Work in order the first time. The order is
+         ambition, not setup cost, which is why some late ones need nothing installed.</p>
+      <div class="ladder" id="ladderGrid"></div>
+      <div class="note" style="margin-top:auto"><b>Every folder holds the same three things:</b>
+        <span class="mono">README.md</span> (the situation, the prompt, what to expect, what it
+        means), <span class="mono">raw/</span> (supplied material, never modified) and
+        <span class="mono">finished/</span> (your runs). Every install command is in
+        <span class="mono">SETUP.md</span>, and each slide that needs one carries it.</div>
+    </div>
+    <div class="corner"><b>Claude Code Starter Kit</b> · the list, 1 of 2</div>
+  </section>
+
+  <!-- 4 · THE LIST, PART TWO -->
+  <section class="slide">
+    <div class="inner">
+      <span class="kicker">The list, continued</span>
+      <h2 id="listTwoTitle">The rest of the list.</h2>
+      <p class="sub">Same four things per card. These run longer and lean on habits the earlier
+         ones build &mdash; but nothing stops you starting here if one of them is sitting on your
+         desk today.</p>
+      <div class="ladder" id="ladderGrid2"></div>
+      <div class="note" style="margin-top:auto"><b>00 is the one that runs out of order:</b> it
+        installs what the rest of the list needs, so do it before the first exercise that names a
+        tool rather than in numeric order. Every other number can be taken on its own.</div>
+    </div>
+    <div class="corner"><b>Claude Code Starter Kit</b> · the list, 2 of 2</div>
+  </section>
+
+  <!-- exercise slides are generated here -->
+
+  <!-- LAST · WHAT NOW -->
+  <section class="slide" id="endslide">
+    <div class="inner">
+      <span class="kicker">Where this leaves you</span>
+      <h2>Knowing what to ask for is the bottleneck now.</h2>
+      <p class="sub">Worth being explicit about what changed, because the individual exercises
+         undersell it.</p>
+      <div class="split">
+        <div class="card">
+          <h3>What you can do that you couldn't three hours ago</h3>
+          <p>Hand off tedious work in bulk (01, 03, 17). Audit things nobody has checked in
+             years (02, 05, 17). Answer a question that was invisible behind a chore (04).
+             Produce artefacts in the formats real people demand (06, 08, 12).</p>
+          <p>Write down how you write (07), how your team works (10) and how you do a
+             recurring job (11), so none of it needs re-explaining. Read a browser (13) and your
+             own systems (20), make video (14, 15), break things safely (16), stand up real
+             infrastructure (19), schedule work you never watch (22), and publish (23).</p>
+        </div>
+        <div class="card focus">
+          <h3>What actually changed</h3>
+          <p>Not that any single task got faster. That <span class="em">expertise stopped being
+             the constraint</span> — and you're the one who knows which questions matter in your
+             own work.</p>
+          <p>Go and point this at something real. Start with the most boring recurring thing
+             you do; that's where it pays first.</p>
+        </div>
+      </div>
+      <div class="note"><b>Before you put the kit down:</b> exercise 22 registered a scheduled
+        task and exercise 23 may have deployed a site. Ask Claude to list everything it created
+        on your machine, and give you the commands to remove it.</div>
+    </div>
+    <div class="corner"><b>Claude Code Starter Kit</b> · where this leaves you</div>
+  </section>
+
+</div>
+
+<div id="nav">
+  <button id="prev" title="Previous (←)">←</button>
+  <span id="counter">1 / 1</span>
+  <button id="next" title="Next (→)">→</button>
+</div>
+
+<canvas id="confetti"></canvas>
+<div id="overview"><h4>Overview — numbers are exercise numbers. Click to jump, press O to close</h4><div id="ovlist"></div></div>
+
+<script>
+const ZONES = { a:"Zone A · nothing to install", b:"Zone B · one install", c:"Zone C · your own account" };
+
+const S = [
+{n:"12",t:"Install What You Need",out:"SETUP-REPORT.md + winget-export.json",need:"nothing to install",z:"a",time:"~6 min",skills:"winget, PowerShell",
+ folder:"12-install-what-you-need",
+ sit:"Most of the list needs nothing installed. The rest need a handful of tools, written down in SETUP.md as two websites, a PATH warning, a 1.1 GB download and a package whose ID is nothing like its name. Windows already has a package manager.",
+ prompt:`Work in 12-install-what-you-need/. All paths below are relative to it.
+
+Read raw/required-tools.md. For each tool, check whether this machine already
+has it and at what version. Install nothing that is already there.
+
+Install the missing ones with winget, one at a time, and tell me before each
+one whether it needs admin rights. Anything that needs admin, skip it and put
+it on a list for me to do myself. If a tool is not a winget package at all,
+say so and give me the real install command rather than guessing at an ID.
+
+A tool installed in this shell is not on PATH in this shell, so check the
+versions again from a shell you opened afterwards.
+
+Write finished/run-01/SETUP-REPORT.md: one row per tool, the version found or
+installed, and whatever is still missing and why. Add winget-export.json from
+winget export. Nothing writes to raw/.`,
+ expect:["All nine tools in the report, two marked optional, anything already present left alone",
+         "ffmpeg installed as Gyan.FFmpeg - the ID is nothing like the name, so it had to search",
+         "Playwright CLI reported as not a winget package at all, with an npm command instead"],
+ why:"winget ships with Windows, so this is <b>zone A work that creates zone B capability</b>. Watch for a report claiming installed for a tool that is not on PATH yet - winget exits 0 and the tool still does not run."},
+{n:"01",t:"Organise Messy Files",out:"48 renamed files, sorted, + index.md",need:"nothing to install",z:"a",time:"~4 min",skills:"none",
+ folder:"01-organise-messy-files",
+ sit:"48 files called things like FINAL_FINAL_197.txt and Copy of Copy of doc3697.txt. What each one actually is, is only visible inside it. Everyone has a folder like this.",
+ prompt:`Work in 01-organise-messy-files/. All paths below are relative to it.
+Look in raw/inbox. Every file in there has a useless name, and what each file
+actually is, is only visible inside it.
+
+Read them, then copy them into finished/run-01/ with names that tell me what
+they are - document type, client, date, reference number. Organise them into
+subfolders by document type. Write an index.md listing everything you found.
+
+Don't change anything in raw/. If finished/run-01 already exists, use run-02.`,
+ expect:["48 renamed copies, sorted into five subfolders by type",
+         "Names like 2026-03-14_Invoice_Nordkran_INV-48213.txt",
+         "raw/inbox untouched, plus an index.md you could hand over"],
+ why:"It read the <b>contents</b>, not the filenames — the only place the information survived. And it copied rather than renamed, so you have a before and an after to check."},
+
+{n:"02",t:"Check a Spreadsheet",out:"audit.md — five faults, worst first",need:"nothing to install",z:"a",time:"~5 min",skills:"none",
+ folder:"02-check-spreadsheet",
+ sit:"A dealer margin tracker in use for 18 months. Every number in it looks completely reasonable. There are five things wrong with it, and all five are invisible in the grid.",
+ prompt:`Work in 02-check-spreadsheet/. All paths below are relative to it.
+raw/dealer-margin-tracker.xlsx is a margin tracker somebody inherited and never
+checked. Somebody thinks the totals look low but can't say why.
+
+Go through it properly - the formulas, not just the values - and tell me
+everything that's wrong with it. For each problem: which cell or range, what
+the formula actually does, and what it does to the numbers people are reading.
+
+Write it to finished/run-01/audit.md, worst first. Don't change the spreadsheet.`,
+ expect:["A hard-coded 0.19 VAT rate while the Rates tab says 0.21",
+         "SUM stopping at row 41 when data runs to 61 — 20 dealers missing from every total",
+         "One odd formula, one typed-over constant, and a third of the dates being text"],
+ why:"An .xlsx is a zip of XML, so it got underneath the interface and read the layer Excel hides. <b>A spreadsheet nobody has audited is not a spreadsheet that is correct.</b>"},
+
+{n:"03",t:"Clean Messy Data",out:"clean/ + data-quality-report.md",need:"nothing to install",z:"a",time:"~8 min",skills:"none",
+ folder:"03-clean-messy-data",
+ sit:"Six CSVs from three systems, exported by three people who agreed on nothing. Nobody will tell you what's wrong with them — finding out is the job.",
+ prompt:`Work in 03-clean-messy-data/. All paths below are relative to it.
+raw/data has six CSV exports that have never been cleaned.
+
+Work out what's actually wrong with them - don't assume, check. Then write
+cleaned versions into finished/run-01/clean/.
+
+Also write finished/run-01/data-quality-report.md: every problem you found, how
+many rows it affected, what you did about it, and how I'd verify you got it
+right. If something can't be fixed from this data alone, say so instead of
+guessing.
+
+Don't modify anything in raw/. If finished/run-01 exists, use the next number.`,
+ expect:["Claude writing itself a script — Python if you have it, PowerShell if not",
+         "Country recorded 21 ways for 8 countries; Germany four ways",
+         "356 rows that don't join, 26 duplicates, and one defect it should refuse to fix"],
+ why:"Two of those produce a report that runs cleanly and <b>confidently describes 92% of the business as if it were all of it.</b> Nobody finds those by noticing something looks broken."},
+
+{n:"04",t:"Ask Your Data a Question",out:"answer.md — the number and the caveat",need:"nothing to install",z:"a",time:"~8 min",skills:"none",
+ folder:"04-ask-your-data-question",
+ sit:"An email at 16:40 on a Friday. Rotterdam says shipping is slow. Is it a country problem or a specific-dealer problem? Those need completely different conversations.",
+ prompt:`Work in 04-ask-your-data-question/. All paths below are relative to it.
+Read raw/the-question.md, then answer it using the data in raw/data.
+
+Fair warning: the data is messy, and the answer is invisible until it's cleaned.
+
+Put your answer in finished/run-01/answer.md - the number, a short paragraph a
+non-analyst would understand, and whatever table or chart makes it obvious. Tell
+me separately what you don't trust and what you'd want before betting anything
+on this.`,
+ expect:["Italy 40.8 days and Spain 37.2, against Germany 22.1 and Netherlands 18.6",
+         "Dealer D1005 at 46.4 days — and it's German, hiding inside a healthy average",
+         "So the honest answer is: both, in different places"],
+ why:"Invisible until the 21 country spellings are consolidated. <b>Most analyses that would change a decision aren't hard — they sit behind two hours of tedium nobody budgeted.</b>"},
+
+{n:"05",t:"Fix Broken SQL",out:"a corrected .sql + what it changes",need:"nothing to install",z:"a",time:"~7 min",skills:"none",
+ folder:"05-fix-broken-sql",
+ sit:"A SQL file handed over by somebody who left. It runs. It returns plausible numbers. Finance has never been able to reconcile it, and everyone agreed to stop worrying about that.",
+ prompt:`Work in 05-fix-broken-sql/. All paths below are relative to it.
+raw/monthly_warranty_report.sql was handed to me by somebody who left. It runs
+and the numbers look fine, but Finance has never been able to reconcile it.
+
+Read it carefully and tell me everything wrong with it. For each one: what the
+SQL actually does, what it does to the numbers, and how somebody would have
+noticed - or why nobody did.
+
+Then write a corrected version. Explain what changes and roughly by how much.
+Read raw/HANDOVER-NOTES.md too - some of it is a confession.
+
+Everything into finished/run-01/.`,
+ expect:["A WHERE clause silently turning the LEFT JOIN into an inner join",
+         "A join on model alone that fans out and inflates revenue",
+         "A date range that stopped in 2025, returns counted as revenue, country grouped raw"],
+ why:"Read the handover notes again afterwards. <b>Three people reported these bugs in writing</b> — as a reconciliation gap, an odd number, and 'ask Marta about Belgium'. Each was reasonable to defer."},
+
+{n:"06",t:"Build a Dashboard",out:"one self-contained .html file",need:"nothing to install",z:"a",time:"~10 min",skills:"dataviz, frontend-design",
+ folder:"06-build-dashboard",
+ sit:"Five numbers get rebuilt by hand in Excel every Monday at 08:15. IT's constraint: one file, opens in a browser, no install, no internet.",
+ prompt:`Work in 06-build-dashboard/. All paths below are relative to it.
+Read raw/brief.md and build the dashboard it describes from the data in raw/data.
+
+The data is dirty - clean it first, and tell me what you had to fix.
+
+One self-contained HTML file. No CDN, no internet, no build step - it has to work
+with the network unplugged. It should look like something a competent designer
+made, not a default template.
+
+Put it in finished/run-01/ and tell me how to open it.`,
+ expect:["One .html file that opens by double-clicking",
+         "Charts as inline SVG or canvas — no chart library is available offline",
+         "Data embedded in the file, because a file:// page can't read its siblings"],
+ why:"No CDN means no Chart.js, no D3, no React — which many would call impossible. <b>The constraint improved the artefact.</b> Most 'we can't build that here' beliefs are a tooling assumption mistaken for a limit."},
+
+{n:"07",t:"Copy Your Writing Style",out:"style-guide.md + two draft emails",need:"nothing to install",z:"a",time:"~7 min",skills:"none",
+ folder:"07-copy-your-writing-style",
+ sit:"Three emails by the same person, with a distinctive voice. And one awkward email that has to go out to three people, one of whom is on the distribution list.",
+ prompt:`Work in 07-copy-your-writing-style/. All paths below are relative to it.
+Read the three emails in raw/samples. Work out how this person writes - structure,
+sentence length, how they open, how they handle bad news, what they never do.
+
+Write it up as a style guide in finished/run-01/style-guide.md. Be specific
+enough that somebody could follow it; "professional but friendly" is useless.
+
+Then read raw/the-email-you-need-to-write.md and write that email twice: once
+following the style guide, and once the way a generic AI assistant would. Put both
+in finished/run-01/ so I can compare them.`,
+ expect:["A style guide with real rules in it, not adjectives",
+         "Two versions that read like different people wrote them",
+         "Check whether the styled one kept the awkward third bullet"],
+ why:"Asking for <b>both</b> versions is the trick — without the generic one to compare against, the styled one just looks fine. Then swap in three things you actually wrote."},
+
+{n:"08",t:"Make a Slide Deck",out:"a deck + a list of what got cut",need:"nothing to install",z:"a",time:"~10 min",skills:"artifact-design, slides",
+ folder:"08-make-slide-deck",
+ sit:"A finished analysis: honest, thorough, and completely unusable in a meeting. Your manager has ten minutes with a regional director who will ask “so what do we do about it” out loud.",
+ prompt:`Work in 08-make-slide-deck/. All paths below are relative to it.
+raw/findings.md is my analysis. raw/the-ask.md is who it's for and how long
+they've got.
+
+Build something my manager can put on screen. She's not an analyst, she has ten
+minutes, and she'll be asked "so what do we do about it" in the room.
+
+One self-contained HTML file, no internet needed. Lead with the finding, not the
+method. Everything I couldn't answer goes at the end where she can find it if
+challenged, not in the middle where it dilutes the point.
+
+finished/run-01/. Tell me what you cut and why.`,
+ expect:["The €609-vs-€124 contrast made visual, not described",
+         "One failure code and one part number as the actionable payoff",
+         "A list of what got cut — the most useful output here"],
+ why:"The hard part was <b>subtraction</b>. The analysis is in discovery order, which is right for a working document and exactly wrong for a meeting."},
+
+{n:"09",t:"Match a Brand Style",out:"style-system.md + a new deck",need:"nothing to install",z:"a",time:"~15 min",skills:"frontend-design, artifact-design",
+ folder:"09-match-brand-style",
+ sit:"A five-slide deck in a company's house style, and completely unrelated content that has to be presented in that same style, so it looks like it came from the same organisation.",
+ prompt:`Work in 09-match-brand-style/. All paths below are relative to it.
+raw/reference-deck/quarterly-review.html is a deck in my company's house style.
+raw/content-to-present.md is new content that has nothing to do with it.
+First, read the reference and write finished/run-01/style-system.md: the actual
+rules. Every colour and what it's for, the type pairing and sizes, the spacing
+rhythm, the border and corner treatment, and every reusable component you can
+identify. Specific values, not adjectives.
+
+Then build a new deck from content-to-present.md that follows that system
+exactly, into finished/run-01/. Same 1280x720 canvas, same navigation, same
+footer pattern. Decide what to cut - the notes are longer than the deck should be.
+
+Don't reuse any of the reference's sentences. Only its system.
+
+Then audit your own deck: for every slide, check that nothing is clipped or
+overflowing the canvas, and fix whatever is. Tell me how you checked.`,
+ expect:["A style-system.md with real values - hex, sizes, spacing - not adjectives",
+         "A new deck in the same family that shares none of the reference's sentences",
+         "An explanation of how it checked for clipping. Read that part carefully."],
+ why:"A design system is <b>extractable</b>, not something to approximate by eye. The style doc is the durable artefact; the deck is just the first thing built with it."},
+
+{n:"10",t:"Write a Project CLAUDE.md",out:"CLAUDE.md in the exercise folder",need:"nothing to install",z:"a",time:"~8 min",skills:"/init, CLAUDE.md",
+ folder:"10-write-project-claude-md",
+ sit:"By now you've noticed you keep re-explaining the same things. Here are a team's conventions, currently living in three people's heads. Run /init first, on its own.",
+ prompt:`Work in 10-write-project-claude-md/. All paths below are relative to it.
+Read raw/HOW-WE-DO-THINGS.md and look at the files in raw/queries and raw/scripts.
+
+Turn those conventions into a CLAUDE.md in this exercise folder - not in
+finished/ - because that's the only place it actually takes effect. Make it
+specific and short. Rules I'd actually notice being broken, not aspirations.
+
+Then, separately, write finished/run-01/what-it-would-have-caught.md: go through
+raw/queries and raw/scripts and list every place the existing code breaks one of
+these rules.`,
+ expect:["A CLAUDE.md in the exercise folder — not in finished/",
+         "A list of violations in the existing files",
+         "Then ask for a new query, and watch it obey rules you never mentioned"],
+ why:"CLAUDE.md is read automatically at the start of every session in that folder. Every team has a conventions doc in a wiki. <b>The difference is that one of them loads before every piece of work.</b>"},
+
+{n:"11",t:"Save a Repeatable Skill",out:".claude/skills/monthly-pack/SKILL.md",need:"nothing to install",z:"a",time:"~10 min",skills:"writing-skills",
+ folder:"11-save-repeatable-skill",
+ sit:"Nine steps, done by hand on the third working day of every month, taking most of a morning, identical every time. Steps 2–5 are the ones that go wrong when rushed.",
+ prompt:`Work in 11-save-repeatable-skill/. All paths below are relative to it.
+Read raw/what-i-do-every-month.md. That's nine steps I do by hand every month and
+it takes a morning.
+
+Turn it into a skill so that next month it's one command. Put it in
+.claude/skills/monthly-pack/ in this exercise folder.
+
+Steps 2 to 5 are where I make mistakes when I'm rushing, so those need to be
+explicit and checkable, not vague. Step 8 needs a person's judgement - make the
+skill produce a draft and clearly mark what I have to review rather than pretending
+it's done.
+
+Then show me it working on the data in raw/data, into finished/run-01/.`,
+ expect:["A folder with a SKILL.md in it — that's the whole technology",
+         "A description specific enough that the skill actually loads",
+         "Step 8 as a draft marked for review, not as finished work"],
+ why:"<b>Automate what can be checked; draft and flag what needs judgement.</b> Skills that blur those two are the ones that eventually embarrass somebody."},
+
+{n:"13",t:"Make Excel and PDF Files",out:"an .xlsx with live formulas + a PDF",need:"Python",z:"b",time:"~12 min",skills:"openpyxl, matplotlib",
+ folder:"13-make-excel-and-pdf-files",
+ sit:"Finance doesn't accept a screenshot, an HTML file, a link or a dashboard. They've asked for the same two things for six years: a workbook with live formulas, and a PDF for the printed board pack.",
+ prompt:`Work in 13-make-excel-and-pdf-files/. Read raw/what-finance-needs.md.
+
+Build both deliverables from raw/findings.md and raw/data, into finished/run-01/:
+
+1. An .xlsx with live formulas, not pasted values - one tab per section, headers
+   frozen, money formatted as money.
+2. A PDF for a printed board pack. A4 portrait, and the charts have to survive
+   being printed in greyscale.
+
+Also fix raw/dealer-margin-tracker.xlsx - there are five things wrong with it.
+Corrected copy into finished/run-01/, original untouched, and a note listing what
+you changed and where.`,
+ expect:["Named tabs, frozen headers, number formats, and actual =SUM() formulas",
+         "An A4 PDF whose charts differ by pattern, not only by colour",
+         "The exercise-02 faults finally fixed, with a change log"],
+ why:"A workbook of constants is a photograph of a calculation. <b>A number with no formula behind it can't be audited, only trusted</b> — which is why they've asked for six years."},
+
+{n:"14",t:"Browser Automation",out:"a comparison CSV from eight sites",need:"Node",z:"b",time:"~12 min",skills:"Playwright MCP",
+ folder:"14-browser-automation",
+ sit:"Eight dealer sites publishing the same machine — in four HTML structures, three currencies, four languages, and one that publishes no price at all. Somebody used to do this by hand once a quarter.",
+ prompt:`Work in 14-browser-automation/. All paths below are relative to it.
+raw/sites has eight mock dealer websites. Serve that folder on localhost, then
+open each site in the browser and find the price and quoted lead time for the
+H340 AJ.
+
+Every site is built differently and they're in different currencies and
+languages, so read the pages rather than guessing at a pattern. One publishes no
+price - record that honestly, don't infer one.
+
+Into finished/run-01/: a comparison table as CSV, prices converted to EUR with the
+rate and date you used stated, lead times normalised to days, and a screenshot of
+each page as evidence.`,
+ expect:["A browser window opening — you can watch it work",
+         "Eight pages parsed on their own terms, not by one shared selector",
+         "One row with an empty price and a note. Go and check this one."],
+ why:"The row to check is the one publishing no price. <b>An LLM asked for a number is under quiet pressure to produce one</b>, and a plausible fabricated price is far worse than a blank."},
+
+{n:"15",t:"Edit Video",out:"an edit list + a captioned cut",need:"ffmpeg + Whisper",z:"b",time:"~18 min",skills:"faster-whisper, ffmpeg",
+ folder:"15-edit-video",
+ sit:"A 33-second one-take clip with a deliberate dead pause in the middle, and no transcript. Producing one, finding the pause and cutting it are the job.",
+ prompt:`Work in 15-edit-video/. All paths below are relative to it.
+raw/clip-raw.mp4 is a 33-second vertical talking-head clip, one take.
+
+Transcribe it locally with Whisper. Nothing leaves this machine.
+
+One long pause in it is deliberate. Find it by measuring the audio, not by ear,
+and write finished/run-01/edit-list.txt: the spans to keep, in output order,
+each with a comment saying why its boundary sits where it does.
+
+Cut the pause, then normalise the audio - in that order - then burn captions in.
+
+Into finished/run-01/: the .srt, edit-list.txt, the captioned .mp4, and NOTES.md
+with the threshold you used, how much you removed, and how you checked the
+captions against what is actually said.`,
+ expect:["One pause of 6.9s found by measuring — the speaker calls it \"about five\"",
+         "33.1s becomes 26.2s, and one cut rather than ten",
+         "Captions checked against the burned pixels, not against the transcript"],
+ why:"<b>Cut the silence before normalising, never after</b> — loudnorm lifts the noise floor above the threshold, so nothing gets cut and nobody notices. And the caption pass hallucinates independently of the transcript pass, so only the pixels prove it."},
+{n:"16",t:"Make a Video from Data",out:"an .mp4 rendered from the findings",need:"Node",z:"b",time:"~20 min",skills:"Remotion",
+ folder:"16-make-video-from-data",
+ sit:"The same finding as exercise 08, as a video under a minute that works with the sound off. The highest-friction exercise in the kit — read its README, including the licence note, before starting.",
+ prompt:`Work in 16-make-video-from-data/. All paths below are relative to it.
+Read raw/findings.md, raw/brand.md and raw/the-job.md.
+
+Build a short data video - under 60 seconds, 1920x1080, 30fps - about the
+telehandler warranty finding. Use Remotion.
+
+Follow the brand guide properly: one accent colour on screen at a time, numbers as
+the hero, one idea per scene. It has to be watchable with the sound off, so nothing
+depends on narration.
+
+Set the project up in finished/run-01/, render the mp4 there, and tell me how to
+re-render it after I edit a number.`,
+ expect:["A React project where each scene is a component",
+         "€609 counting up while €124 and €68 sit still",
+         "Expect two or three rounds of “scene two is too fast”. That's normal."],
+ why:"The video is <b>code</b>, so it's a function of the data — next month's number changes and you re-render. A no-install fallback path is in the README."},
+
+{n:"17",t:"Version Control",out:"a git repo with a real history",need:"Git",z:"b",time:"~8 min",skills:"git",
+ folder:"17-version-control",
+ sit:"A script that works, whose numbers are right. You're about to break it on purpose, and then get it back.",
+ prompt:`Work in 17-version-control/. All paths below are relative to it.
+Copy raw/monthly_report.py and its data folder into finished/run-01/, then work in
+there.
+
+1. Make it a git repository and commit the working version.
+2. Show me what git thinks the state is, and explain what just got stored and where.
+3. Now break it - change the returns filter so returns count as revenue - and run
+   it so I can see the numbers change.
+4. Show me the diff between what's saved and what's on disk. Explain how to read it.
+5. Put it back to the committed version.
+6. Then make a real improvement, commit that properly, and show me the history.
+
+Write finished/run-01/what-happened.md explaining each step in plain language -
+what the command did, and what I'd have lost without it.`,
+ expect:["The totals visibly change when the filter breaks — and they go up",
+         "A diff you can read, then the broken version restored exactly",
+         "A plain-language write-up for somebody who's never used git"],
+ why:"Two wrong beliefs, disproved in eight minutes. <b>Committing is not publishing</b> — nothing leaves your disk and there's nowhere to push to. And it's for anyone who's kept report_v3_FINAL.xlsx."},
+
+{n:"18",t:"Run Many Agents at Once",out:"12 agent reviews + audit-summary.md",need:"nothing to install",z:"a",time:"~15 min",skills:"subagents",
+ folder:"18-run-many-agents-at-once",
+ sit:"Twelve SQL files. Every one runs. Every one has at least one defect of the kind that returns plausible numbers rather than an error. Several have two. Nobody owns them.",
+ prompt:`Work in 18-run-many-agents-at-once/. All paths below are relative to it.
+raw/legacy-reports has 12 SQL files. Each one has at least one defect - the kind
+that returns plausible numbers rather than an error. Some have two.
+
+Don't work through them one at a time. Send a separate agent per file, running in
+parallel, each one reporting back: what's wrong, what it does to the numbers, how
+confident it is, and how somebody would notice.
+
+The schema is in raw/data, so check claims about columns against the actual files.
+
+Then read all the reports yourself and write finished/run-01/audit-summary.md:
+everything found, ordered by how much damage it does, plus which defects show up in
+more than one file - because those are the ones worth fixing as a policy rather
+than one at a time.`,
+ expect:["Twelve agents starting together, finishing at different times",
+         "Then a synthesis step reading across all twelve for patterns",
+         "Then open ANSWER-KEY.md and score it. False positives matter most."],
+ why:"Fan out to gather, come back together to conclude. Twelve agents can't see each other, so none can say “this mistake is in five files”. <b>That observation only exists above the fan-out.</b>"},
+
+{n:"19",t:"Run a Machine Learning Model",out:"RECOMMENDATION.md + metrics",need:"Python + sklearn",z:"b",time:"~20 min",skills:"dataviz",
+ folder:"19-run-machine-learning-model",
+ sit:"Breakdown tickets must close within five working days. Some get missed, and nobody can say which ones while there is still time to act. The ask: can we predict a breach on day one?",
+ prompt:`Work in 19-run-machine-learning-model/. Read raw/the-job.md. The data is in raw/data.
+
+Build a model that predicts whether a breakdown ticket will breach the five-day
+close target, using only what's known when the ticket opens.
+
+Before you fit anything: clean the categories and countries, and establish two
+baselines - always-predict-the-majority-class, and a simple lookup on dealer tier.
+I want to know what the model has to beat.
+
+Then fit something, evaluate with cross-validation, and report the variance too.
+
+Into finished/run-01/: the script, the metrics, and a RECOMMENDATION.md that tells
+me what to actually do on Monday. If the honest answer is that I don't need a
+model, say that instead.`,
+ expect:["409 usable tickets, 19.8% breach rate, tier-only baseline at 0.766 AUC",
+         "The fitted model at 0.773 - seven thousandths better than one GROUP BY",
+         "Gradient boosting scoring worse, at 0.701, because 409 rows can't support it"],
+ why:"The right answer was <b>you don't need a model</b>. Make a model beat a baseline before believing it - and if any feature touched the close date, it scores 1.000 and means nothing."},
+
+{n:"20",t:"Build a BI Dashboard",out:"a live Superset dashboard + NOTES.md",need:"Docker",z:"c",time:"~25 min",skills:"Superset REST API",
+ folder:"20-build-bi-dashboard",
+ sit:"Exercise 06's HTML file is right when nothing can be installed. It's wrong when five people need to change the filters themselves. Start docker compose before you sit down.",
+ prompt:`Work in 20-build-bi-dashboard/. All paths below are relative to it.
+Superset is running at http://localhost:8088 (admin/admin). Its REST API docs are
+at /swagger/v1.
+Build a working dashboard from raw/data, entirely through the API - don't ask me to
+click anything.
+
+1. The CSVs are dirty. Clean them first (21 country spellings, returns as negative
+   quantity, duplicate order IDs, model codes that don't join) into a SQLite file in
+   raw/data/, and tell me what you fixed.
+2. Register that as a database in Superset via the API.
+3. Create datasets, then charts: revenue by country, warranty cost per unit by
+   machine family, order-to-ship days by country, and the worst ten dealers.
+4. Assemble them into one dashboard and publish it.
+
+Then write finished/run-01/NOTES.md: every API call you made in order, so I could
+repeat this against a different Superset without you.`,
+ expect:["Login, CSRF token, register database, dataset, chart, dashboard — all six tested",
+         "Cleaning happens upstream, not in chart SQL",
+         "Then open it and change a filter. That's the payoff."],
+ why:"<b>Anything with an HTTP API can be built by an agent.</b> Superset is just the example — the sequence is identical for Tableau, Looker, Metabase or Fabric."},
+
+{n:"21",t:"Connect Your Tools",out:"a working MCP connection",need:"an account of yours",z:"c",time:"~15 min",skills:"MCP configuration",
+ folder:"21-connect-your-tools",
+ sit:"Every exercise so far ran on material somebody prepared for you. This one runs on your work. Pick one system — a database, a folder, Jira, ClickUp, Slack, whatever you actually live in.",
+ prompt:`Work in 21-connect-your-tools/. All paths below are relative to it.
+I want to connect Claude Code to [the system you picked] so I can ask it questions
+without opening a browser tab.
+
+Find the current MCP server for it. Tell me what it can do, what access it needs,
+and what could go wrong. Then give me the exact command to add it - but don't run
+it yet.`,
+ expect:["A capability list before anything is installed",
+         "One line added to a config file — that's the whole integration",
+         "Then /mcp to confirm, and a real question about your own work"],
+ why:"<b>“Don't run it yet” is the most important part of this prompt.</b> You asked what a thing can do and what access it needs before granting it. One extra exchange, every time. Use a read-only credential first."},
+
+{n:"22",t:"Handle Private Data",out:"analyse_churn.py + aggregates",need:"Python",z:"b",time:"~20 min",skills:"update-config",
+ folder:"22-handle-private-data",
+ sit:"A client wants churn analysed, but their file holds names, dates of birth and national IDs that will not leave their environment. The code travels to the data instead.",
+ prompt:`Work in 22-handle-private-data/. Read raw/SCHEMA.md and raw/the-job.md.
+
+You are not allowed to read raw/client-data/ at all. Before anything else, add
+a deny rule to .claude/settings.json blocking raw/client-data/**, then try to
+read the file and show me you were actually blocked.
+
+Then write a churn analysis script into finished/run-01/ that:
+  - takes a CSV path as an argument and works from SCHEMA.md alone, so it
+    handles categories it has never seen
+  - reports churn rate by country and by contract-value band
+  - suppresses any group under 5 customers, so it can't be recovered by
+    subtracting from a total
+  - outputs aggregates only, never a row or an identifier, and says what it
+    suppressed and why
+
+Validate it on raw/synthetic-sample.csv, then I'll run it on the client file myself.`,
+ expect:["A deny rule in settings.json, and a refusal you can actually see",
+         "Luxembourg suppressed at 3 customers; Austria handled though never seen",
+         "Aggregates only - no rows, no identifiers, and a note of what was withheld"],
+ why:"You made the constraint <b>enforceable rather than polite</b>. And watch the suppression: printing a total plus an incomplete breakdown lets anyone subtract their way to the group you hid."},
+
+{n:"23",t:"Schedule a Report",out:"a scheduled task + its first log",need:"your own machine",z:"c",time:"~15 min",skills:"hooks, Task Scheduler",
+ folder:"23-schedule-report",
+ sit:"Two kinds of “without you”, constantly confused. A hook is Claude Code reacting to its own activity. A scheduled job is your OS running something at a time you picked, whether or not Claude is even open. Run the script by hand first.",
+ prompt:`Work in 23-schedule-report/. All paths below are relative to it.
+Now schedule build_pack.py to run at 06:00 every Monday on this machine, writing
+its output and any errors to finished/run-01/logs/.
+
+Use Windows Task Scheduler. Show me the command, explain what it registered and
+where, and tell me exactly how to check it ran and how to remove it. Then trigger
+it once manually so I can see it work end to end.`,
+ expect:["A hook added to settings.json, and proof that it fires",
+         "A scheduled task, plus the commands to inspect and delete it",
+         "A log file with a timestamp in it"],
+ why:"Automating something you've never watched run is how you get a job that's been failing silently since March. Then ask the real question: <b>how would you know if it failed?</b>"},
+
+{n:"24",t:"Publish a Dashboard",out:"a public URL + DEPLOYED.md",need:"a hosting account",z:"c",time:"~20 min",skills:"vercel:deploy",
+ folder:"24-publish-dashboard",
+ sit:"Everything so far produced a file on your disk. A file on your disk can't be sent to someone who then sends it to someone else.",
+ prompt:`Work in 24-publish-dashboard/. Read raw/findings.md and raw/the-job.md.
+
+Build the analysis into a small site worth reading on a phone - fast, no clutter, the
+telehandler finding leading - then deploy it so I get a URL I can send to someone.
+
+Before you deploy: show me exactly what's about to be published and confirm nothing
+in it is anything I'd regret being indexed. Wait for me to say go.
+
+After it's live, write finished/run-01/DEPLOYED.md: the URL, what account it's under,
+what it costs, and the exact steps to take it down.`,
+ expect:["A list of what's about to be published, and a pause",
+         "A real URL that loads on your phone",
+         "A written note of where it lives and how to remove it"],
+ why:"You built a confirmation step into an irreversible action. <b>You can delete a finished/ folder; you cannot un-publish something that's been crawled.</b> Learn that here, where the stakes are zero."},
+{n:"25",t:"Customise Claude Code",out:"a status line script + settings entry",need:"nothing to install",z:"a",time:"~10 min",skills:"update-config",
+ folder:"25-customise-claude-code",
+ sit:"The strip at the bottom of a session tells you very little by default. It is also the one part of the interface you control - and the two numbers you most want mid-session are not in it.",
+ prompt:`Work in 25-customise-claude-code/. Read raw/the-job.md and raw/reference-statusline.md.
+
+Build a status line that renders exactly the format in the reference, then wire it
+up in my Claude Code settings so it actually shows.
+
+Test it before you wire anything: raw/sample-input.json is the kind of JSON Claude
+Code pipes in on stdin, so pipe that through your script and show me the output.
+
+Node is what the reference was written in. If I don't have Node, use PowerShell or
+Python instead - the output format is the contract, not the language.
+
+Into finished/run-01/: the script, the settings.json snippet, and NOTES.md saying
+which fields come from stdin and which you had to read from somewhere else.`,
+ expect:["Six fields joined by \" | \" from the sample: Opus 4.6, ctx:42%, 5h:18%, 7d:31%",
+         "effort: read from settings.json - it is not in the stdin payload",
+         "Missing percentages dropped, not printed as null or 0%"],
+ why:"The interface changes the same way everything else here does: <b>a config key naming a script</b>. And a status line that crashes shows nothing at all, so testing against a saved payload is what makes the failure readable."},
+{n:"26",t:"Scrape a Web Page",out:"listings.csv + top5.md + notes.md",need:"Node",z:"b",time:"~10 min",skills:"Playwright MCP",
+ folder:"26-scrape-web-page",
+ install:`winget install OpenJS.NodeJS.LTS
+claude mcp add --scope local playwright -- npx -y @playwright/mcp@latest`,
+ installTag:"Not set up for Node yet? Run these first",
+ sit:"Somebody re-types this page into a spreadsheet every morning. Eight ways of writing a price, two of them not numbers.",
+ prompt:`Work in 26-scrape-web-page/. All paths below are relative to it.
+Read raw/the-job.md, then serve raw/site on localhost and open it in the browser.
+
+Pull every real listing off the page into a table: id, title, price as a number,
+currency basis, place, seller, when it was posted, views.
+
+Prices are written several different ways and two are not numbers - record those
+as missing rather than guessing. Paid placements are not listings.
+
+Then answer the actual ask: the top 5 hottest listings. Define hottest from what
+the page contains, say which definition you used, and say what it cannot support.
+
+Into finished/run-01/: listings.csv, top5.md with the definition stated, and
+notes.md listing every row you excluded and why. Nothing writes to raw/.`,
+ expect:["Twelve rows, not fourteen: the two paid slots out, the duplicate machine collapsed",
+         "Two prices recorded as missing rather than zero, which would make them the cheapest",
+         "A stated definition of hottest, and the admission that views are missing for four of fourteen"],
+ why:"The extraction is the easy half. <b>Hottest has no answer on this page</b>, three readings are defensible, and the failure is picking one silently so the reader believes there is a fact where there is a choice."},
+{n:"27",t:"Track Website Changes",out:"a change report + history.md",need:"Node",z:"b",time:"~10 min",skills:"Playwright MCP",
+ folder:"27-track-website-changes",
+ install:`winget install OpenJS.NodeJS.LTS
+claude mcp add --scope local playwright -- npx -y @playwright/mcp@latest`,
+ installTag:"Same setup as 13 and 25 — skip if you did either",
+ sit:"The same marketplace page saved a day apart. Something real happened overnight; most of what differs is noise.",
+ prompt:`Work in 27-track-website-changes/. All paths below are relative to it.
+Read raw/the-job.md. Serve raw/ on localhost and open both raw/monday/ and
+raw/tuesday/ in the browser.
+
+Compare them as listings, not as text. Report what is genuinely new, what is
+gone, and where a price actually moved. Most of what differs between the two
+files is noise - session ids, view counters, timestamps, rotated adverts, and
+relative dates sliding by a day. Do not report noise as change.
+
+One apparent price change is a formatting change only. Catch it.
+
+Into finished/run-01/: changes-2026-08-19.md for today, and history.md as an
+append-only log with today's entry added under a dated heading. If history.md
+already exists, append - never overwrite. Nothing writes to raw/.`,
+ expect:["Two new listings, one gone, two real price moves - five changes out of roughly ninety changed lines",
+         "L-4287 reported as unchanged: EUR44500 and EUR 44.500,00 are the same price",
+         "history.md appended to under a dated heading, not overwritten"],
+ why:"Comparing values rather than text is the whole trick. <b>The append-only history file is what makes a workflow remember its conclusions</b> - a file in the folder, no database and no memory feature."},
+{n:"28",t:"Use a Database",out:"series.duckdb + STORAGE.md",need:"DuckDB",z:"b",time:"~12 min",skills:"DuckDB, SQL",
+ folder:"28-use-database",
+ install:"winget install DuckDB.cli",
+ installNote:"One executable, no server, and the database is a single file. Close and reopen your terminal afterwards, then check with <code>duckdb --version</code> &mdash; a tool installed in this shell is not on PATH in this shell.",
+ sit:"A daily price feed as one JSON file per day: one date pulled twice, one weekday missing, one bad value, one null.",
+ prompt:`Work in 28-use-database/. All paths below are relative to it.
+Read raw/the-job.md. raw/snapshots holds one JSON file per day of a price feed.
+
+Load it into a local DuckDB database in finished/run-01/ with one row per date.
+Where a date has two files, keep the one with the later retrieved_at and record
+that you dropped the other. One value is a European-formatted string and one is
+null - handle both without inventing a number.
+
+Then tell me which dates are actually missing - weekends are not missing data -
+and make the load safe to run twice: a second run must not duplicate rows.
+
+Into finished/run-01/: series.duckdb, the load script, and STORAGE.md answering
+whether this belongs in files or a database, with the reason. Nothing writes
+to raw/.`,
+ expect:["24 rows from 25 files, with the re-run winning and the original recorded as dropped",
+         "2026-07-23 named as the only missing weekday - weekends are not missing data",
+         "The load run twice with the row count unchanged"],
+ why:"Not size but <b>rules</b> forced the database here: a duplicate date, a gap and two bad values. DuckDB reads the folder in place, so the question is when to materialise, not files versus database."},
+{n:"29",t:"Plan Before Building",out:"plan.md, and no code yet",need:"nothing to install",z:"a",time:"~10 min",skills:"none",
+ folder:"29-plan-before-building",
+ sit:"A request that has arrived three times and been built zero times, in three messages from two people. One asks for one row per part, the next for one row per depot. Neither defines last month, availability, or what running out means.",
+ prompt:`Work in 29-plan-before-building/. All paths below are relative to it.
+Read raw/the-job.md and raw/example-plan.md. Do not write any code yet.
+
+Write finished/run-01/plan.md for the parts pack. Follow the shape of the example,
+not its content.
+
+Before anything else, list every question in the brief that cannot be answered
+from the brief - including where two messages contradict each other. For each
+one, give me the options and the one you recommend, with the reason.
+
+Then the steps in order, with the two or three points where being wrong is cheap
+to catch, and what is explicitly out of scope for a first version.
+
+Do not resolve the contradiction by picking quietly. Put it in front of me.
+
+Then stop. I will read the plan before you build anything.`,
+ expect:["The contradiction surfaced as a decision, not resolved quietly inside the code",
+         "Four or five open questions, each with options and a recommendation",
+         "The nice-to-have email placed out of scope, and no code written at all"],
+ why:"A plan is <b>a cheap place to be wrong</b>. Four undefined terms went into that brief and none of them are technical - written down they get answered in two minutes, buried in code they surface at the demo."},
+{n:"30",t:"Share a Live Report",out:"a URL + PUBLISHED.md",need:"claude.ai account",z:"c",time:"~8 min",skills:"artifacts",
+ folder:"30-share-live-report",
+ sit:"A finished one-file report that opens in a browser and is completely stuck. Emailing it makes five copies, and fixing a number makes ten. Put it somewhere people can open, and keep the link the same when it updates.",
+ prompt:`Work in 30-share-live-report/. All paths below are relative to it.
+Read raw/the-job.md, then read all of raw/dealer-scorecard.html before publishing
+anything - tell me what is in it, including anything in a comment.
+
+Copy it to finished/run-01/ and publish that copy as an artifact. Give it a real
+title and a one-line description.
+
+Then change one thing - move the caveat to the top, where somebody will actually
+read it - and publish again to the SAME artifact so the link does not change.
+
+Into finished/run-01/: the published file, and PUBLISHED.md with the URL, what
+you changed between the two versions, and who can see it. Nothing writes to raw/.`,
+ expect:["The file read and summarised before anything is published, comments included",
+         "A working URL, and the second publish reusing it rather than making a second link",
+         "PUBLISHED.md stating who can see it - artifacts start private until the link is shared"],
+ why:"A file becomes a place, and a URL has one current version where an attachment has as many as there are inboxes. <b>Publishing is a disclosure decision</b> dressed as a formatting step."},
+{n:"31",t:"Compare Two Systems",out:"reconciliation.csv + REPORT.md",need:"nothing to install",z:"a",time:"~12 min",skills:"none",
+ folder:"31-compare-two-systems",
+ sit:"Two exports of the same orders, 220 rows against 212, and a gap of 502 289. The dealer id is cased differently in each file, one class of row is excluded by design, one order id is duplicated, and some amount differences are rounding.",
+ prompt:`Work in 31-compare-two-systems/. All paths below are relative to it.
+Read raw/the-job.md. Do not open raw/ANSWER-KEY.md until your report is written.
+
+Reconcile raw/erp-export.csv against raw/bi-export.csv. Every row on either side
+lands in exactly one bucket, and the buckets must add up to the difference between
+the two totals. If they do not add up, say so rather than rounding the gap away.
+
+Separate amount differences that are rounding from ones that are material. One
+class of row is excluded from one file by definition - that is its own bucket,
+not an error. One order id is duplicated. The dealer id is cased differently in
+each file.
+
+Into finished/run-01/: reconciliation.csv with a bucket per row, and REPORT.md
+with the bucket totals, the arithmetic proving they add up, and which buckets
+somebody actually has to act on. Then check ANSWER-KEY.md and tell me what you
+missed. Nothing writes to raw/.`,
+ expect:["Six buckets that sum to exactly 502 289.00, with the arithmetic shown",
+         "18 rounding differences worth five cents kept apart from 5 material ones worth 305.00",
+         "Returns named as a definition difference rather than an error"],
+ why:"Neither file is wrong. <b>The buckets adding up is what makes it a reconciliation</b> rather than an investigation - and five material errors netting to 305 against 35 million is invisible to anyone comparing totals."},
+];
+
+/* Only a 16-line prompt reaches the corner label on a real 1280x720 canvas.
+   Threshold set by measuring with the stage transform removed, not guessed.
+   An install block costs roughly three prompt lines of height, so a slide
+   carrying one steps down earlier. 15 is the worst case without this: it
+   renders at full size with no relief, which is exactly where 27 sits. */
+function promptClass(lines, hasInstall) {
+  return lines >= (hasInstall ? 13 : 16) ? " tight" : "";
+}
+
+/* ---- build the ladder grid on slide 3 ---- */
+const lrow = s => `
+  <div class="lrow">
+    <div class="lhead"><span class="n">${s.n}</span><span class="need ${s.z}">${s.need}</span></div>
+    <div class="t">${s.t}</div>
+    <div class="out">&rarr; ${s.out}</div>
+  </div>`;
+/* Two grids, because the whole list does not fit one 720px canvas at readable
+   type. Split purely by number and re-derived from S.length, so adding exercises
+   rebalances the two slides instead of needing a hand-edit. Both lookups are
+   guarded - an unguarded one here throws and silently kills nav and the copy
+   buttons while the slides still render clean. */
+const HALF = Math.ceil(S.length / 2);
+const ladderA = document.getElementById("ladderGrid");
+if (ladderA) ladderA.innerHTML = S.slice(0, HALF).map(lrow).join("");
+const ladderB = document.getElementById("ladderGrid2");
+if (ladderB) ladderB.innerHTML = S.slice(HALF).map(lrow).join("");
+const listTwo = document.getElementById("listTwoTitle");
+if (listTwo && S[HALF]) listTwo.textContent = `From ${S[HALF].n} onwards.`;
+
+/* ---- every count on the framing slides is derived from S ----
+   The hand-maintained versions had all drifted at least once. Nothing here
+   spells a number in words, because that is what made them expensive to keep
+   true when the list grew. */
+const N = S.length;
+const zoneA = S.filter(x => x.z === "a");
+const named = S.filter(x => x.z === "b");
+const yours = S.filter(x => x.z === "c");
+const nums = a => a.map(x => x.n).join(", ");
+const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+
+document.title = `Claude Code Starter Kit · ${N} things to make Claude Code do`;
+setText("coverTitle", `${N} things to make Claude Code do.`);
+setText("coverCount", `${N} numbered folders`);
+setText("coverZoneA", `${zoneA.length} of the ${N}`);
+setText("loopZoneA", `${zoneA.length} of the ${N}`);
+setText("loopCost", `${zoneA.length} of the ${N} — ${nums(zoneA)} —`);
+
+/* ---- build one slide per exercise, before the closing slide ---- */
+const stage = document.getElementById("stage");
+const endslide = document.getElementById("endslide");
+
+S.forEach(s => {
+  const lines = s.prompt.split("\n").length;
+  const sec = document.createElement("section");
+  sec.className = "slide";
+  sec.innerHTML = `
+    <div class="inner">
+      <div class="metarow">
+        <span class="stnum">EXERCISE ${s.n}</span>
+        <span class="zpill ${s.z}"><span class="dot"></span>${ZONES[s.z]}</span>
+        <span class="stmeta">${s.time} &nbsp;·&nbsp; skills: <b>${s.skills}</b></span>
+      </div>
+      <h2>${s.t}</h2>
+      <p class="sub">${s.sit}</p>
+      ${s.install ? `<div class="copyblock cmdblock installblock">
+        <span class="tag">▌ ${s.installTag || `Don't have ${s.need} yet? Run this first`}</span>
+        <button class="copybtn">Copy</button>
+<pre class="copytext">${s.install}</pre>
+      </div>${s.installNote ? `<p class="inote">${s.installNote}</p>` : ""}` : ""}
+      <div class="copyblock">
+        <span class="tag">▌ Paste this into Claude Code, in ${s.folder}/</span>
+        <button class="copybtn">Copy</button>
+<pre class="copytext${promptClass(lines, !!s.install)}">${s.prompt}</pre>
+      </div>
+      <div class="duo">
+        <div class="gcol">
+          <h3>What you should see</h3>
+          <ul>${s.expect.map(e => `<li>${e}</li>`).join("")}</ul>
+        </div>
+        <div class="card focus why">
+          <h3>What it teaches</h3>
+          <p>${s.why}</p>
+        </div>
+      </div>
+    </div>
+    <div class="corner"><b>Claude Code Starter Kit</b> · ${s.folder}/README.md</div>`;
+  stage.insertBefore(sec, endslide);
+});
+
+/* ---- house deck controls ---- */
+const slides = Array.from(document.querySelectorAll('.slide'));
+let idx = 0;
+function show(i) {
+  idx = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, j) => s.classList.toggle('active', j === idx));
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + slides.length;
+  document.getElementById('progress').style.width = ((idx + 1) / slides.length * 100) + '%';
+  location.hash = 'slide-' + (idx + 1);
+}
+document.getElementById('prev').addEventListener('click', () => show(idx - 1));
+document.getElementById('next').addEventListener('click', () => show(idx + 1));
+document.addEventListener('keydown', e => {
+  if (e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') show(idx + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   show(idx - 1);
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End')  show(slides.length - 1);
+  if (e.key === 'c' || e.key === 'C') dropConfetti();
+  if (e.key === 'o' || e.key === 'O') document.getElementById('overview').classList.toggle('on');
+  if (e.key === 'Escape') document.getElementById('overview').classList.remove('on');
+});
+const ov = document.getElementById('ovlist');
+/* Label exercise slides with their EXERCISE number, never their slide position.
+   Three framing slides sit in front of exercise 01, so a raw index reads three
+   too high — "exercise 06 shows as 9" was reported from a real run. Framing
+   slides get a dot, because numbering them at all is what caused the confusion. */
+slides.forEach((s, j) => {
+  const h = s.querySelector('h2') || s.querySelector('h1');
+  const stnum = s.querySelector('.stnum');
+  const label = stnum ? stnum.textContent.trim().replace(/^EXERCISE\s+/i, '') : '·';
+  const d = document.createElement('div');
+  d.innerHTML = '<span>' + label + '</span>' + (h ? h.textContent.trim() : 'Slide ' + (j + 1));
+  d.addEventListener('click', () => { show(j); document.getElementById('overview').classList.remove('on'); });
+  ov.appendChild(d);
+});
+function flashCopied(btn) {
+  const original = btn.textContent;
+  btn.textContent = '✓ Copied';
+  btn.classList.add('done');
+  setTimeout(() => { btn.textContent = original; btn.classList.remove('done'); }, 1600);
+}
+function legacyCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); flashCopied(btn); } catch (err) { btn.textContent = 'Copy failed'; }
+  document.body.removeChild(ta);
+}
+/* ---- press C ----
+   Self-contained: one canvas, requestAnimationFrame, no library and no network,
+   because the deck has to work from a file:// path with no internet. Stops itself
+   when the last piece leaves the bottom, so an idle deck burns no CPU. */
+const cvs = document.getElementById('confetti');
+const ctx = cvs && cvs.getContext('2d');
+let pieces = [], confettiRunning = false;
+const CONFETTI_COLORS = ['#2f7fd0', '#8fc0f0', '#1c5236', '#f0b429', '#e8734a', '#ffffff'];
+
+function sizeCanvas() {
+  if (!cvs) return;
+  const r = window.devicePixelRatio || 1;
+  cvs.width = window.innerWidth * r;
+  cvs.height = window.innerHeight * r;
+  ctx.setTransform(r, 0, 0, r, 0, 0);
+}
+window.addEventListener('resize', sizeCanvas);
+
+function dropConfetti() {
+  if (!cvs || !ctx) return;
+  sizeCanvas();
+  cvs.classList.add('on');
+  const w = window.innerWidth;
+  for (let i = 0; i < 140; i++) {
+    pieces.push({
+      x: Math.random() * w,
+      y: -20 - Math.random() * 200,
+      vx: (Math.random() - 0.5) * 1.6,
+      vy: 2 + Math.random() * 3.2,
+      w: 5 + Math.random() * 6,
+      h: 8 + Math.random() * 8,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.22,
+      color: CONFETTI_COLORS[(Math.random() * CONFETTI_COLORS.length) | 0]
+    });
+  }
+  if (!confettiRunning) { confettiRunning = true; requestAnimationFrame(tickConfetti); }
+}
+
+function tickConfetti() {
+  const h = window.innerHeight;
+  ctx.clearRect(0, 0, window.innerWidth, h);
+  pieces = pieces.filter(p => p.y < h + 40);
+  pieces.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vy += 0.02;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx.restore();
+  });
+  if (pieces.length) { requestAnimationFrame(tickConfetti); }
+  else { confettiRunning = false; cvs.classList.remove('on'); ctx.clearRect(0, 0, window.innerWidth, h); }
+}
+
+document.querySelectorAll('.copybtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = btn.closest('.copyblock').querySelector('.copytext').textContent;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => flashCopied(btn)).catch(() => legacyCopy(text, btn));
+    } else {
+      legacyCopy(text, btn);
+    }
+  });
+});
+function fit() {
+  const s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.getElementById('stage').style.transform = 'scale(' + s + ')';
+  document.getElementById('stage').style.transformOrigin = 'center center';
+}
+window.addEventListener('resize', fit); fit();
+function fromHash() {
+  const m = location.hash.match(/slide-(\d+)/);
+  return m ? parseInt(m[1]) - 1 : 0;
+}
+// so a pasted #slide-N link moves the deck even when it's already open
+window.addEventListener('hashchange', () => { const i = fromHash(); if (i !== idx) show(i); });
+show(fromHash());
+</script>
+
+<a href="https://github.com/mcastelein/claude-code-starter-kit" target="_blank" rel="noopener" style="
+  position:fixed;right:14px;bottom:14px;z-index:9999;
+  font:600 13px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  color:#e8eef5;background:rgba(12,18,26,.92);border:1px solid #2b3a4a;
+  border-radius:999px;padding:10px 15px;text-decoration:none;
+  box-shadow:0 4px 18px rgba(0,0,0,.4)">
+  get the files on GitHub &rarr;</a>
+</body>
+</html>
