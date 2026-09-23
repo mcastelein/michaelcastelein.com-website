@@ -978,8 +978,15 @@ const BASE_MIN  = 20;   // the at: values below were authored against this
    speed rather than an approximation. 15 is about 30 words a minute: slow
    enough to read from the back of the room, fast enough not to stall.
    ------------------------------------------------------------------- */
-const TYPE_CPS    = 15;
-const TYPE_MAX_MS = 9000;   // even so, no single prompt types for longer
+/* Typing pace. Halved on 2026-09-23: the conversations were reading at about
+   20 seconds each, which is a long time to stand still. All four dials move
+   together, because the two pauses are a third of the running time and
+   speeding up only the characters would not feel any faster. */
+const TYPE_CPS     = 30;    // characters a second
+const TYPE_MAX_MS  = 4500;  // even so, no single prompt types for longer
+const TYPE_ENTER   = 240;   // the beat between the last character and "enter"
+const TYPE_AFTER_A = 450;   // after a turn that got a reply, so it can be read
+const TYPE_AFTER_Q = 200;   // after a turn that did not
 
 const SCALE = TALK_MIN / BASE_MIN;
 const mmss  = sec => {
@@ -2116,8 +2123,9 @@ function runTyper(slideEl){
           box.classList.remove("typing");
           t.textContent = "";
           mid.insertAdjacentHTML("beforeend", turnHTML(turns[n]));
-          setTimeout(()=>playTurn(n+1), turns[n].out ? 900 : 400);
-        }, 480);
+          setTimeout(()=>playTurn(n+1),
+                     turns[n].out ? TYPE_AFTER_A : TYPE_AFTER_Q);
+        }, TYPE_ENTER);
       }
     }, delay);
   };
