@@ -496,6 +496,25 @@ ul.pts.sm li{font-size:23px}
 .bleed-tag .bh{font-size:19px;font-weight:800;letter-spacing:-.015em;color:var(--ink);
   display:block;line-height:1.1}
 
+/* ---------- the closing slide: two links people have to type ----------
+   Big, monospace, high contrast. Somebody at the back has to read these off
+   a projector and get them right on the first try, so they are the largest
+   mono type in the deck and the two halves are visually distinct: the page
+   you open now, and the files you clone later. */
+.kitlinks{display:flex;gap:20px;margin-top:38px;width:100%;max-width:1000px}
+.klink{flex:1 1 0;min-width:0;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;gap:9px}
+.klink.now{border-color:#2f4f74;background:linear-gradient(180deg,#152232,var(--surface))}
+.klink .kn{font-family:var(--mono);font-size:10.5px;font-weight:800;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--ink-faint)}
+.klink.now .kn{color:var(--accent)}
+.klink .kurl{font-family:var(--mono);font-size:21px;font-weight:800;color:var(--ink);
+  letter-spacing:-.01em;line-height:1.24}
+.klink .kurl span{white-space:nowrap}
+/* the only legal break in the URL is the <wbr> after the slash */
+.klink.now .kurl{color:#8fc4ff}
+.klink .kwhat{font-size:14.5px;color:var(--ink-soft);line-height:1.38}
+
 /* ---------- the video editing column ------------------------------
    Two screens play a real mp4 and one draws the cut to scale. The bars
    are laid out in percent of the same 24.70 seconds, so the "after" bar
@@ -1672,15 +1691,26 @@ const BASE = [
   html:`<div class="inner center">
     <div class="kicker">Take this with you</div>
     <h1 style="font-size:58px">31 things to try<br>this week.</h1>
-    <div class="sub" style="font-size:24px">PLACEHOLDER: QR code or short link to the starter kit</div>
-    <div class="sub mono" style="font-size:18px;color:var(--ink-faint);margin-top:40px">
+    <div class="kitlinks">
+      <div class="klink now"><span class="kn">open it now</span>
+        <span class="kurl"><span>michaelcastelein.com/</span><wbr><span>claude-starter-kit</span></span>
+        <span class="kwhat">The 31 ideas as a page. Nothing to install, works on a phone.</span></div>
+      <div class="klink"><span class="kn">then get the files</span>
+        <span class="kurl"><span>github.com/mcastelein/</span><wbr><span>claude-code-starter-kit</span></span>
+        <span class="kwhat">One folder per job: what you start with, what to ask for,
+          and a worked answer to check yours against.</span></div>
+    </div>
+    <div class="sub mono" style="font-size:18px;color:var(--ink-faint);margin-top:34px">
       Michael Castelein &middot; find me at dinner
     </div>
   </div>`,
   notes:[
-    "!Add the QR code or short link. This is the whole reason to give a talk.",
-    "Confetti fires by itself when you land here. Press C to fire it again.",
-    "Then stop talking and take questions. Do not summarize."
+    "<b>Say the left one out loud and wait.</b> Phones come out. It is a page, it opens on anything, and nothing has to be installed.",
+    "Then the right one: <b>\"that is the same 31 things with the files, so you can actually do them.\"</b>",
+    "Both are live now. The page links across to the repo in the corner, so anyone who only writes down the first one still finds the second.",
+    "Confetti fires by itself when you land here. Press C to fire it again, and again. It stacks.",
+    "Then stop talking and take questions. Do not summarize.",
+    "!A QR code for the left link would still help the back of the room. Worth adding if there is time."
   ]
 }
 ];
