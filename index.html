@@ -6,7 +6,7 @@
     var el = document.getElementById('intro');
     if (!el) return;
     var seen = false;
-    try { seen = sessionStorage.getItem('mc-intro') === '1'; } catch (e) {}
+    try { seen = localStorage.getItem('mc-intro') === '1'; } catch (e) {}
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (seen || calm) { el.remove(); return; }
 
@@ -16,7 +16,7 @@
     function close() {
       if (done) return;
       done = true;
-      try { sessionStorage.setItem('mc-intro', '1'); } catch (e) {}
+      try { localStorage.setItem('mc-intro', '1'); } catch (e) {}
       el.classList.add('intro--out');
       document.documentElement.classList.remove('intro-on');
       setTimeout(function () { el.remove(); }, 700);
