@@ -351,6 +351,12 @@ const points = bases.map((b) => ({
 
     const frame = (now: number) => {
       if (!running) return;
+      // Hidden behind the home intro video: skip the work, so the video gets the GPU.
+      if (document.documentElement.classList.contains('intro-on')) {
+        t0 = now;
+        requestAnimationFrame(frame);
+        return;
+      }
       const dt = now - t0;
       t0 = now;
 

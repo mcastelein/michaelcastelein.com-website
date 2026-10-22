@@ -4,16 +4,14 @@
  * a browser, then fades out to reveal the site.
  *
  * The video is built in Remotion (higgsfield-testing/motion-intro) and lives in
- * public/intro/. It is skipped for reduced-motion visitors and on repeat visits
- * from the same browser, so a visitor sees it once and then gets the regular site.
+ * public/intro/: intro.mp4 (wide, laptops) and intro-mobile.mp4 (tall, phones).
+ * It is skipped for reduced-motion visitors and on repeat visits from the same browser, so a visitor sees it once and then gets the regular site.
  */
 ---
 
 <div class="intro" id="intro" aria-label="Intro video">
   <video
     class="intro__video"
-    src="/intro/intro.mp4"
-    poster="/intro/poster.jpg"
     muted
     playsinline
     autoplay
@@ -33,6 +31,11 @@
 
     document.documentElement.classList.add('intro-on');
     var video = el.querySelector('video');
+    // Phones held upright get the tall cut, everything else the wide one. The source is
+    // set here, not in the markup, so a visitor only ever downloads one of the two files.
+    var tall = window.matchMedia('(max-aspect-ratio: 4/5)').matches;
+    video.poster = tall ? '/intro/poster-mobile.jpg' : '/intro/poster.jpg';
+    video.src = tall ? '/intro/intro-mobile.mp4' : '/intro/intro.mp4';
     var done = false;
     function close() {
       if (done) return;
@@ -58,14 +61,14 @@
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: #06060b;
+    background: #000;
     display: grid;
     place-items: center;
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
   .intro--out { opacity: 0; transform: scale(1.04); pointer-events: none; }
   /* contain, so no screen shape crops the text; the page background matches the video edges. */
-  .intro__video { width: 100%; height: 100%; object-fit: contain; }
+  .intro__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .intro__skip {
     position: absolute;
     right: 16px;
