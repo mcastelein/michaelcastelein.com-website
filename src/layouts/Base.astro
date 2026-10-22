@@ -55,6 +55,9 @@ const socials = liveSocials();
       <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
 
+    <!-- Full-screen overlays (the home intro) sit outside <main> so the sticky masthead cannot stack above them. -->
+    <slot name="intro" />
+
     <header class="mast">
       <a class="mast__id" href={home ? '#top' : '/'}>
         <span class="mast__dot"></span>{site.name}

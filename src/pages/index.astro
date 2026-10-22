@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Globe from '../components/Globe.astro';
 import Photo from '../components/Photo.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import IntroVideo from '../components/IntroVideo.astro';
 import { hasPhotos, photoAt } from '../lib/photos';
 import {
   site, hero, services, now, ventures, projects,
@@ -40,6 +41,8 @@ const pageTitle = `${site.name} · Data & AI consultant, AI adoption training`;
 ---
 
 <Base title={pageTitle} home={true}>
+  <IntroVideo slot="intro" />
+
   <!-- ── Hero ───────────────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero__text">
