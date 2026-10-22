@@ -1,11 +1,11 @@
 ---
 /**
- * Full-screen motion intro that plays over the home page on the first visit of
- * a browser session, then fades out to reveal the site.
+ * Full-screen motion intro that plays over the home page on the first visit from
+ * a browser, then fades out to reveal the site.
  *
  * The video is built in Remotion (higgsfield-testing/motion-intro) and lives in
  * public/intro/. It is skipped for reduced-motion visitors and on repeat visits
- * in the same session, so it never gets in the way twice.
+ * from the same browser, so a visitor sees it once and then gets the regular site.
  */
 ---
 
@@ -27,7 +27,7 @@
     var el = document.getElementById('intro');
     if (!el) return;
     var seen = false;
-    try { seen = sessionStorage.getItem('mc-intro') === '1'; } catch (e) {}
+    try { seen = localStorage.getItem('mc-intro') === '1'; } catch (e) {}
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (seen || calm) { el.remove(); return; }
 
@@ -37,7 +37,7 @@
     function close() {
       if (done) return;
       done = true;
-      try { sessionStorage.setItem('mc-intro', '1'); } catch (e) {}
+      try { localStorage.setItem('mc-intro', '1'); } catch (e) {}
       el.classList.add('intro--out');
       document.documentElement.classList.remove('intro-on');
       setTimeout(function () { el.remove(); }, 700);
