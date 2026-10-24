@@ -1,0 +1,117 @@
+// Suno fill button (bookmarklet). Michael clicks it on suno.com/create in his OWN browser.
+// It only fills the form: Title, Style, Lyrics, Variety = Off. Michael clicks Create and does
+// any human check himself. Built into a bookmarklet by make_fill_button.py ([{"num": "M01", "title": "突然", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n半夜三点 城市还没有睡\n红色的灯 一直在楼下跑\n我的手机 突然亮了一下\n一条消息 上面是你的名字\n\n[Pre-Chorus: rising]\n发生了什么 你为什么回来\n我的心跳得 比车还要快\n\n[Chorus]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n\n[Verse 2: faster]\n你走了以后 我换了手机\n换了工作 也换了头发\n可是你的消息 还是找到我\n三个字 你好吗 我看了一百次\n\n[Pre-Chorus: rising]\n发生了什么 你为什么回来\n我的心跳得 比车还要快\n\n[Chorus]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n\n[Bridge: chopped vocal glitches, synth build]\n消息 消息\n发生 发生\n突然 我明白了\n我从来没有忘记你\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n突然 我不想再等\n\n[Outro: synth hook, clean fade]\n半夜三点 我回了你的消息"}, {"num": "M02", "title": "赢", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n最后十公里 天已经黑了\n我的腿很重 我的心很快\n每一个人 都在路边看我\n压力像一座山 放在我身上\n\n[Pre-Chorus: rising]\n别停下来 再走一步\n我听见我的心 在说坚持\n\n[Chorus]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n\n[Verse 2: faster]\n早上五点 我一个人练习\n下雨下雪 我都在路上\n他们说你太老了 别跑了\n我笑一笑 我还在跑\n\n[Pre-Chorus: rising]\n别停下来 再走一步\n我听见我的心 在说坚持\n\n[Chorus]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n\n[Bridge: chopped vocal glitches, synth build]\n压力 压力\n坚持 坚持\n我不怕了\n我已经赢了\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n没有压力 就没有我\n\n[Outro: synth hook, clean fade]\n线就在前面 我赢了"}, {"num": "M03", "title": "继续", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n天上没有星星 只有大楼的光\n地铁里每个人 都在看手机\n机器在说话 车在自己开\n这个世界 跑得比我们快\n\n[Pre-Chorus: rising]\n有人说 一切快要结束了\n我说 现在才刚刚开始\n\n[Chorus]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n\n[Verse 2: faster]\n我的眼睛 有了新的颜色\n我的心 还是以前的样子\n你问我 我还是不是我\n我说 我只是不想结束\n\n[Pre-Chorus: rising]\n有人说 一切快要结束了\n我说 现在才刚刚开始\n\n[Chorus]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n\n[Bridge: chopped vocal glitches, synth build]\n继续 继续\n结束 结束\n不是结束\n是新的世界\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n继续 一直继续\n\n[Outro: synth hook, clean fade]\n音乐还没有结束 我们继续"}] replaced).
+(() => {
+  const SONGS = [{"num": "M01", "title": "突然", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n半夜三点 城市还没有睡\n红色的灯 一直在楼下跑\n我的手机 突然亮了一下\n一条消息 上面是你的名字\n\n[Pre-Chorus: rising]\n发生了什么 你为什么回来\n我的心跳得 比车还要快\n\n[Chorus]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n\n[Verse 2: faster]\n你走了以后 我换了手机\n换了工作 也换了头发\n可是你的消息 还是找到我\n三个字 你好吗 我看了一百次\n\n[Pre-Chorus: rising]\n发生了什么 你为什么回来\n我的心跳得 比车还要快\n\n[Chorus]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n\n[Bridge: chopped vocal glitches, synth build]\n消息 消息\n发生 发生\n突然 我明白了\n我从来没有忘记你\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n突然 突然\n一切都在发生\n一条消息 我回到昨天\n突然 今晚什么都会发生\n突然 我不想再等\n\n[Outro: synth hook, clean fade]\n半夜三点 我回了你的消息"}, {"num": "M02", "title": "赢", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n最后十公里 天已经黑了\n我的腿很重 我的心很快\n每一个人 都在路边看我\n压力像一座山 放在我身上\n\n[Pre-Chorus: rising]\n别停下来 再走一步\n我听见我的心 在说坚持\n\n[Chorus]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n\n[Verse 2: faster]\n早上五点 我一个人练习\n下雨下雪 我都在路上\n他们说你太老了 别跑了\n我笑一笑 我还在跑\n\n[Pre-Chorus: rising]\n别停下来 再走一步\n我听见我的心 在说坚持\n\n[Chorus]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n\n[Bridge: chopped vocal glitches, synth build]\n压力 压力\n坚持 坚持\n我不怕了\n我已经赢了\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n赢 赢 我要赢\n压力越大 我跑得越快\n坚持 坚持 到最后一分钟\n这条路 只有我能赢\n没有压力 就没有我\n\n[Outro: synth hook, clean fade]\n线就在前面 我赢了"}, {"num": "M03", "title": "继续", "style": "futuristic cyberpop, electropop, Mandopop, 140 BPM, female lead vocal, Mandarin Chinese lyrics, clear crisp diction, fast rhythmic melodic verses, longer held notes in the chorus, pulsing synth hook from the first bar, hard electronic drums, distorted synth bass, glitchy vocal chops, stacked group harmonies, minor key, dense glossy modern production, constant forward momentum, huge sung melodic chorus, clean polished vocals throughout, neon cyberpunk, sleek and mature", "exclude": "screaming, growling, harsh vocals, screamo, metalcore, unclean vocals, shouted vocals, death growl, rap, trap, hip hop, spoken word, English vocals, Cantonese, synthwave, retro 80s, bubblegum pop, kawaii, EDM festival drop, ballad, lo-fi, acoustic, orchestral", "inspo": "", "lyrics": "[Intro: pulsing synth hook]\n\n[Verse 1]\n天上没有星星 只有大楼的光\n地铁里每个人 都在看手机\n机器在说话 车在自己开\n这个世界 跑得比我们快\n\n[Pre-Chorus: rising]\n有人说 一切快要结束了\n我说 现在才刚刚开始\n\n[Chorus]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n\n[Verse 2: faster]\n我的眼睛 有了新的颜色\n我的心 还是以前的样子\n你问我 我还是不是我\n我说 我只是不想结束\n\n[Pre-Chorus: rising]\n有人说 一切快要结束了\n我说 现在才刚刚开始\n\n[Chorus]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n\n[Bridge: chopped vocal glitches, synth build]\n继续 继续\n结束 结束\n不是结束\n是新的世界\n\n[Final Chorus: clean sung vocals, wider harmonies, heavier bass]\n继续 继续 别让音乐停\n世界不会等你 那就跑得更快\n继续 继续 今晚不会结束\n我们的世界 现在才开始\n继续 一直继续\n\n[Outro: synth hook, clean fade]\n音乐还没有结束 我们继续"}];
+  if (!location.hostname.endsWith('suno.com')) { alert('Open suno.com/create first, then click the button again.'); return; }
+  document.getElementById('mlv-fill')?.remove();
+
+  const KEY = 'mlv-fill-done';
+  const done = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+  const markDone = (n) => { try { localStorage.setItem(KEY, JSON.stringify([...new Set([...done(), n])])); } catch {} };
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const visible = (el) => el && el.offsetParent !== null;
+
+  const box = document.createElement('div');
+  box.id = 'mlv-fill';
+  box.style.cssText = 'position:fixed;top:12px;right:12px;z-index:2147483647;background:#14141a;color:#f2f2f2;' +
+    'border:1px solid #444;border-radius:12px;padding:12px;width:250px;font:14px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px #0008';
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+    '<b>Fill a song</b><button id="mlv-x" style="background:none;border:0;color:#aaa;font-size:18px;cursor:pointer">×</button></div>' +
+    '<div id="mlv-list"></div><div id="mlv-msg" style="margin-top:8px;color:#9fd;min-height:1.4em"></div>';
+  document.body.appendChild(box);
+  box.querySelector('#mlv-x').onclick = () => box.remove();
+  const msg = (t, bad) => { const m = box.querySelector('#mlv-msg'); m.textContent = t; m.style.color = bad ? '#f99' : '#9fd'; };
+
+  const list = box.querySelector('#mlv-list');
+  const draw = () => {
+    list.innerHTML = '';
+    for (const s of SONGS) {
+      const b = document.createElement('button');
+      const isDone = done().includes(s.num);
+      b.textContent = (isDone ? '✓ ' : '') + s.num + '  ' + s.title;
+      b.style.cssText = 'display:block;width:100%;text-align:left;margin:3px 0;padding:7px 9px;border-radius:8px;cursor:pointer;' +
+        'border:1px solid #555;font:inherit;' + (isDone ? 'background:#1d2b22;color:#8c8' : 'background:#23232c;color:#fff');
+      b.onclick = () => fill(s).catch(e => msg('Error: ' + e.message, true));
+      list.appendChild(b);
+    }
+  };
+  draw();
+
+  const setValue = (el, v) => {
+    const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  async function fill(s) {
+    msg('Filling ' + s.title + '...');
+    const lyr = document.querySelector('[aria-label="Lyrics editor"]');
+    const sty = [...document.querySelectorAll('textarea[maxlength="1000"]:not([aria-label="Tone"])')].find(visible);
+    const tit = [...document.querySelectorAll('input[placeholder="Song Title (Optional)"]')].find(visible);
+    if (!lyr || !sty || !tit) return msg('Form not found. Use Songs > Advanced on suno.com/create.', true);
+
+    // Lyrics: the editor is Lexical. A beforeinput insertText event gives the exact same text and line
+    // breaks as the old Playwright fill (paste split lines into paragraphs; execCommand dropped the breaks).
+    // Retry: the first try on a fresh page can miss.
+    const same = () => lyr.innerText.trim() === s.lyrics.trim();
+    for (let i = 0; i < 3 && !same(); i++) {
+      // Select exactly the editor's contents (focus was on the menu button), let Lexical sync, then type
+      // over it. No execCommand('delete'): it leaves Lexical's selection stale and the insert does nothing.
+      lyr.focus();
+      const range = document.createRange();
+      range.selectNodeContents(lyr);
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+      await sleep(200);
+      lyr.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertText', data: s.lyrics, bubbles: true, cancelable: true }));
+      await sleep(400);
+    }
+    setValue(sty, s.style);
+    setValue(tit, s.title);
+
+    // Variety = 0 ("Off"), or Suno rewrites the style per take.
+    const more = [...document.querySelectorAll('*')].find(e => e.childElementCount === 0 && e.textContent.trim() === 'More Options');
+    const toggle = more?.closest('[aria-expanded]');
+    if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+    let v = null;
+    for (let i = 0; i < 20 && !v; i++) { await sleep(150); v = document.querySelector('[role="slider"][aria-label="Variety"]'); }
+    if (v) { v.focus(); v.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', code: 'Home', bubbles: true })); await sleep(200); }
+    // Exclude box sits inside More Options. Always set it, so a song with no excludes clears the last one's.
+    const ex = [...document.querySelectorAll('input[placeholder="Exclude styles"]')].find(visible);
+    if (ex) setValue(ex, s.exclude || '');
+
+    // Inspo playlist (Suno forgets it on reload). Skip if an Inspo track list is already showing.
+    // XPath text search: fast. A scan of every element per poll froze the page.
+    const xfind = (xp) => {
+      const r = document.evaluate(xp, document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+      for (let i = 0; i < r.snapshotLength; i++) if (visible(r.snapshotItem(i))) return r.snapshotItem(i);
+      return null;
+    };
+    const leaf = (t) => xfind(`//*[normalize-space(text())=${JSON.stringify(t)}]`);
+    const inspoOn = () => !!xfind(`//*[contains(text(), "Drag tracks here for inspiration")]`);
+    if (s.inspo && !inspoOn()) {
+      leaf('Inspo')?.click();
+      let pick = null;
+      for (let i = 0; i < 20 && !pick; i++) { await sleep(200); pick = leaf(s.inspo); }
+      pick?.click();
+      for (let i = 0; i < 20 && !inspoOn(); i++) await sleep(200);
+    }
+
+    const ok = {
+      inspo: !s.inspo || inspoOn(),
+      lyrics: same(),
+      style: sty.value === s.style,
+      title: tit.value === s.title,
+      variety: v?.getAttribute('aria-valuenow') === '0',
+      exclude: !!ex && ex.value === (s.exclude || ''),
+    };
+    const bad = Object.keys(ok).filter(k => !ok[k]);
+    if (bad.length) return msg('Check these by hand: ' + bad.join(', '), true);
+    markDone(s.num);
+    draw();
+    msg('Filled ' + s.title + '. Now click Create.');
+  }
+})();
