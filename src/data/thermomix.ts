@@ -103,7 +103,7 @@ export const recipes: Recipe[] = [
   {
     slug: 'chocolate-banana-oatmeal-cookies',
     name: 'Chocolate Banana Oatmeal Cookies',
-    tagline: 'Two bananas, a bowl of oats and some dark chocolate. No flour, no butter, no added sugar.',
+    tagline: 'Two bananas, a bowl of oats and some dark chocolate. No flour. Butter and sugar optional.',
     description:
       'Soft, chewy banana oat cookies with dark chocolate chunks, made in the Thermomix. Part of the oats is milled into flour so the dough holds together without eggs or butter. 12 cookies.',
     prepMin: 10,
@@ -125,6 +125,9 @@ export const recipes: Recipe[] = [
       { qty: '1 tsp', item: 'vanilla extract' },
       { qty: '½ tsp', item: 'ground cinnamon' },
       { qty: '1 pinch', item: 'salt' },
+      { qty: '15 g', item: 'butter', note: 'soft, in pieces (optional)' },
+      { qty: '12 g', item: 'brown sugar', note: 'optional' },
+      { qty: '1', item: 'egg yolk', note: 'optional' },
     ],
     steps: [
       {
@@ -133,7 +136,7 @@ export const recipes: Recipe[] = [
       },
       {
         short: 'Place 70 g dark chocolate into mixing bowl.',
-        more: 'Using chocolate chips? Skip this step and the next one, and add the chips in step 12.',
+        more: 'Using chocolate chips? Skip this step and the next one, and add the chips in step 15.',
       },
       {
         short: 'Chop 3 sec/speed 7. Transfer to a bowl and set aside.',
@@ -151,6 +154,18 @@ export const recipes: Recipe[] = [
       { short: 'Add 1 tsp vanilla extract.' },
       { short: 'Add ½ tsp ground cinnamon.' },
       { short: 'Add 1 pinch salt.' },
+      {
+        short: 'Add 15 g butter, soft, in pieces (optional).',
+        more: 'Butter gives crisper edges and a more cookie-like taste. Skip it for the lighter version.',
+      },
+      {
+        short: 'Add 12 g brown sugar (optional).',
+        more: 'A little sugar makes them sweeter and helps them brown. Skip it if your bananas are very ripe.',
+      },
+      {
+        short: 'Add 1 egg yolk (optional).',
+        more: 'Only if you want a richer, softer cookie. Use the yolk only. A whole egg makes the dough too wet and cakey.',
+      },
       { short: 'Mix 10 sec/speed 4. Scrape down sides of mixing bowl with spatula.' },
       { short: 'Add 100 g rolled oats.' },
       { short: 'Add reserved chopped chocolate.' },
@@ -175,7 +190,7 @@ export const recipes: Recipe[] = [
       'Use bananas with black spots. The browner the banana, the sweeter the cookie.',
       'Keeps 3 days in a tin, a week in the fridge. Freezes well.',
       'Gluten free if you buy oats labeled gluten free.',
-      'No egg, no butter, no added sugar. Dairy free if your chocolate is.',
+      'Skip the three optional add-ons and they have no egg, no butter and no added sugar. Dairy free if your chocolate is.',
     ],
     basedOn: [
       {
