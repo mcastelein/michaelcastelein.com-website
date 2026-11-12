@@ -111,7 +111,8 @@ export const recipes: Recipe[] = [
     color: { deep: '#4a2c1d', light: '#fff1b8' },
     ingredients: [
       { qty: '70 g', item: 'dark chocolate', note: 'in pieces (or chocolate chips)' },
-      { qty: '150 g', item: 'rolled oats' },
+      { qty: '50 g', item: 'rolled oats', note: 'milled into flour' },
+      { qty: '100 g', item: 'rolled oats', note: 'left whole' },
       { qty: '250 g', item: 'very ripe bananas', note: 'peeled, in pieces (2 large)' },
       { qty: '1 tsp', item: 'vanilla extract' },
       { qty: '½ tsp', item: 'ground cinnamon' },
