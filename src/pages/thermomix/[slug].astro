@@ -1,0 +1,129 @@
+---
+/**
+ * /thermomix/<slug>/, one Thermomix recipe per page.
+ *
+ * The page is built to be imported into Cookidoo (Created Recipes > Import
+ * recipe > paste URL). The importer reads the schema.org Recipe JSON-LD in
+ * <head>, so that block is the part that matters. The visible page shows the
+ * same data for humans. All copy lives in src/data/thermomix.ts.
+ */
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+import { recipes, type Recipe } from '../../data/thermomix';
+
+export function getStaticPaths() {
+  return recipes.map((recipe) => ({ params: { slug: recipe.slug }, props: { recipe } }));
+}
+
+const { recipe } = Astro.props as { recipe: Recipe };
+const url = new URL(`/thermomix/${recipe.slug}/`, Astro.site ?? 'https://michaelcastelein.com').href;
+const iso = (min: number) => `PT${min}M`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipe.name,
+  description: recipe.description,
+  url,
+  author: { '@type': 'Person', name: site.name, url: 'https://michaelcastelein.com' },
+  datePublished: recipe.published,
+  image: ['https://michaelcastelein.com/img/michael.jpeg'],
+  prepTime: iso(recipe.prepMin),
+  cookTime: iso(recipe.cookMin),
+  totalTime: iso(recipe.totalMin),
+  recipeYield: [String(recipe.servings), recipe.yield],
+  recipeCategory: recipe.category,
+  recipeCuisine: recipe.cuisine,
+  keywords: ['Thermomix', ...recipe.keywords].join(', '),
+  tool: [{ '@type': 'HowToTool', name: 'Thermomix' }],
+  recipeIngredient: recipe.ingredients,
+  recipeInstructions: recipe.steps.map((text, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    text,
+    url: `${url}#step-${i + 1}`,
+  })),
+};
+
+const facts = [
+  { k: 'Makes', v: recipe.yield },
+  { k: 'Prep', v: `${recipe.prepMin} min` },
+  { k: 'Bake', v: `${recipe.cookMin} min` },
+  { k: 'Total', v: `${recipe.totalMin} min` },
+];
+---
+
+<Base title={`${recipe.name} · Thermomix · ${site.name}`} description={recipe.description}>
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <section class="page page--article recipe">
+    <a class="page__back" href="/thermomix/">← All Thermomix recipes</a>
+    <h1 class="page__title">{recipe.name}</h1>
+    <p class="page__tagline">{recipe.tagline}</p>
+
+    <div class="import">
+      <p class="import__k">Add it to your Thermomix</p>
+      <p class="import__v">
+        In Cookidoo, open <strong>Created Recipes</strong>, press the green button, choose
+        <strong>Import recipe</strong> and paste this link.
+      </p>
+      <div class="import__row">
+        <code class="import__url">{url}</code>
+        <button class="btn btn--solid import__copy" type="button" data-copy={url}>Copy link</button>
+      </div>
+    </div>
+
+    <div class="facts">
+      {facts.map((f) => (
+        <div class="fact">
+          <p class="fact__k">{f.k}</p>
+          <p class="fact__v">{f.v}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="prose" style="margin-top:20px;">
+      <h3>Ingredients</h3>
+      <ul>
+        {recipe.ingredients.map((i) => <li>{i}</li>)}
+      </ul>
+
+      <h3>Steps</h3>
+      <ol class="steps">
+        {recipe.steps.map((s, i) => <li id={`step-${i + 1}`}>{s}</li>)}
+      </ol>
+
+      <h3>Tips</h3>
+      <ul>
+        {recipe.tips.map((t) => <li>{t}</li>)}
+      </ul>
+
+      <h3>Where this came from</h3>
+      <p>
+        I compared the best rated versions online, kept the simplest ingredient list, and
+        rewrote the method for the Thermomix.
+      </p>
+      <ul>
+        {recipe.basedOn.map((b) => (
+          <li>
+            <a href={b.url} rel="noopener" target="_blank">{b.name}</a>. {b.note}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+          btn.textContent = 'Copied';
+        } catch {
+          btn.textContent = 'Select the link above';
+        }
+        setTimeout(() => (btn.textContent = 'Copy link'), 1800);
+      });
+    });
+  </script>
+</Base>

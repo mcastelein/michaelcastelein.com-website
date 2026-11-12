@@ -904,3 +904,70 @@ body {
   text-transform: none;
   letter-spacing: 0.02em;
 }
+
+/* ── Thermomix recipe pages ─────────────────────────────────────────────
+   /thermomix/<slug>/. The import box sits on top because pasting the URL
+   into Cookidoo is the reason the page exists. */
+.import {
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--blue);
+  background: var(--paper-2);
+  border-radius: 4px;
+}
+.import__k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.import__v { font-size: 15.5px; line-height: 1.55; color: var(--ink-2); }
+.import__v strong { color: var(--ink); font-weight: 600; }
+.import__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.import__url {
+  flex: 1 1 260px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 9px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.import__copy { cursor: pointer; }
+.recipe .prose ul li a { color: var(--blue); }
+.steps { counter-reset: step; display: grid; }
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 13px 0 13px 44px;
+  border-top: 1px solid var(--rule);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.steps li:last-child { border-bottom: 1px solid var(--rule); }
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}

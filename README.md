@@ -121,3 +121,12 @@ their container instead of scrolling.
 which is what the custom domain serves. `public/CNAME` is copied into `dist/` on
 every build and the workflow fails loudly if it goes missing, because a
 `gh-pages` push without it silently unbinds the domain.
+
+## Thermomix recipes
+
+`/thermomix/<slug>/` pages exist so Cookidoo can import them (Created Recipes >
+green button > Import recipe > paste the URL). Add a recipe by adding an entry
+to `recipes` in `src/data/thermomix.ts`. Nothing else. The page template
+`src/pages/thermomix/[slug].astro` writes the schema.org Recipe JSON-LD into
+`<head>`, which is what the importer reads. Write steps in Cookidoo notation
+(`10 sec/speed 4`, `20 sec/reverse/speed 3`, `3 min/100°C/speed 1`).

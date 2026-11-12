@@ -1,0 +1,35 @@
+---
+/**
+ * /thermomix/, the list of Thermomix recipes. Each one links to its own page,
+ * which is the URL you paste into Cookidoo's Import recipe.
+ */
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+import { recipes } from '../../data/thermomix';
+---
+
+<Base
+  title={`Thermomix recipes · ${site.name}`}
+  description="Recipes written for the Thermomix. Paste any page into Cookidoo's Import recipe to add it to your machine."
+>
+  <section class="page page--article recipe">
+    <a class="page__back" href="/">← Home</a>
+    <h1 class="page__title">Thermomix recipes</h1>
+    <p class="page__tagline">Recipes I cook at home, written for the Thermomix.</p>
+
+    <div class="prose">
+      <p>
+        To add one to your machine: open the recipe, copy its link, then in Cookidoo go to
+        <strong>Created Recipes</strong>, press the green button and choose
+        <strong>Import recipe</strong>.
+      </p>
+      <ul>
+        {recipes.map((r) => (
+          <li>
+            <a href={`/thermomix/${r.slug}/`}><strong>{r.name}</strong></a>. {r.tagline}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
