@@ -1,37 +1,17 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Globe from '../components/Globe.astro';
-import Photo from '../components/Photo.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import IntroVideo from '../components/IntroVideo.astro';
-import { hasPhotos, photoAt } from '../lib/photos';
+import { photoAt } from '../lib/photos';
 import {
   site, hero, services, now, ventures, projects,
-  bases, baseColors, path, languages, play, coffee,
+  path, languages, play, coffee,
 } from '../data/site';
-
-const today = new Date();
-const currentBase = bases.find((b) => b.months.includes(today.getMonth() + 1)) ?? bases[0];
 
 /* The hero portrait. Falls back to nothing if the folder is empty, so the
    layout never leaves a hole. */
 const portrait = photoAt('me', 0);
-
-/* Photo-bearing blocks only render once there are photos to put in them. */
-/* The band is designed as a triptych. Until all three slots are filled it would
-   leave holes, so a partly-filled band collapses to a single centred portrait.
-   The 'me' slot starts at index 2 because index 0 is now the hero portrait. */
-const bandSlots: Array<[string, number]> = [['me', 2], ['chaozhou', 0], ['kunming', 0]];
-const bandFilled = bandSlots.filter(([c, i]) => photoAt(c, i)).length;
-const bandMode = bandFilled === bandSlots.length ? 'full' : bandFilled > 0 ? 'solo' : 'none';
-
-const showMosaic = hasPhotos(
-  ['chaozhou', 3], ['netherlands', 0], ['play', 0],
-  ['kunming', 3], ['usa', 0], ['me', 1]
-);
-const showPlayPhotos = hasPhotos(['play', 1], ['play', 2]);
-const homeHasPhotos = (id: string) => hasPhotos([id, 1], [id, 2]);
 
 /* Only the three most interesting projects on the home page. The full list
    lives at /projects. */
@@ -44,7 +24,7 @@ const pageTitle = `${site.name} · Data & AI consultant, AI adoption training`;
   <IntroVideo slot="intro" />
 
   <!-- ── Hero ───────────────────────────────────────────────────────────── -->
-  <section class="hero">
+  <section class="hero hero--solo">
     <div class="hero__text">
       {portrait ? (
         <div class="hero__portrait">
@@ -76,15 +56,6 @@ const pageTitle = `${site.name} · Data & AI consultant, AI adoption training`;
         </a>
         <a class="btn" href="/projects/">See the projects</a>
       </div>
-      <p class="hero__now">
-        <span class="pip" style={`--c:${baseColors[currentBase.id].accent}`}></span>
-        Right now: {currentBase.country}, {currentBase.utc}
-      </p>
-    </div>
-
-    <div class="hero__globe">
-      <Globe />
-      <p class="hero__globe-cap">Drag to spin. The arcs are the real route.</p>
     </div>
   </section>
 
@@ -171,69 +142,6 @@ const pageTitle = `${site.name} · Data & AI consultant, AI adoption training`;
     </div>
   </section>
 
-  <!-- ── Where: the loop, demoted to a section ──────────────────────────── -->
-  <section class="section" id="where">
-    <div class="section__head">
-      <p class="rubric">Where</p>
-      <h2>I do all of it from four homes.</h2>
-      <p class="section__sub">
-        The same route, in the same order, every year: Chaozhou, Kunming, the
-        Netherlands, the United States. Chaozhou and Kunming are both in China
-        and share almost nothing. Different food, climate and language, with a
-        thousand kilometres between them.
-      </p>
-    </div>
-
-    {bandMode !== 'none' && (
-      <div class:list={['band', `band--${bandMode}`]} aria-label="Photographs">
-        <Photo category="me" index={2} hint="A portrait that isn't a headshot" ratio="4 / 5" class="band__a" />
-        <Photo category="chaozhou" index={0} hint="Chaozhou street life, wide" ratio="3 / 2" class="band__b" />
-        <Photo category="kunming" index={0} hint="Kunming, the plateau or the city" ratio="4 / 5" class="band__c" />
-      </div>
-    )}
-
-    {bases.map((b, i) => (
-      <article
-        class:list={['home', { 'home--flip': i % 2 === 1, 'home--solo': !homeHasPhotos(b.id) }]}
-        style={`--c:${baseColors[b.id].accent}`}
-      >
-        {homeHasPhotos(b.id) && (
-          <div class="home__photos">
-            <Photo category={b.id} index={1} hint={`${b.city}, the establishing shot`} ratio="3 / 4" />
-            <Photo category={b.id} index={2} hint={`${b.city}, a detail close up`} ratio="1 / 1" class="home__photo2" />
-          </div>
-        )}
-
-        <div class="home__body">
-          <p class="home__index">
-            <span>{String(i + 1).padStart(2, '0')}</span> / {b.role}
-          </p>
-          <h3 class="home__city">
-            <span>{b.city}</span>
-            {b.cityLocal && <em lang="zh-Hans">{b.cityLocal}</em>}
-          </h3>
-          <p class="home__when">{b.monthLabel} · {b.country} · {b.lat.toFixed(1)}°, {b.lon.toFixed(1)}°</p>
-          <p class="home__headline">{b.headline}</p>
-          <p class="home__prose">{b.body}</p>
-          <ul class="home__list">
-            {b.doing.map((d) => <li>{d}</li>)}
-          </ul>
-        </div>
-      </article>
-    ))}
-
-    {showMosaic && (
-      <div class="mosaic">
-        <Photo category="chaozhou" index={3} hint="Family traditions, Chaozhou" ratio="1 / 1" />
-        <Photo category="netherlands" index={0} hint="Dutch water, bikes, or summer" ratio="1 / 1" />
-        <Photo category="play" index={0} hint="Table tennis or badminton" ratio="1 / 1" />
-        <Photo category="kunming" index={3} hint="Kunming, everyday" ratio="1 / 1" />
-        <Photo category="usa" index={0} hint="The US stretch" ratio="1 / 1" />
-        <Photo category="me" index={1} hint="You, mid-something" ratio="1 / 1" />
-      </div>
-    )}
-  </section>
-
   <!-- ── Path ───────────────────────────────────────────────────────────── -->
   <section class="section section--split" id="path">
     <div class="section__head">
@@ -256,13 +164,7 @@ const pageTitle = `${site.name} · Data & AI consultant, AI adoption training`;
       <p class="rubric">Off the clock</p>
       <h2>Rackets, distance, spreadsheets.</h2>
     </div>
-    <div class:list={['play', { 'play--nophotos': !showPlayPhotos }]}>
-      {showPlayPhotos && (
-        <div class="play__photos">
-          <Photo category="play" index={1} hint="Mid-rally, or a team photo" ratio="3 / 2" />
-          <Photo category="play" index={2} hint="Running or training" ratio="3 / 2" />
-        </div>
-      )}
+    <div class="play play--nophotos">
       <div class="play__cards">
         {play.map((pl) => (
           <article class="mini">

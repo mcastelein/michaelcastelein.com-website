@@ -28,7 +28,7 @@ export const site = {
   name: 'Michael Castelein',
   domain: 'michaelcastelein.com',
   short:
-    'Dutch-American data and AI consultant. I run analytics and BI projects, train teams to use AI in their day job, and work from four homes across three countries.',
+    'Dutch-American data and AI consultant. I run analytics and BI projects, and train teams to use AI in their day job.',
   /** Primary call to action. LinkedIn until a booking link exists. */
   contact: 'https://www.linkedin.com/in/michael-castelein/',
   contactLabel: 'Message me on LinkedIn',
@@ -51,9 +51,9 @@ export const liveSocials = (): Social[] => site.socials.filter((s) => !s.pending
 
 export const hero = {
   /** Three display lines. The third renders italic in the accent colour. */
-  lines: ['Data & AI consultant.', 'Digital nomad.', 'I teach teams to use AI.'],
+  lines: ['Data & AI consultant.', 'Product builder.', 'I teach teams to use AI.'],
   lede:
-    "I'm Michael, a Dutch-American consultant running ML Ventures. Half the work is data: analytics, BI, and the pipelines underneath. The other half is training teams to use AI inside the work they already do. On the side I build language-learning software and small tools. I do all of it from four homes across three countries.",
+    "I'm Michael, a Dutch-American consultant running ML Ventures. Half the work is data: analytics, BI, and the pipelines underneath. The other half is training teams to use AI inside the work they already do. On the side I build language-learning software and small tools.",
 };
 
 /** The two things someone would hire me for. */
@@ -63,7 +63,7 @@ export const services = [
     name: 'Data & analytics',
     status: 'The engine',
     body:
-      'Analytics, BI, analytics engineering, data science and ML. This is what the agency has run on for years, with two subcontractors and no office in any of the four countries.',
+      'Analytics, BI, analytics engineering, data science and ML. This is what the agency has run on for years, with two subcontractors.',
     includes: [
       'Analytics and BI. Dashboards people open, and numbers that reconcile.',
       'Analytics engineering. Models and pipelines that hold up when the business changes.',
@@ -87,13 +87,12 @@ export const services = [
 ];
 
 export const now = {
-  updated: 'August 2026',
-  base: 'netherlands',
+  updated: 'November 2026',
   lines: [
     'Running ML Ventures: data, BI, and analytics engineering, with two subcontractors.',
     'Running AI adoption workshops, teaching teams to use AI on their own work.',
     'Building language-learning tools: spaced-repetition cards, audio drilling, and an adaptive reader that meets you at your level.',
-    'In the Netherlands until October, then the US through the end of the year.',
+    'Making Mandarin songs and music videos for HSK Hits.',
     'Training for a first triathlon, on the way to an Ironman.',
     'Pushing Mandarin from good to fluent, and Teochew from nothing to something.',
   ],
@@ -134,6 +133,17 @@ export const projectHref = (p: Project): string | undefined =>
  * so keep something clickable at the top.
  */
 export const projects: Project[] = [
+  {
+    slug: 'hsk-hits',
+    name: 'HSK Hits',
+    tagline: 'Learn Chinese by getting a song stuck in your head.',
+    body:
+      'Mandarin pop songs written for each HSK level, with music videos, lyrics in pinyin and English, and the focus words of every song. The library follows the HSK Standard Course books lesson by lesson. Tap the words you know and the player puts the songs with the most new words first. Songs and videos are AI-made, the site is Next.js and Supabase.',
+    state: 'live',
+    stateLabel: 'Live product',
+    site: 'https://hsk-hits.vercel.app',
+    tags: ['Mandarin', 'AI music', 'Next.js'],
+  },
   {
     slug: 'ieltsboost',
     name: 'IELTSBoost',
@@ -190,15 +200,45 @@ export const projects: Project[] = [
     tags: ['Product', 'Gifting', 'Templates'],
   },
   {
+    slug: 'video-search',
+    name: 'Video Search',
+    tagline: 'Type what you remember, get the exact moment in the clip.',
+    body:
+      'Search a phone video library in plain words, like "Lina at the night market", and get back the clip and the timestamp. An AI model describes each video, speech and faces are handled locally, and everything lands in one SQLite index. Matches load straight into a new CapCut project, already trimmed. Works on iCloud and Google Drive, and never moves or deletes an original.',
+    state: 'writeup',
+    stateLabel: 'Runs locally',
+    tags: ['Video', 'AI search', 'Python'],
+  },
+  {
+    slug: 'meeting-notes',
+    name: 'Meeting Vault',
+    tagline: 'Every meeting I have, filed and linked without me touching it.',
+    body:
+      'Recorded meetings export on their own into an Obsidian vault: one note per meeting with the summary on top and the full transcript below, grouped by client. Every person and every action item gets its own note, so the graph view shows who I talk to and what I still owe them.',
+    state: 'writeup',
+    stateLabel: 'Runs locally',
+    tags: ['Productivity', 'Obsidian', 'Automation'],
+  },
+  {
+    slug: 'health-dashboard',
+    name: 'Health Dashboard',
+    tagline: 'Sleep, training and heart rate from every app, in one database.',
+    body:
+      'Pulls Oura, Apple Health, Strava and Hevy into one Postgres database, then builds a report on top: last night’s sleep from two devices side by side, a Zone 2 check, and feedback on recent workouts and runs. All the feedback is rule-based, so no data leaves the machine.',
+    state: 'building',
+    stateLabel: 'Building',
+    tags: ['Health', 'Postgres', 'Data viz'],
+  },
+  {
     slug: 'website',
     name: 'This website',
-    tagline: 'Astro, a hand-rolled WebGL globe, and no CMS.',
+    tagline: 'Astro, GitHub Pages, and no CMS.',
     body:
-      'Built in Astro and deployed to GitHub Pages. The globe is Three.js with the real travel route drawn as arcs. All the copy lives in one TypeScript file so nothing drifts out of sync.',
+      'Built in Astro and deployed to GitHub Pages. All the copy lives in one TypeScript file so nothing drifts out of sync.',
     state: 'live',
     stateLabel: 'Open source',
     repo: 'https://github.com/mcastelein/michaelcastelein.com-website',
-    tags: ['Astro', 'Three.js', 'Open source'],
+    tags: ['Astro', 'TypeScript', 'Open source'],
   },
 ];
 
@@ -403,6 +443,6 @@ export const play = [
 export const coffee = {
   headline: 'Let’s have coffee',
   body:
-    'If any of this overlaps with something you are doing, a data problem, getting AI to land in your team, learning Chinese, or you just liked the map, say hello.',
-  fineprint: 'I answer from whichever timezone I am in. It changes four times a year.',
+    'If any of this overlaps with something you are doing, a data problem, getting AI to land in your team, or learning Chinese, say hello.',
+  fineprint: 'I usually reply within a day.',
 };
