@@ -1,15 +1,19 @@
 ---
 /**
- * /thermomix/<slug>/, one Thermomix recipe per page.
+ * /thermomix/<slug>/, one Thermomix recipe per page, built to cook from on a phone.
  *
- * Built for cooking from: ingredients in a panel you can tick off (sticky on
- * desktop), steps you can tap as done, and every Thermomix setting drawn as a
- * small machine-display chip. The schema.org Recipe JSON-LD in <head> is what
- * the Cookidoo push script reads. All copy lives in src/data/thermomix.ts.
+ * - Ingredients and steps each have a check circle. Ticks are saved in this
+ *   browser (localStorage, per recipe) so a refresh or a locked phone keeps them.
+ * - Each step is one short line; the details sit behind a "More" dropdown.
+ * - Every Thermomix setting is drawn as a machine-display chip.
+ * - The screen is kept awake (Wake Lock API) once you start ticking things.
+ * - The schema.org Recipe JSON-LD in <head> is what the Cookidoo push script reads.
+ *
+ * All copy lives in src/data/thermomix.ts.
  */
 import Base from '../../layouts/Base.astro';
 import { site } from '../../data/site';
-import { recipes, ingredientLine, splitStep, type Recipe } from '../../data/thermomix';
+import { recipes, ingredientLine, splitStep, stepText, type Recipe } from '../../data/thermomix';
 
 export function getStaticPaths() {
   return recipes.map((recipe) => ({ params: { slug: recipe.slug }, props: { recipe } }));
@@ -37,25 +41,22 @@ const jsonLd = {
   keywords: ['Thermomix', ...recipe.keywords].join(', '),
   tool: [{ '@type': 'HowToTool', name: 'Thermomix' }],
   recipeIngredient: recipe.ingredients.map(ingredientLine),
-  recipeInstructions: recipe.steps.map((text, i) => ({
+  recipeInstructions: recipe.steps.map((s, i) => ({
     '@type': 'HowToStep',
     position: i + 1,
-    text,
+    text: stepText(s),
     url: `${url}#step-${i + 1}`,
   })),
 };
 
-const steps = recipe.steps.map(splitStep);
-const machineSteps = steps.filter((s) => s.some((p) => p.kind === 'setting')).length;
+const steps = recipe.steps.map((s) => ({ parts: splitStep(s.short), more: s.more }));
+const machineSteps = steps.filter((s) => s.parts.some((p) => p.kind === 'setting')).length;
 
-/** The machine program: every setting, with the verb right before it ("chop", "mill"). */
-const program = steps.flatMap((parts, n) =>
-  parts.flatMap((p, k) => {
-    if (p.kind !== 'setting') return [];
-    const before = parts[k - 1];
-    const verb = before?.kind === 'text' ? before.text.trim().split(/\s+/).pop() ?? '' : '';
-    return [{ step: n + 1, verb: verb.charAt(0).toUpperCase() + verb.slice(1), p }];
-  }),
+/** The machine program: every setting, labeled by the first word of its step ("Chop", "Mill"). */
+const program = steps.flatMap((s, n) =>
+  s.parts.flatMap((p) =>
+    p.kind === 'setting' ? [{ step: n + 1, verb: recipe.steps[n].short.split(' ')[0], p }] : [],
+  ),
 );
 
 const stats = [
@@ -64,26 +65,32 @@ const stats = [
   ...(recipe.oven ? [{ k: 'Oven', v: recipe.oven }] : []),
   { k: 'On the Thermomix', v: `${machineSteps} steps` },
 ];
+
+const check = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 ---
 
 <Base title={`${recipe.name} · Thermomix · ${site.name}`} description={recipe.description}>
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-  <article class="rx" style={`--rx-deep:${recipe.color.deep};--rx-light:${recipe.color.light};`}>
+  <article
+    class="rx"
+    data-recipe={recipe.slug}
+    style={`--rx-deep:${recipe.color.deep};--rx-light:${recipe.color.light};`}
+  >
     <a class="rx__back" href="/thermomix/">All Thermomix recipes</a>
 
     <header class="rx__head">
       <div class="rx__intro">
-      <h1 class="rx__title">{recipe.name}</h1>
-      <p class="rx__tag">{recipe.tagline}</p>
-      <dl class="rx__stats">
-        {stats.map((s) => (
-          <div>
-            <dt>{s.k}</dt>
-            <dd>{s.v}</dd>
-          </div>
-        ))}
-      </dl>
+        <h1 class="rx__title">{recipe.name}</h1>
+        <p class="rx__tag">{recipe.tagline}</p>
+        <dl class="rx__stats">
+          {stats.map((s) => (
+            <div>
+              <dt>{s.k}</dt>
+              <dd>{s.v}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       {program.length > 0 && (
@@ -110,35 +117,42 @@ const stats = [
     </header>
 
     <div class="rx__body">
-      <aside class="rx__ing" aria-labelledby="ing-h">
-        <div class="rx__ing-head">
+      <section class="rx__ing" aria-labelledby="ing-h">
+        <div class="rx__sec-head">
           <h2 id="ing-h">Ingredients</h2>
-          <p>Tap to tick off</p>
+          <p class="rx__count" data-count="ing" aria-live="polite">0 of {recipe.ingredients.length}</p>
         </div>
         <ul>
-          {recipe.ingredients.map((i) => (
+          {recipe.ingredients.map((i, n) => (
             <li>
-              <button type="button" class="rx__i" aria-pressed="false">
+              <button type="button" class="rx__i" aria-pressed="false" data-key={`i${n}`}>
                 <span class="rx__q">{i.qty}</span>
                 <span class="rx__n">
                   {i.item}
                   {i.note && <small>{i.note}</small>}
                 </span>
+                <span class="rx__tick" set:html={check} />
               </button>
             </li>
           ))}
         </ul>
-      </aside>
+      </section>
 
       <div class="rx__method">
-        <h2>Method</h2>
+        <div class="rx__sec-head">
+          <h2>Method</h2>
+          <p class="rx__count" data-count="step" aria-live="polite">0 of {steps.length}</p>
+        </div>
         <ol class="rx__steps">
-          {steps.map((parts, n) => (
+          {steps.map((s, n) => (
             <li id={`step-${n + 1}`}>
-              <button type="button" class="rx__s" aria-pressed="false">
-                <span class="rx__num">{n + 1}</span>
+              <button type="button" class="rx__s" aria-pressed="false" data-key={`s${n}`}>
+                <span class="rx__num">
+                  <span class="rx__num-n">{n + 1}</span>
+                  <span class="rx__num-ok" set:html={check} />
+                </span>
                 <span class="rx__txt">
-                  {parts.map((p) =>
+                  {s.parts.map((p) =>
                     p.kind === 'text' ? (
                       p.text
                     ) : (
@@ -158,32 +172,107 @@ const stats = [
                   )}
                 </span>
               </button>
+              {s.more && (
+                <details class="rx__more">
+                  <summary>More</summary>
+                  <p>{s.more}</p>
+                </details>
+              )}
             </li>
           ))}
         </ol>
 
-        <h2>Good to know</h2>
-        <ul class="rx__tips">
-          {recipe.tips.map((t) => <li>{t}</li>)}
-        </ul>
+        <div class="rx__drops">
+          <details class="rx__drop">
+            <summary>Good to know</summary>
+            <ul class="rx__tips">
+              {recipe.tips.map((t) => <li>{t}</li>)}
+            </ul>
+          </details>
+          <details class="rx__drop">
+            <summary>Where this recipe comes from</summary>
+            <p class="rx__src">I compared the best rated versions online and kept the simplest ingredient list.</p>
+            <ul class="rx__tips">
+              {recipe.basedOn.map((b) => (
+                <li>
+                  <a href={b.url} rel="noopener" target="_blank">{b.name}</a>, {b.note}
+                </li>
+              ))}
+            </ul>
+          </details>
+        </div>
 
-        <p class="rx__src">
-          Built from the best rated versions online:{' '}
-          {recipe.basedOn.map((b, i) => (
-            <>
-              <a href={b.url} rel="noopener" target="_blank">{b.name}</a> ({b.note}){i < recipe.basedOn.length - 1 ? ', ' : '.'}
-            </>
-          ))}
-        </p>
+        <button type="button" class="rx__reset" hidden>Clear all ticks</button>
       </div>
     </div>
   </article>
 
   <script>
-    document.querySelectorAll<HTMLButtonElement>('.rx__i, .rx__s').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        btn.setAttribute('aria-pressed', String(btn.getAttribute('aria-pressed') !== 'true'));
+    const root = document.querySelector<HTMLElement>('.rx[data-recipe]');
+    if (root) {
+      const storeKey = `thermomix:${root.dataset.recipe}`;
+      const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-key]')];
+      const reset = root.querySelector<HTMLButtonElement>('.rx__reset')!;
+
+      const load = (): string[] => {
+        try {
+          return JSON.parse(localStorage.getItem(storeKey) ?? '[]');
+        } catch {
+          return [];
+        }
+      };
+      const save = () => {
+        const on = buttons.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.dataset.key!);
+        try {
+          localStorage.setItem(storeKey, JSON.stringify(on));
+        } catch {
+          /* private mode: ticks just will not survive a refresh */
+        }
+      };
+      const render = () => {
+        for (const kind of ['ing', 'step'] as const) {
+          const group = buttons.filter((b) => (kind === 'ing' ? b.classList.contains('rx__i') : b.classList.contains('rx__s')));
+          const done = group.filter((b) => b.getAttribute('aria-pressed') === 'true').length;
+          const el = root.querySelector(`[data-count="${kind}"]`);
+          if (el) el.textContent = done === group.length ? 'All done' : `${done} of ${group.length}`;
+        }
+        reset.hidden = !buttons.some((b) => b.getAttribute('aria-pressed') === 'true');
+      };
+
+      // Keep the phone screen on while cooking. Browsers drop the lock when the
+      // tab hides, so ask again when it comes back.
+      let lock: { release: () => Promise<void> } | null = null;
+      const wake = async () => {
+        try {
+          if (!lock && 'wakeLock' in navigator) {
+            lock = await (navigator as any).wakeLock.request('screen');
+            (lock as any).addEventListener?.('release', () => (lock = null));
+          }
+        } catch {
+          /* not supported or denied, fine */
+        }
+      };
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && buttons.some((b) => b.getAttribute('aria-pressed') === 'true')) wake();
       });
-    });
+
+      const saved = new Set(load());
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(saved.has(b.dataset.key!))));
+      render();
+
+      buttons.forEach((b) =>
+        b.addEventListener('click', () => {
+          b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
+          save();
+          render();
+          wake();
+        }),
+      );
+      reset.addEventListener('click', () => {
+        buttons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        save();
+        render();
+      });
+    }
   </script>
 </Base>

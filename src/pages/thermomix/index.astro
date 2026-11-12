@@ -9,7 +9,7 @@ import { recipes, splitStep } from '../../data/thermomix';
 
 const rows = recipes.map((r) => ({
   ...r,
-  machineSteps: r.steps.filter((s) => splitStep(s).some((p) => p.kind === 'setting')).length,
+  machineSteps: r.steps.filter((s) => splitStep(s.short).some((p) => p.kind === 'setting')).length,
 }));
 ---
 

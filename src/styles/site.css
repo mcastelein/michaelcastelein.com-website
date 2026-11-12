@@ -1015,18 +1015,21 @@ body {
   border-radius: 18px;
   padding: 24px 22px 14px;
 }
-.rx__ing-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.rx__ing-head p { font-size: 13px; color: color-mix(in srgb, var(--rx-deep) 65%, transparent); }
+.rx__sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.rx__count { font-size: 14px; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--rx-deep) 70%, transparent); }
 .rx__ing ul { list-style: none; margin: 0; padding: 0; }
 .rx__ing li + li { border-top: 1px solid color-mix(in srgb, var(--rx-deep) 14%, transparent); }
 .rx__i {
   all: unset;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 76px 1fr;
+  grid-template-columns: 72px 1fr 26px;
+  align-items: start;
   gap: 12px;
   width: 100%;
-  padding: 13px 4px;
+  min-height: 48px;
+  padding: 12px 4px;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   border-radius: 8px;
 }
@@ -1040,11 +1043,23 @@ body {
 .rx__n { font-size: 16px; line-height: 1.4; color: var(--ink); font-weight: 550; padding-top: 2px; }
 .rx__n small { display: block; font-size: 13.5px; font-weight: 400; color: var(--ink-3); margin-top: 2px; }
 .rx__i[aria-pressed='true'] .rx__q,
-.rx__i[aria-pressed='true'] .rx__n { opacity: 0.38; text-decoration: line-through; text-decoration-thickness: 1px; }
+.rx__i[aria-pressed='true'] .rx__n { opacity: 0.4; text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* Check circle, shared by ingredients and steps. */
+.rx__tick, .rx__num-ok {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--rx-deep) 45%, transparent);
+  color: transparent;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+[aria-pressed='true'] > .rx__tick,
+[aria-pressed='true'] .rx__num-ok { background: var(--rx-deep); border-color: var(--rx-deep); color: #fff; }
 
 /* Method */
-.rx__method > h2 + * { margin-top: 18px; }
-.rx__method > * + h2 { margin-top: clamp(40px, 5vw, 56px); }
 .rx__steps { list-style: none; margin: 0; padding: 0; }
 .rx__steps li + li { border-top: 1px solid var(--rule); }
 .rx__s {
@@ -1054,7 +1069,9 @@ body {
   grid-template-columns: 48px 1fr;
   gap: 14px;
   width: 100%;
-  padding: 18px 4px;
+  min-height: 48px;
+  padding: 16px 4px 12px;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   border-radius: 8px;
 }
@@ -1064,9 +1081,82 @@ body {
   line-height: 0.9;
   color: var(--rx-deep);
 }
+.rx__num-ok { display: none; margin-top: 2px; }
+.rx__s[aria-pressed='true'] .rx__num-n { display: none; }
+.rx__s[aria-pressed='true'] .rx__num-ok { display: grid; }
 .rx__txt { font-size: 17.5px; line-height: 1.75; color: var(--ink-2); }
-.rx__s[aria-pressed='true'] .rx__num,
-.rx__s[aria-pressed='true'] .rx__txt { opacity: 0.35; }
+.rx__s[aria-pressed='true'] .rx__txt { opacity: 0.4; }
+.rx__steps li:has(.rx__s[aria-pressed='true']) .rx__more { opacity: 0.5; }
+
+/* "More" under a step: lines up with the step text. */
+.rx__more { margin: 0 4px 14px 66px; }
+.rx__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--rx-deep);
+  cursor: pointer;
+  list-style: none;
+}
+.rx__more summary::-webkit-details-marker, .rx__drop summary::-webkit-details-marker { display: none; }
+.rx__more summary::after, .rx__drop summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.15s;
+}
+.rx__more[open] summary::after, .rx__drop[open] summary::after { transform: rotate(-135deg) translateY(-1px); }
+.rx__more[open] summary { color: var(--ink-3); }
+.rx__more p {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--paper-2);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* Section dropdowns under the method. */
+.rx__drops { margin-top: clamp(30px, 4vw, 44px); border-top: 1px solid var(--rule); }
+.rx__drop { border-bottom: 1px solid var(--rule); }
+.rx__drop summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 60px;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.6vw, 30px);
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.rx__drop summary::after { color: var(--rx-deep); margin-right: 6px; }
+.rx__drop[open] { padding-bottom: 20px; }
+.rx__drop .rx__src { margin: 0 0 12px; font-size: 15px; color: var(--ink-2); }
+.rx__reset {
+  margin-top: 26px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.rx__reset:hover { border-color: var(--rx-deep); color: var(--rx-deep); }
+.rx__more summary:focus-visible, .rx__drop summary:focus-visible, .rx__reset:focus-visible {
+  outline: 2px solid var(--rx-deep);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
 .rx__i:focus-visible, .rx__s:focus-visible, .rx__list a:focus-visible {
   outline: 2px solid var(--rx-deep);
   outline-offset: 2px;
@@ -1111,9 +1201,8 @@ body {
   border-radius: 50%;
   background: var(--rx-deep);
 }
-.rx__src { margin-top: 36px; font-size: 13.5px; line-height: 1.6; color: var(--ink-3); }
-.rx__src a { color: var(--ink-2); }
-.rx__src a:hover { color: var(--rx-deep); }
+.rx__tips a { color: var(--ink); }
+.rx__tips a:hover { color: var(--rx-deep); }
 
 /* List page */
 .rx__list { list-style: none; margin: clamp(30px, 5vw, 54px) 0 0; padding: 0; display: grid; gap: 14px; }
@@ -1143,8 +1232,9 @@ body {
   .rx__ing { position: static; }
 }
 @media (max-width: 420px) {
-  .rx__i { grid-template-columns: 64px 1fr; }
+  .rx__i { grid-template-columns: 62px 1fr 26px; }
   .rx__s { grid-template-columns: 34px 1fr; gap: 10px; }
+  .rx__more { margin-left: 48px; }
   .rx__num { font-size: 28px; }
   .rx__txt { font-size: 16.5px; }
   .tm { font-size: 13px; }

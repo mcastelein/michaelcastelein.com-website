@@ -21,6 +21,13 @@ export type Ingredient = {
   note?: string;
 };
 
+export type Step = {
+  /** One short line, shown by default. Holds the Thermomix setting, if any. */
+  short: string;
+  /** The details, behind a "More" dropdown. Never put a setting in here. */
+  more?: string;
+};
+
 export type Recipe = {
   slug: string;
   name: string;
@@ -42,7 +49,7 @@ export type Recipe = {
   /** Page colors: a deep one for the chips and type, a light one for the ingredient panel. */
   color: { deep: string; light: string };
   ingredients: Ingredient[];
-  steps: string[];
+  steps: Step[];
   tips: string[];
   /** Where the ratios came from. */
   basedOn: { name: string; url: string; note: string }[];
@@ -52,6 +59,9 @@ export type Recipe = {
 
 /** "70 g dark chocolate, in pieces" as one line, for JSON-LD and Cookidoo. */
 export const ingredientLine = (i: Ingredient) => `${i.qty} ${i.item}${i.note ? `, ${i.note}` : ''}`;
+
+/** The full step text, for JSON-LD and Cookidoo: the short line, then the details. */
+export const stepText = (s: Step) => (s.more ? `${s.short}. ${s.more}` : `${s.short}.`);
 
 /** A Thermomix setting in a step, Cookidoo notation. Same pattern as the push script. */
 export const SETTING =
@@ -108,20 +118,44 @@ export const recipes: Recipe[] = [
       { qty: '1 pinch', item: 'salt' },
     ],
     steps: [
-      'Preheat the oven to 180°C (350°F). Line a baking tray with baking paper.',
-      'Place 70 g dark chocolate in the mixing bowl and chop 3 sec/speed 7. Transfer to a small bowl and set aside.',
-      'Place 50 g rolled oats in the mixing bowl and mill 10 sec/speed 9.',
-      'Add 250 g bananas, 1 tsp vanilla extract, ½ tsp cinnamon and 1 pinch salt, then mix 10 sec/speed 4. Scrape down the sides of the mixing bowl with the spatula.',
-      'Add the remaining 100 g rolled oats and the chopped chocolate, then mix 20 sec/reverse/speed 3, helping with the spatula.',
-      'Leave the dough to rest in the mixing bowl for 10 minutes, so the oats soak up the banana.',
-      'Scoop 12 heaped tablespoons of dough onto the baking tray and press each one flat to about 1 cm thick. They do not spread in the oven.',
-      'Bake for 14 to 16 minutes (180°C) until the edges are golden. Leave to cool on the tray for 10 minutes before you move them.',
+      {
+        short: 'Heat the oven to 180°C / 350°F and line a tray',
+        more: 'Use baking paper or a silicone mat. Bake on the middle rack.',
+      },
+      {
+        short: 'Chop the chocolate 3 sec/speed 7, then set it aside',
+        more: 'Start with 70 g dark chocolate in the mixing bowl. You want rough chunks, not powder. Tip them into a small bowl. No need to wipe the mixing bowl. Using chocolate chips? Skip this step and add them with the oats later.',
+      },
+      {
+        short: 'Mill 50 g oats 10 sec/speed 9',
+        more: 'This turns a third of the oats into flour. The oat flour holds the cookie together, since there is no egg or butter.',
+      },
+      {
+        short: 'Mash in the bananas, vanilla, cinnamon and salt 10 sec/speed 4',
+        more: 'That is 250 g banana in pieces, 1 tsp vanilla extract, ½ tsp cinnamon and 1 pinch salt. Scrape down the sides of the mixing bowl with the spatula afterward. For a richer cookie, add 30 g peanut butter here.',
+      },
+      {
+        short: 'Fold in 100 g oats and the chocolate 20 sec/reverse/speed 3',
+        more: 'Reverse keeps the oats and the chocolate chunks whole. If the dough sticks, help it with the spatula through the hole in the lid.',
+      },
+      {
+        short: 'Let the dough rest 10 minutes',
+        more: 'The oats soak up the banana and the dough firms up. It is easier to scoop, and the cookies come out chewier.',
+      },
+      {
+        short: 'Scoop 12 mounds and press each flat to 1 cm',
+        more: 'One heaped tablespoon per cookie. Wet fingers stop the dough from sticking. They do not spread in the oven, so the shape you press is the shape you get.',
+      },
+      {
+        short: 'Bake 14 to 16 minutes, then cool 10 minutes on the tray',
+        more: 'They are done when the edges turn golden. They are soft when hot and firm up as they cool, so do not move them too early.',
+      },
     ],
     tips: [
       'Use bananas with black spots. The browner the banana, the sweeter the cookie.',
-      'Using chocolate chips? Skip step 2 and add them in step 5.',
-      'For a richer cookie, add 30 g peanut butter with the bananas.',
       'Keeps 3 days in a tin, a week in the fridge. Freezes well.',
+      'Gluten free if you buy oats labeled gluten free.',
+      'No egg, no butter, no added sugar. Dairy free if your chocolate is.',
     ],
     basedOn: [
       {
