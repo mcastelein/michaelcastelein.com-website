@@ -7,7 +7,7 @@
  *
  * Rules:
  *   1. Metric, grams first (Cookidoo is grams).
- *   2. Steps use Cookidoo's own notation: "10 sec/speed 4",
+ *   2. Steps copy Cookidoo's own wording and notation: "10 sec/speed 4",
  *      "20 sec/reverse/speed 3", "3 min/100°C/speed 1". The page draws these
  *      as machine chips and the push script turns them into guided settings.
  *   3. One bowl action per step, so each step has at most one setting.
@@ -22,9 +22,14 @@ export type Ingredient = {
 };
 
 export type Step = {
-  /** One short line, shown by default. Holds the Thermomix setting, if any. */
+  /**
+   * The step exactly as it goes on the Thermomix, in Cookidoo's own wording
+   * ("Place 50 g rolled oats into mixing bowl.", "Mill 10 sec/speed 9.").
+   * One action per step: adding ingredients is one step (the scale weighs),
+   * running the machine is the next (you turn the dial).
+   */
   short: string;
-  /** The details, behind a "More" dropdown. Never put a setting in here. */
+  /** Website only, behind a "More" dropdown: the why and the variations. Never a setting. */
   more?: string;
 };
 
@@ -60,8 +65,8 @@ export type Recipe = {
 /** "70 g dark chocolate, in pieces" as one line, for JSON-LD and Cookidoo. */
 export const ingredientLine = (i: Ingredient) => `${i.qty} ${i.item}${i.note ? `, ${i.note}` : ''}`;
 
-/** The full step text, for JSON-LD and Cookidoo: the short line, then the details. */
-export const stepText = (s: Step) => (s.more ? `${s.short}. ${s.more}` : `${s.short}.`);
+/** The step as the Thermomix shows it, for JSON-LD and Cookidoo. The "more" text stays on the website. */
+export const stepText = (s: Step) => s.short;
 
 /** A Thermomix setting in a step, Cookidoo notation. Same pattern as the push script. */
 export const SETTING =
@@ -120,36 +125,49 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       {
-        short: 'Heat the oven to 180°C / 350°F and line a tray',
-        more: 'Use baking paper or a silicone mat. Bake on the middle rack.',
+        short: 'Preheat oven to 350°F (180°C). Line a baking sheet with parchment paper.',
+        more: 'Bake on the middle rack.',
       },
       {
-        short: 'Chop the chocolate 3 sec/speed 7, then set it aside',
-        more: 'Start with 70 g dark chocolate in the mixing bowl. You want rough chunks, not powder. Tip them into a small bowl. No need to wipe the mixing bowl. Using chocolate chips? Skip this step and add them with the oats later.',
+        short: 'Place 70 g dark chocolate into mixing bowl.',
+        more: 'Using chocolate chips? Skip this step and the next one, and add the chips with the oats in step 8.',
       },
       {
-        short: 'Mill 50 g oats 10 sec/speed 9',
-        more: 'This turns a third of the oats into flour. The oat flour holds the cookie together, since there is no egg or butter.',
+        short: 'Chop 3 sec/speed 7. Transfer to a bowl and set aside.',
+        more: 'You want rough chunks, not powder. No need to wipe the mixing bowl.',
       },
       {
-        short: 'Mash in the bananas, vanilla, cinnamon and salt 10 sec/speed 4',
-        more: 'That is 250 g banana in pieces, 1 tsp vanilla extract, ½ tsp cinnamon and 1 pinch salt. Scrape down the sides of the mixing bowl with the spatula afterward. For a richer cookie, add 30 g peanut butter here.',
+        short: 'Place 50 g rolled oats into mixing bowl.',
       },
       {
-        short: 'Fold in 100 g oats and the chocolate 20 sec/reverse/speed 3',
+        short: 'Mill 10 sec/speed 9.',
+        more: 'This makes oat flour. It holds the cookies together, since there is no egg or butter.',
+      },
+      {
+        short: 'Add 250 g bananas, 1 tsp vanilla extract, ½ tsp ground cinnamon and 1 pinch salt.',
+        more: 'Use very ripe bananas with black spots, broken into pieces. For a richer cookie, add 30 g peanut butter too.',
+      },
+      {
+        short: 'Mix 10 sec/speed 4. Scrape down sides of mixing bowl with spatula.',
+      },
+      {
+        short: 'Add 100 g rolled oats and reserved chopped chocolate.',
+      },
+      {
+        short: 'Mix 20 sec/reverse/speed 3.',
         more: 'Reverse keeps the oats and the chocolate chunks whole. If the dough sticks, help it with the spatula through the hole in the lid.',
       },
       {
-        short: 'Let the dough rest 10 minutes',
-        more: 'The oats soak up the banana and the dough firms up. It is easier to scoop, and the cookies come out chewier.',
+        short: 'Let dough rest 10 minutes.',
+        more: 'The oats soak up the banana, so the dough is easier to scoop and the cookies come out chewier.',
       },
       {
-        short: 'Scoop 12 mounds and press each flat to 1 cm',
+        short: 'Form 12 mounds on prepared baking sheet and flatten each to 1 cm (½ inch).',
         more: 'One heaped tablespoon per cookie. Wet fingers stop the dough from sticking. They do not spread in the oven, so the shape you press is the shape you get.',
       },
       {
-        short: 'Bake 14 to 16 minutes, then cool 10 minutes on the tray',
-        more: 'They are done when the edges turn golden. They are soft when hot and firm up as they cool, so do not move them too early.',
+        short: 'Bake 14 to 16 minutes (350°F) until edges are golden. Let cool 10 minutes on baking sheet.',
+        more: 'They are soft when hot and firm up as they cool, so do not move them too early.',
       },
     ],
     tips: [
