@@ -1,34 +1,41 @@
 ---
 /**
- * /thermomix/, the list of Thermomix recipes. Each one links to its own page,
- * which is the URL you paste into Cookidoo's Import recipe.
+ * /thermomix/, the list of Thermomix recipes. Each row takes the recipe's own
+ * colors, so the list looks like the pages it links to.
  */
 import Base from '../../layouts/Base.astro';
 import { site } from '../../data/site';
-import { recipes } from '../../data/thermomix';
+import { recipes, splitStep } from '../../data/thermomix';
+
+const rows = recipes.map((r) => ({
+  ...r,
+  machineSteps: r.steps.filter((s) => splitStep(s).some((p) => p.kind === 'setting')).length,
+}));
 ---
 
 <Base
   title={`Thermomix recipes · ${site.name}`}
-  description="Recipes written for the Thermomix. Paste any page into Cookidoo's Import recipe to add it to your machine."
+  description="Recipes I cook at home, written for the Thermomix, with every machine setting in the steps."
 >
-  <section class="page page--article recipe">
-    <a class="page__back" href="/">← Home</a>
-    <h1 class="page__title">Thermomix recipes</h1>
-    <p class="page__tagline">Recipes I cook at home, written for the Thermomix.</p>
+  <section class="rx rx--list">
+    <a class="rx__back" href="/">Home</a>
+    <header class="rx__head">
+      <h1 class="rx__title">Thermomix recipes</h1>
+      <p class="rx__tag">What I cook at home. Every step has its machine setting, so you can follow along at the bowl.</p>
+    </header>
 
-    <div class="prose">
-      <p>
-        Every step is written with its Thermomix settings, the way Cookidoo writes them, so
-        you can add any of these to <strong>Created Recipes</strong> in Cookidoo.
-      </p>
-      <ul>
-        {recipes.map((r) => (
-          <li>
-            <a href={`/thermomix/${r.slug}/`}><strong>{r.name}</strong></a>. {r.tagline}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul class="rx__list">
+      {rows.map((r) => (
+        <li style={`--rx-deep:${r.color.deep};--rx-light:${r.color.light};`}>
+          <a href={`/thermomix/${r.slug}/`}>
+            <span class="rx__list-name">{r.name}</span>
+            <span class="rx__list-tag">{r.tagline}</span>
+            <span class="rx__list-meta">
+              {r.yield}, {r.totalMin} min, {r.ingredients.length} ingredients, {r.machineSteps} Thermomix steps
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </section>
 </Base>

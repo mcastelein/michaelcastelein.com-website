@@ -3,17 +3,23 @@
  *
  * Cookidoo blocks URL import from this site, so recipes reach the Thermomix
  * through thermomix-recipes/03_scripts/push_to_cookidoo.py, which reads the
- * schema.org Recipe JSON-LD that the page template builds from this data, so
- * every field here ends up in Cookidoo.
+ * schema.org Recipe JSON-LD that the page template builds from this data.
  *
- * Rules that keep the import clean:
- *   1. One ingredient per line, quantity first, metric (Cookidoo is grams).
+ * Rules:
+ *   1. Metric, grams first (Cookidoo is grams).
  *   2. Steps use Cookidoo's own notation: "10 sec/speed 4",
- *      "20 sec/reverse/speed 3", "3 min/100°C/speed 1". The importer tries to
- *      turn those strings into Thermomix settings.
- *   3. One bowl action per step, so each step gets at most one setting.
+ *      "20 sec/reverse/speed 3", "3 min/100°C/speed 1". The page draws these
+ *      as machine chips and the push script turns them into guided settings.
+ *   3. One bowl action per step, so each step has at most one setting.
  *   4. Same house style as site.ts: no em or en dashes in prose.
  */
+
+export type Ingredient = {
+  /** Amount with unit, e.g. "70 g", "1 tsp", "1 pinch". */
+  qty: string;
+  item: string;
+  note?: string;
+};
 
 export type Recipe = {
   slug: string;
@@ -28,17 +34,53 @@ export type Recipe = {
   totalMin: number;
   yield: string;
   servings: number;
+  /** Oven setting shown in the top row, if the recipe uses one. */
+  oven?: string;
   category: string;
   cuisine: string;
   keywords: string[];
-  ingredients: string[];
+  /** Page colors: a deep one for the chips and type, a light one for the ingredient panel. */
+  color: { deep: string; light: string };
+  ingredients: Ingredient[];
   steps: string[];
   tips: string[];
-  /** Where the ratios came from, shown at the bottom of the page. */
+  /** Where the ratios came from. */
   basedOn: { name: string; url: string; note: string }[];
   /** ISO date, first published. */
   published: string;
 };
+
+/** "70 g dark chocolate, in pieces" as one line, for JSON-LD and Cookidoo. */
+export const ingredientLine = (i: Ingredient) => `${i.qty} ${i.item}${i.note ? `, ${i.note}` : ''}`;
+
+/** A Thermomix setting in a step, Cookidoo notation. Same pattern as the push script. */
+export const SETTING =
+  /(\d+)\s*(sec|min)(?:\/(\d+)°C|\/(Varoma))?(?:\/(reverse))?\/speed\s*(soft|\d+(?:\.\d+)?)/;
+
+export type StepPart =
+  | { kind: 'text'; text: string }
+  | { kind: 'setting'; raw: string; time: string; temp?: string; reverse: boolean; speed: string };
+
+/** Splits a step into plain text and Thermomix settings, so the page can draw the settings. */
+export function splitStep(step: string): StepPart[] {
+  const parts: StepPart[] = [];
+  const re = new RegExp(SETTING.source, 'g');
+  let last = 0;
+  for (const m of step.matchAll(re)) {
+    if (m.index! > last) parts.push({ kind: 'text', text: step.slice(last, m.index) });
+    parts.push({
+      kind: 'setting',
+      raw: m[0],
+      time: `${m[1]} ${m[2]}`,
+      temp: m[3] ? `${m[3]}°C` : m[4],
+      reverse: Boolean(m[5]),
+      speed: m[6],
+    });
+    last = m.index! + m[0].length;
+  }
+  if (last < step.length) parts.push({ kind: 'text', text: step.slice(last) });
+  return parts;
+}
 
 export const recipes: Recipe[] = [
   {
@@ -52,16 +94,18 @@ export const recipes: Recipe[] = [
     totalMin: 36,
     yield: '12 cookies',
     servings: 12,
+    oven: '180°C / 350°F',
     category: 'Baking',
     cuisine: 'American',
     keywords: ['banana', 'oats', 'chocolate', 'cookies', 'no added sugar', 'egg free', 'dairy free option'],
+    color: { deep: '#4a2c1d', light: '#fff1b8' },
     ingredients: [
-      '70 g dark chocolate, in pieces (or chocolate chips)',
-      '150 g rolled oats',
-      '250 g very ripe bananas, peeled, in pieces (2 large)',
-      '1 tsp vanilla extract',
-      '½ tsp ground cinnamon',
-      '1 pinch salt',
+      { qty: '70 g', item: 'dark chocolate', note: 'in pieces (or chocolate chips)' },
+      { qty: '150 g', item: 'rolled oats' },
+      { qty: '250 g', item: 'very ripe bananas', note: 'peeled, in pieces (2 large)' },
+      { qty: '1 tsp', item: 'vanilla extract' },
+      { qty: '½ tsp', item: 'ground cinnamon' },
+      { qty: '1 pinch', item: 'salt' },
     ],
     steps: [
       'Preheat the oven to 180°C (350°F). Line a baking tray with baking paper.',
@@ -74,32 +118,31 @@ export const recipes: Recipe[] = [
       'Bake for 14 to 16 minutes (180°C) until the edges are golden. Leave to cool on the tray for 10 minutes before you move them.',
     ],
     tips: [
-      'The browner the banana, the sweeter the cookie. Black-spotted bananas are what you want.',
-      'If you use chocolate chips, skip step 2 and add them in step 5.',
-      'For a richer cookie, add 30 g peanut butter with the bananas in step 4.',
-      'They keep 3 days in a closed tin, or a week in the fridge. They freeze well.',
-      'Gluten free if you use oats labeled gluten free.',
+      'Use bananas with black spots. The browner the banana, the sweeter the cookie.',
+      'Using chocolate chips? Skip step 2 and add them in step 5.',
+      'For a richer cookie, add 30 g peanut butter with the bananas.',
+      'Keeps 3 days in a tin, a week in the fridge. Freezes well.',
     ],
     basedOn: [
       {
-        name: 'Downshiftology, banana oatmeal cookies',
+        name: 'Downshiftology',
         url: 'https://downshiftology.com/recipes/banana-oatmeal-cookies/',
-        note: 'Rated 4.9 from about 80 votes. The three ingredient base: banana, oats, chocolate.',
+        note: '4.9 from about 80 votes',
       },
       {
-        name: 'The Big Man\'s World, 3 ingredient breakfast cookies',
+        name: "The Big Man's World",
         url: 'https://thebigmansworld.com/3-ingredient-breakfast-cookies/',
-        note: 'Rated 5.0 from about 1,700 votes. Same base, no eggs and no sugar.',
+        note: '5.0 from about 1,700 votes',
       },
       {
-        name: 'Averie Cooks, chocolate chip banana oatmeal cookies',
+        name: 'Averie Cooks',
         url: 'https://averiecooks.com/banana-oatmeal-chocolate-chip-cookies',
-        note: 'Rated 4.6 from about 280 votes. Source of the cinnamon, vanilla and salt.',
+        note: '4.6 from about 280 votes',
       },
       {
-        name: 'Thermomix Recipe Community, banana oat cookies',
+        name: 'Thermomix Recipe Community',
         url: 'https://recipecommunity.com.au/baking-sweet-recipes/banana-oat-cookies-dairy-free-egg-free-nut-free/bqwubz7m-fc8e7-359410-beea0-kjcr02c5',
-        note: 'The Thermomix pattern: mash on speed 4 to 5, fold oats in on reverse.',
+        note: 'the Thermomix method',
       },
     ],
     published: '2026-11-12',
