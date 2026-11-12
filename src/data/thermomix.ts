@@ -1,8 +1,8 @@
 /**
  * Thermomix recipes, served at /thermomix/<slug>/.
  *
- * Each page exists so Cookidoo can import it: Cookidoo > Created Recipes >
- * green button > Import recipe > paste the page URL. The importer reads the
+ * Cookidoo blocks URL import from this site, so recipes reach the Thermomix
+ * through thermomix-recipes/03_scripts/push_to_cookidoo.py, which reads the
  * schema.org Recipe JSON-LD that the page template builds from this data, so
  * every field here ends up in Cookidoo.
  *

@@ -124,9 +124,15 @@ every build and the workflow fails loudly if it goes missing, because a
 
 ## Thermomix recipes
 
-`/thermomix/<slug>/` pages exist so Cookidoo can import them (Created Recipes >
-green button > Import recipe > paste the URL). Add a recipe by adding an entry
-to `recipes` in `src/data/thermomix.ts`. Nothing else. The page template
-`src/pages/thermomix/[slug].astro` writes the schema.org Recipe JSON-LD into
-`<head>`, which is what the importer reads. Write steps in Cookidoo notation
-(`10 sec/speed 4`, `20 sec/reverse/speed 3`, `3 min/100°C/speed 1`).
+`/thermomix/<slug>/` pages. Add a recipe by adding an entry to `recipes` in
+`src/data/thermomix.ts`. Nothing else. The page template
+`src/pages/thermomix/[slug].astro` writes schema.org Recipe JSON-LD into
+`<head>`. Write steps in Cookidoo notation (`10 sec/speed 4`,
+`20 sec/reverse/speed 3`, `3 min/100°C/speed 1`).
+
+Cookidoo's "Import recipe" refuses this site (approved sites only). To get a
+recipe onto the Thermomix, run the push script in
+`Documents\Projects
+ew-projects	hermomix-recipes_scripts\push_to_cookidoo.py`.
+It reads the JSON-LD from the live page and turns the notation into real
+guided-cooking settings.
