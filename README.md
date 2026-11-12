@@ -132,7 +132,6 @@ every build and the workflow fails loudly if it goes missing, because a
 
 Cookidoo's "Import recipe" refuses this site (approved sites only). To get a
 recipe onto the Thermomix, run the push script in
-`Documents\Projects
-ew-projects	hermomix-recipes_scripts\push_to_cookidoo.py`.
+`Documents/Projects/new-projects/thermomix-recipes/03_scripts/push_to_cookidoo.py`.
 It reads the JSON-LD from the live page and turns the notation into real
 guided-cooking settings.
