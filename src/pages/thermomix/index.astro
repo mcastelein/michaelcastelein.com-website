@@ -3,12 +3,16 @@
  * /thermomix/, the list of Thermomix recipes. Each row takes the recipe's own
  * colors, so the list looks like the pages it links to.
  */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Base from '../../layouts/Base.astro';
 import { site } from '../../data/site';
 import { recipes, splitStep } from '../../data/thermomix';
 
+const photos = import.meta.glob<{ default: ImageMetadata }>('../../assets/thermomix/*.{jpg,jpeg,png,webp}', { eager: true });
 const rows = recipes.map((r) => ({
   ...r,
+  photo: r.image ? photos[`../../assets/thermomix/${r.image}`]?.default : undefined,
   machineSteps: r.steps.filter((s) => splitStep(s.short).some((p) => p.kind === 'setting')).length,
 }));
 ---
@@ -27,7 +31,8 @@ const rows = recipes.map((r) => ({
     <ul class="rx__list">
       {rows.map((r) => (
         <li style={`--rx-deep:${r.color.deep};--rx-light:${r.color.light};`}>
-          <a href={`/thermomix/${r.slug}/`}>
+          <a href={`/thermomix/${r.slug}/`} class:list={[{ 'has-photo': r.photo }]}>
+            {r.photo && <Image src={r.photo} alt="" widths={[400, 800]} sizes="(max-width: 700px) 100vw, 360px" class="rx__list-photo" />}
             <span class="rx__list-name">{r.name}</span>
             <span class="rx__list-tag">{r.tagline}</span>
             <span class="rx__list-meta">

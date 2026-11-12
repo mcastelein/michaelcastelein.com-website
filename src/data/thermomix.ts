@@ -51,6 +51,8 @@ export type Recipe = {
   category: string;
   cuisine: string;
   keywords: string[];
+  /** Photo file in src/assets/thermomix/. */
+  image?: string;
   /** Page colors: a deep one for the chips and type, a light one for the ingredient panel. */
   color: { deep: string; light: string };
   ingredients: Ingredient[];
@@ -113,6 +115,7 @@ export const recipes: Recipe[] = [
     category: 'Baking',
     cuisine: 'American',
     keywords: ['banana', 'oats', 'chocolate', 'cookies', 'no added sugar', 'egg free', 'dairy free option'],
+    image: 'chocolate-banana-oatmeal-cookies.jpg',
     color: { deep: '#4a2c1d', light: '#fff1b8' },
     ingredients: [
       { qty: '70 g', item: 'dark chocolate', note: 'in pieces (or chocolate chips)' },

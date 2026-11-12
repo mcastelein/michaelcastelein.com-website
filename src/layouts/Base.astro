@@ -21,9 +21,11 @@ interface Props {
   description?: string;
   /** Home renders anchor links; other pages link back to the sections. */
   home?: boolean;
+  /** Absolute URL of the link-preview image. Defaults to the portrait. */
+  image?: string;
 }
 
-const { title, description = site.short, home = false } = Astro.props;
+const { title, description = site.short, home = false, image = 'https://michaelcastelein.com/img/michael.jpeg' } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://michaelcastelein.com').href;
 const p = (hash: string) => (home ? hash : `/${hash}`);
@@ -44,7 +46,7 @@ const socials = liveSocials();
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content="https://michaelcastelein.com/img/michael.jpeg" />
+    <meta property="og:image" content={image} />
     <meta name="twitter:card" content="summary_large_image" />
     <Analytics />
     <slot name="head" />

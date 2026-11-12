@@ -1225,9 +1225,28 @@ body {
 .rx__list-tag { font-size: 16px; color: var(--ink-2); }
 .rx__list-meta { font-size: 13.5px; color: color-mix(in srgb, var(--rx-deep) 70%, transparent); }
 
+/* Hero photo between the header and the cooking columns. */
+.rx__photo { margin: clamp(26px, 4vw, 44px) 0 0; }
+.rx__photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+/* List card with a photo: photo on the right, text on the left. */
+.rx__list a.has-photo { grid-template-columns: minmax(0, 1fr) minmax(200px, 360px); grid-auto-flow: dense; column-gap: 28px; align-items: center; }
+.rx__list a.has-photo > span { grid-column: 1; }
+.rx__list-photo { grid-column: 2; grid-row: 1 / span 3; width: 100%; height: auto; border-radius: 12px; }
+
 @media (max-width: 820px) {
   .rx__head, .rx__body { grid-template-columns: 1fr; }
   .rx__prog { display: none; }
+  .rx__list a.has-photo { grid-template-columns: 1fr; }
+  .rx__list-photo { grid-column: 1; grid-row: 1; margin-bottom: 8px; }
+  .rx__list a.has-photo > span { grid-column: 1; }
   .rx__ing { position: static; }
 }
 @media (max-width: 420px) {

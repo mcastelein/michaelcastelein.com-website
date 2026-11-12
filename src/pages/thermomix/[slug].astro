@@ -11,6 +11,8 @@
  *
  * All copy lives in src/data/thermomix.ts.
  */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Base from '../../layouts/Base.astro';
 import { site } from '../../data/site';
 import { recipes, ingredientLine, splitStep, stepText, type Recipe } from '../../data/thermomix';
@@ -23,6 +25,11 @@ const { recipe } = Astro.props as { recipe: Recipe };
 const url = new URL(`/thermomix/${recipe.slug}/`, Astro.site ?? 'https://michaelcastelein.com').href;
 const iso = (min: number) => `PT${min}M`;
 
+const photos = import.meta.glob<{ default: ImageMetadata }>('../../assets/thermomix/*.{jpg,jpeg,png,webp}', { eager: true });
+const photo = recipe.image ? photos[`../../assets/thermomix/${recipe.image}`]?.default : undefined;
+const share = photo ? await getImage({ src: photo, width: 1200, format: 'jpg' }) : undefined;
+const shareUrl = share ? new URL(share.src, Astro.site ?? 'https://michaelcastelein.com').href : undefined;
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Recipe',
@@ -31,7 +38,7 @@ const jsonLd = {
   url,
   author: { '@type': 'Person', name: site.name, url: 'https://michaelcastelein.com' },
   datePublished: recipe.published,
-  image: ['https://michaelcastelein.com/img/michael.jpeg'],
+  image: [shareUrl ?? 'https://michaelcastelein.com/img/michael.jpeg'],
   prepTime: iso(recipe.prepMin),
   cookTime: iso(recipe.cookMin),
   totalTime: iso(recipe.totalMin),
@@ -69,7 +76,7 @@ const stats = [
 const check = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 ---
 
-<Base title={`${recipe.name} · Thermomix · ${site.name}`} description={recipe.description}>
+<Base title={`${recipe.name} · Thermomix · ${site.name}`} description={recipe.description} image={shareUrl}>
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <article
@@ -115,6 +122,19 @@ const check = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true
         </div>
       )}
     </header>
+
+    {photo && (
+      <figure class="rx__photo">
+        <Image
+          src={photo}
+          alt={`${recipe.name}, fresh from the oven`}
+          widths={[640, 1000, 1600, 2000]}
+          sizes="(max-width: 1160px) 100vw, 1080px"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
+    )}
 
     <div class="rx__body">
       <section class="rx__ing" aria-labelledby="ing-h">
