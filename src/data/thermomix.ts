@@ -130,29 +130,27 @@ export const recipes: Recipe[] = [
       },
       {
         short: 'Place 70 g dark chocolate into mixing bowl.',
-        more: 'Using chocolate chips? Skip this step and the next one, and add the chips with the oats in step 8.',
+        more: 'Using chocolate chips? Skip this step and the next one, and add the chips in step 12.',
       },
       {
         short: 'Chop 3 sec/speed 7. Transfer to a bowl and set aside.',
         more: 'You want rough chunks, not powder. No need to wipe the mixing bowl.',
       },
-      {
-        short: 'Place 50 g rolled oats into mixing bowl.',
-      },
+      { short: 'Place 50 g rolled oats into mixing bowl.' },
       {
         short: 'Mill 10 sec/speed 9.',
         more: 'This makes oat flour. It holds the cookies together, since there is no egg or butter.',
       },
       {
-        short: 'Add 250 g bananas, 1 tsp vanilla extract, ½ tsp ground cinnamon and 1 pinch salt.',
-        more: 'Use very ripe bananas with black spots, broken into pieces. For a richer cookie, add 30 g peanut butter too.',
+        short: 'Add 250 g bananas, in pieces.',
+        more: 'Use very ripe bananas with black spots. For a richer cookie, add 30 g peanut butter too.',
       },
-      {
-        short: 'Mix 10 sec/speed 4. Scrape down sides of mixing bowl with spatula.',
-      },
-      {
-        short: 'Add 100 g rolled oats and reserved chopped chocolate.',
-      },
+      { short: 'Add 1 tsp vanilla extract.' },
+      { short: 'Add ½ tsp ground cinnamon.' },
+      { short: 'Add 1 pinch salt.' },
+      { short: 'Mix 10 sec/speed 4. Scrape down sides of mixing bowl with spatula.' },
+      { short: 'Add 100 g rolled oats.' },
+      { short: 'Add reserved chopped chocolate.' },
       {
         short: 'Mix 20 sec/reverse/speed 3.',
         more: 'Reverse keeps the oats and the chocolate chunks whole. If the dough sticks, help it with the spatula through the hole in the lid.',
