@@ -28,7 +28,7 @@ export const site = {
   name: 'Michael Castelein',
   domain: 'michaelcastelein.com',
   short:
-    'Dutch-American data and AI consultant. I run analytics and BI projects, and train teams to use AI in their day job.',
+    'Dutch-American data and AI consultant. I run analytics and BI projects, train teams to use AI in their day job, and work while traveling most of the year.',
   /** Primary call to action. LinkedIn until a booking link exists. */
   contact: 'https://www.linkedin.com/in/michael-castelein/',
   contactLabel: 'Message me on LinkedIn',
@@ -51,9 +51,9 @@ export const liveSocials = (): Social[] => site.socials.filter((s) => !s.pending
 
 export const hero = {
   /** Three display lines. The third renders italic in the accent colour. */
-  lines: ['Data & AI consultant.', 'Product builder.', 'I teach teams to use AI.'],
+  lines: ['Data & AI consultant.', 'Digital nomad.', 'I teach teams to use AI.'],
   lede:
-    "I'm Michael, a Dutch-American consultant running ML Ventures. Half the work is data: analytics, BI, and the pipelines underneath. The other half is training teams to use AI inside the work they already do. On the side I build language-learning software and small tools.",
+    "I'm Michael, a Dutch-American consultant running ML Ventures. Half the work is data: analytics, BI, and the pipelines underneath. The other half is training teams to use AI inside the work they already do. On the side I build language-learning software and small tools, mostly while on the road.",
 };
 
 /** The two things someone would hire me for. */
@@ -93,6 +93,7 @@ export const now = {
     'Running AI adoption workshops, teaching teams to use AI on their own work.',
     'Building language-learning tools: spaced-repetition cards, audio drilling, and an adaptive reader that meets you at your level.',
     'Making Mandarin songs and music videos for HSK Hits.',
+    'In Atlanta through the end of the year, then back to China.',
     'Training for a first triathlon, on the way to an Ironman.',
     'Pushing Mandarin from good to fluent, and Teochew from nothing to something.',
   ],
@@ -210,14 +211,14 @@ export const projects: Project[] = [
     tags: ['Video', 'AI search', 'Python'],
   },
   {
-    slug: 'meeting-notes',
-    name: 'Meeting Vault',
-    tagline: 'Every meeting I have, filed and linked without me touching it.',
+    slug: 'accountability-bot',
+    name: 'Accountability Bot',
+    tagline: 'A WhatsApp group that keeps score, so nobody has to nag.',
     body:
-      'Recorded meetings export on their own into an Obsidian vault: one note per meeting with the summary on top and the full transcript below, grouped by client. Every person and every action item gets its own note, so the graph view shows who I talk to and what I still owe them.',
-    state: 'writeup',
-    stateLabel: 'Runs locally',
-    tags: ['Productivity', 'Obsidian', 'Automation'],
+      'A bot that sits in our exercise and wake-up accountability groups. It reads each check-in, scores it against the group rules, keeps everyone’s wallet in Supabase, and posts a weekly overview and the Friday payouts. A dashboard shows who is on a streak and who owes the pot.',
+    state: 'live',
+    stateLabel: 'In daily use',
+    tags: ['WhatsApp', 'Bot', 'Supabase'],
   },
   {
     slug: 'health-dashboard',
@@ -230,15 +231,25 @@ export const projects: Project[] = [
     tags: ['Health', 'Postgres', 'Data viz'],
   },
   {
+    slug: 'hsk-boost',
+    name: 'HSK Boost',
+    tagline: 'Everything for the HSK exam in one place, from level 1 to 9.',
+    body:
+      'HSK prep for English speakers: spaced-repetition vocabulary, stroke-order practice, reading, listening, writing and HSKK speaking. It covers both the old HSK (levels 1 to 6) and HSK 3.0 (levels 1 to 9), with almost 16,000 words. Claude marks the writing and speaking. Next.js with a local database.',
+    state: 'building',
+    stateLabel: 'Building',
+    tags: ['Mandarin', 'HSK', 'Next.js'],
+  },
+  {
     slug: 'website',
     name: 'This website',
-    tagline: 'Astro, GitHub Pages, and no CMS.',
+    tagline: 'Astro, a hand-rolled WebGL globe, and no CMS.',
     body:
-      'Built in Astro and deployed to GitHub Pages. All the copy lives in one TypeScript file so nothing drifts out of sync.',
+      'Built in Astro and deployed to GitHub Pages. The globe is Three.js with the real travel route drawn as arcs. All the copy lives in one TypeScript file so nothing drifts out of sync.',
     state: 'live',
     stateLabel: 'Open source',
     repo: 'https://github.com/mcastelein/michaelcastelein.com-website',
-    tags: ['Astro', 'TypeScript', 'Open source'],
+    tags: ['Astro', 'Three.js', 'Open source'],
   },
 ];
 
@@ -443,6 +454,6 @@ export const play = [
 export const coffee = {
   headline: 'Let’s have coffee',
   body:
-    'If any of this overlaps with something you are doing, a data problem, getting AI to land in your team, or learning Chinese, say hello.',
-  fineprint: 'I usually reply within a day.',
+    'If any of this overlaps with something you are doing, a data problem, getting AI to land in your team, learning Chinese, or you just liked the globe, say hello.',
+  fineprint: 'I answer from whichever timezone I am in.',
 };
