@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-11-13T19:29:30+00:00",
+  "tools": [
+    {
+      "tool": "Claude",
+      "plan": "Max",
+      "source": "live",
+      "id": "claude-week",
+      "window": "week",
+      "used_pct": 50.0,
+      "resets_at": "2026-11-14T00:00:00.228685+00:00"
+    },
+    {
+      "tool": "Claude",
+      "plan": "Max",
+      "source": "live",
+      "id": "claude-5h",
+      "window": "5 hours",
+      "used_pct": 62.0,
+      "resets_at": "2026-11-13T20:20:00.228665+00:00"
+    },
+    {
+      "tool": "Codex + ChatGPT",
+      "plan": "Plus",
+      "source": "live",
+      "id": "codex-week",
+      "window": "week",
+      "used_pct": 2.0,
+      "resets_at": "2026-11-14T13:08:06+00:00",
+      "as_of": "2026-11-13T15:24:16+00:00",
+      "note": "Last seen in a Codex session log. Updates when you next use Codex."
+    },
+    {
+      "tool": "Codex + ChatGPT",
+      "plan": "Plus",
+      "source": "live",
+      "id": "codex-5h",
+      "window": "5 hours",
+      "used_pct": 0.0,
+      "resets_at": "2026-11-13T20:24:32+00:00",
+      "as_of": "2026-11-13T15:24:16+00:00",
+      "note": "Last seen in a Codex session log. Updates when you next use Codex."
+    },
+    {
+      "tool": "Muse (Meta)",
+      "id": "muse",
+      "plan": "",
+      "source": "live",
+      "window": "?",
+      "error": "Login expired. Run: muse login"
+    },
+    {
+      "tool": "ElevenLabs",
+      "id": "elevenlabs",
+      "window": "month",
+      "source": "live",
+      "plan": "Starter",
+      "used_pct": 8.8,
+      "detail": "7,895 of 90,000 characters",
+      "resets_at": "2026-11-30T08:39:28+00:00"
+    },
+    {
+      "id": "higgsfield",
+      "tool": "Higgsfield",
+      "plan": "Plus",
+      "window": "month",
+      "unit": "credits",
+      "limit": 1000,
+      "left": 925,
+      "as_of": "2026-11-13T19:25:00+00:00",
+      "note": "Checked via the Higgsfield MCP. Set reset_day_of_month in manual.json.",
+      "source": "manual",
+      "used_pct": 7.5,
+      "detail": "925 of 1,000 credits left"
+    },
+    {
+      "id": "grok",
+      "tool": "Grok",
+      "plan": "",
+      "window": "month",
+      "note": "No usage API. Add your billing day in manual.json.",
+      "source": "manual"
+    },
+    {
+      "id": "suno",
+      "tool": "Suno",
+      "plan": "",
+      "window": "month",
+      "unit": "credits",
+      "note": "No official API. Add plan, credits and billing day in manual.json.",
+      "source": "manual"
+    }
+  ]
+}
