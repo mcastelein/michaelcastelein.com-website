@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T19:34:24+00:00",
+  "generated_at": "2026-11-13T19:52:43+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 50.0,
-      "resets_at": "2026-11-14T00:00:00.376138+00:00"
+      "used_pct": 51.0,
+      "resets_at": "2026-11-14T00:00:00.036371+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 66.0,
-      "resets_at": "2026-11-13T20:20:00.376116+00:00"
+      "used_pct": 72.0,
+      "resets_at": "2026-11-13T20:20:00.036352+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -43,11 +43,21 @@
     },
     {
       "tool": "Muse (Meta)",
-      "id": "muse",
-      "plan": "",
+      "id": "muse-week",
+      "plan": "Everyday Usage",
       "source": "live",
-      "window": "?",
-      "error": "Login expired. Run: muse login"
+      "window": "week",
+      "used_pct": 1.0,
+      "resets_at": "2026-11-16T00:00:00+00:00"
+    },
+    {
+      "tool": "Muse (Meta)",
+      "id": "muse-5h",
+      "plan": "Everyday Usage",
+      "source": "live",
+      "window": "5 hours",
+      "used_pct": 3.0,
+      "resets_at": "2026-11-14T00:52:19+00:00"
     },
     {
       "tool": "ElevenLabs",
