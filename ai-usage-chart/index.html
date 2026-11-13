@@ -56,7 +56,7 @@ ul.ideas{padding-left:20px;margin:0} ul.ideas li{margin:0 0 8px}
     <ul class="ideas">
       <li><b>Claude Code:</b> review open PRs at work. Reviews save to a local folder, never posted. Runs by itself when a weekly reset is close.</li>
       <li><b>Codex:</b> second-opinion PR reviews, or tidy and test an old side project.</li>
-      <li><b>Claude or Codex:</b> describe photos and videos for the video search index, in place of the paid Gemini API.</li>
+      <li><b>Codex and Muse:</b> index the video search backlog in place of the paid Gemini API. Runs every 3 hours, stops at 80% of the week or 5-hour window.</li>
       <li><b>Higgsfield:</b> b-roll, thumbnails and Reel covers for travel content. Product shots for the nails store.</li>
       <li><b>ElevenLabs:</b> Mandarin audio notecards, voiceovers for Reels.</li>
       <li><b>Suno:</b> intros, jingles and background tracks for videos.</li>
@@ -68,12 +68,12 @@ ul.ideas{padding-left:20px;margin:0} ul.ideas li{margin:0 0 8px}
 <script>
 const BURN = {
   "Claude": "Auto job reviews open work PRs when the week is about to reset.",
-  "Codex + ChatGPT": "Second-opinion PR reviews, or video search indexing.",
+  "Codex + ChatGPT": "Video search backlog indexing (auto, stops at 80%).",
   "Higgsfield": "B-roll, thumbnails, product shots.",
   "ElevenLabs": "Mandarin audio notecards, Reel voiceovers.",
   "Suno": "Video intros and background tracks.",
   "Grok": "Content trend research.",
-  "Muse (Meta)": "Docs and tests on side projects."
+  "Muse (Meta)": "Video search backlog indexing (auto, stops at 80%)."
 };
 const fmtLeft = ms => {
   if (ms == null) return "reset ?";
