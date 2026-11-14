@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T13:34:25+00:00",
+  "generated_at": "2026-11-14T16:03:35+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 0.0,
-      "resets_at": "2026-11-20T23:59:59.554871+00:00"
+      "used_pct": 1.0,
+      "resets_at": "2026-11-20T23:59:59.815582+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 1.0,
-      "resets_at": "2026-11-14T15:29:59.554849+00:00"
+      "used_pct": 0.0,
+      "resets_at": "2026-11-14T20:59:59.815557+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 0.0,
-      "resets_at": "2026-11-21T13:08:06+00:00",
-      "as_of": "2026-11-14T11:40:40+00:00",
+      "used_pct": 5.0,
+      "resets_at": "2026-11-21T14:35:43+00:00",
+      "as_of": "2026-11-14T14:41:54+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -36,18 +36,28 @@
       "source": "live",
       "id": "codex-5h",
       "window": "5 hours",
-      "used_pct": 83.0,
-      "resets_at": "2026-11-14T13:35:30+00:00",
-      "as_of": "2026-11-14T11:40:40+00:00",
+      "used_pct": 30.0,
+      "resets_at": "2026-11-14T19:35:43+00:00",
+      "as_of": "2026-11-14T14:41:54+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
       "id": "muse-week",
-      "plan": "",
+      "plan": "Everyday Usage",
       "source": "live",
       "window": "week",
-      "note": "No usage reported yet this window. Shows after the first Muse prompt."
+      "used_pct": 23.0,
+      "resets_at": "2026-11-16T00:00:00+00:00"
+    },
+    {
+      "tool": "Muse (Meta)",
+      "id": "muse-5h",
+      "plan": "Everyday Usage",
+      "source": "live",
+      "window": "5 hours",
+      "used_pct": 3.0,
+      "resets_at": "2026-11-14T21:02:49+00:00"
     },
     {
       "tool": "ElevenLabs",
@@ -90,5 +100,32 @@
       "note": "No official API. Add plan, credits and billing day in manual.json.",
       "source": "manual"
     }
-  ]
+  ],
+  "indexing": {
+    "library": "michael",
+    "by_tool": {
+      "codex_image": 204,
+      "codex_movie": 52,
+      "muse_image": 25,
+      "muse_movie": 6
+    },
+    "days": [
+      {
+        "day": "2026-11-13",
+        "tool": "codex",
+        "n": 61
+      },
+      {
+        "day": "2026-11-13",
+        "tool": "muse",
+        "n": 31
+      },
+      {
+        "day": "2026-11-14",
+        "tool": "codex",
+        "n": 195
+      }
+    ],
+    "library_indexed": 1303
+  }
 }
