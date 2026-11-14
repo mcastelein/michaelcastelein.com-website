@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T19:34:25+00:00",
+  "generated_at": "2026-11-14T22:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 2.0,
-      "resets_at": "2026-11-20T23:59:59.838130+00:00"
+      "resets_at": "2026-11-20T23:59:59.617768+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 8.0,
-      "resets_at": "2026-11-14T20:59:59.838080+00:00"
+      "used_pct": 0.0,
+      "resets_at": null
     },
     {
       "tool": "Codex + ChatGPT",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 13.0,
+      "used_pct": 22.0,
       "resets_at": "2026-11-21T14:35:43+00:00",
-      "as_of": "2026-11-14T17:40:27+00:00",
+      "as_of": "2026-11-14T20:41:25+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -36,28 +36,18 @@
       "source": "live",
       "id": "codex-5h",
       "window": "5 hours",
-      "used_pct": 84.0,
-      "resets_at": "2026-11-14T19:35:43+00:00",
-      "as_of": "2026-11-14T17:40:27+00:00",
+      "used_pct": 36.0,
+      "resets_at": "2026-11-15T01:36:37+00:00",
+      "as_of": "2026-11-14T20:41:25+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
       "id": "muse-week",
-      "plan": "Everyday Usage",
+      "plan": "",
       "source": "live",
       "window": "week",
-      "used_pct": 23.0,
-      "resets_at": "2026-11-16T00:00:00+00:00"
-    },
-    {
-      "tool": "Muse (Meta)",
-      "id": "muse-5h",
-      "plan": "Everyday Usage",
-      "source": "live",
-      "window": "5 hours",
-      "used_pct": 3.0,
-      "resets_at": "2026-11-14T21:02:49+00:00"
+      "note": "No usage reported yet this window. Shows after the first Muse prompt."
     },
     {
       "tool": "ElevenLabs",
@@ -104,8 +94,8 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 234,
-      "codex_movie": 61,
+      "codex_image": 264,
+      "codex_movie": 70,
       "muse_image": 25,
       "muse_movie": 6
     },
@@ -123,9 +113,9 @@
       {
         "day": "2026-11-14",
         "tool": "codex",
-        "n": 234
+        "n": 273
       }
     ],
-    "library_indexed": 1342
+    "library_indexed": 1381
   }
 }
