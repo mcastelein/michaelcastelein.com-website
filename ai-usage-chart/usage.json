@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T16:03:35+00:00",
+  "generated_at": "2026-11-14T16:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 1.0,
-      "resets_at": "2026-11-20T23:59:59.815582+00:00"
+      "resets_at": "2026-11-21T00:00:00.299749+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 0.0,
-      "resets_at": "2026-11-14T20:59:59.815557+00:00"
+      "used_pct": 2.0,
+      "resets_at": "2026-11-14T21:00:00.299729+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
