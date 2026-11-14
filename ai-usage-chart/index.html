@@ -41,6 +41,18 @@ h2{font-size:18px;margin:40px 0 12px}
 .err{color:var(--burn);font-size:13px;margin-top:8px}
 .burnidea{font-size:13px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .burnidea b{font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+.days{display:flex;align-items:flex-end;gap:6px;height:110px;margin-top:16px;border-bottom:1px solid var(--line)}
+.day{flex:1;display:flex;flex-direction:column-reverse;min-width:0}
+.day i{display:block}
+.day i.codex{background:var(--accent)} .day i.muse{background:var(--burn)}
+.dlbl{display:flex;gap:6px;font-size:11px;color:var(--muted);margin-top:4px}
+.dlbl span{flex:1;text-align:center;min-width:0}
+.key{font-size:13px;color:var(--muted);margin-top:10px}
+.key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 ul.ideas{padding-left:20px;margin:0} ul.ideas li{margin:0 0 8px}
 @media (max-width:520px){ .row{grid-template-columns:70px 1fr} .row .when{grid-column:2;text-align:left} }
 </style>
@@ -50,6 +62,9 @@ ul.ideas{padding-left:20px;margin:0} ul.ideas li{margin:0 0 8px}
   <h1>AI usage chart</h1>
   <p class="sub" id="stamp">Loading.</p>
   <div id="list"></div>
+
+  <h2>Video search backlog indexing</h2>
+  <div class="card" id="idx"><div class="note">Loading.</div></div>
 
   <h2>Ways to burn spare usage</h2>
   <div class="card">
@@ -127,6 +142,27 @@ fetch("usage.json", {cache: "no-store"}).then(r => r.json()).then(d => {
     return `<div class="card"><div class="top"><span class="name">${esc(tool)}<span class="plan">${esc(main.plan)}</span></span>
       <span class="tag ${cls}">${label}</span></div>${lines}${notes}${errs}${extra}${idea}</div>`;
   }).join("");
+  const x = d.indexing, box = document.getElementById("idx");
+  if (!x || x.error) { box.innerHTML = `<div class="note">${esc(x ? x.error : "No indexing data.")}</div>`; return; }
+  const b = x.by_tool, n = k => b[k] || 0;
+  const tot = n("codex_image") + n("codex_movie") + n("muse_image") + n("muse_movie");
+  const stat = (v, l) => `<div class="stat"><b>${v.toLocaleString()}</b><span>${l}</span></div>`;
+  const dayKeys = [];
+  for (let i = 13; i >= 0; i--) dayKeys.push(new Date(Date.now() - i * 864e5).toISOString().slice(0, 10));
+  const per = {}; for (const r of x.days) (per[r.day] ||= {})[r.tool] = r.n;
+  const max = Math.max(1, ...dayKeys.map(k => (per[k]?.codex || 0) + (per[k]?.muse || 0)));
+  const bars = dayKeys.map(k => {
+    const c = per[k]?.codex || 0, m = per[k]?.muse || 0;
+    return `<div class="day" title="${k}: ${c} Codex, ${m} Muse"><i class="codex" style="height:${c / max * 100}px"></i><i class="muse" style="height:${m / max * 100}px"></i></div>`;
+  }).join("");
+  const lbls = dayKeys.map((k, i) => `<span>${i % 2 ? "" : k.slice(8)}</span>`).join("");
+  box.innerHTML = `<div class="stats">${stat(tot, "done for free on subscriptions")}
+    ${stat(n("codex_image") + n("codex_movie"), `Codex (${n("codex_image")} photos, ${n("codex_movie")} videos)`)}
+    ${stat(n("muse_image") + n("muse_movie"), `Muse (${n("muse_image")} photos, ${n("muse_movie")} videos)`)}
+    ${stat(x.library_indexed, "items in the search index")}</div>
+    <div class="days">${bars}</div><div class="dlbl">${lbls}</div>
+    <div class="key">Items per day, last 14 days (day of month):<i style="background:var(--accent)"></i>Codex<i style="background:var(--burn)"></i>Muse</div>
+    <div class="note">Old photos and videos from before Jul 28, 2026. Runs every 3 hours. Each tool stops at 80% of its week or 5-hour window. Claude is never used.</div>`;
 }).catch(() => { document.getElementById("stamp").textContent = "Could not load usage.json."; });
 </script>
 </body>
