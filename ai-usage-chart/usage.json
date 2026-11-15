@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T01:34:25+00:00",
+  "generated_at": "2026-11-15T04:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 2.0,
-      "resets_at": "2026-11-21T00:00:00.332106+00:00"
+      "resets_at": "2026-11-21T00:00:00.353168+00:00"
     },
     {
       "tool": "Claude",
@@ -36,28 +36,18 @@
       "source": "live",
       "id": "codex-5h",
       "window": "5 hours",
-      "used_pct": 89.0,
-      "resets_at": "2026-11-15T01:36:37+00:00",
+      "used_pct": 0.0,
+      "resets_at": "2026-11-15T06:36:37+00:00",
       "as_of": "2026-11-14T23:40:50+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
       "id": "muse-week",
-      "plan": "Everyday Usage",
+      "plan": "",
       "source": "live",
       "window": "week",
-      "used_pct": 24.0,
-      "resets_at": "2026-11-16T00:00:00+00:00"
-    },
-    {
-      "tool": "Muse (Meta)",
-      "id": "muse-5h",
-      "plan": "Everyday Usage",
-      "source": "live",
-      "window": "5 hours",
-      "used_pct": 3.0,
-      "resets_at": "2026-11-15T04:34:07+00:00"
+      "note": "No usage reported yet this window. Shows after the first Muse prompt."
     },
     {
       "tool": "ElevenLabs",
@@ -104,10 +94,10 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 294,
-      "codex_movie": 78,
-      "muse_image": 25,
-      "muse_movie": 6
+      "codex_image": 312,
+      "codex_movie": 80,
+      "muse_image": 43,
+      "muse_movie": 7
     },
     "days": [
       {
@@ -124,8 +114,18 @@
         "day": "2026-11-14",
         "tool": "codex",
         "n": 311
+      },
+      {
+        "day": "2026-11-15",
+        "tool": "codex",
+        "n": 20
+      },
+      {
+        "day": "2026-11-15",
+        "tool": "muse",
+        "n": 19
       }
     ],
-    "library_indexed": 1419
+    "library_indexed": 1458
   }
 }
