@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T16:34:25+00:00",
+  "generated_at": "2026-11-15T19:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 2.0,
-      "resets_at": "2026-11-21T00:00:00.141517+00:00"
+      "resets_at": "2026-11-20T23:59:59.900724+00:00"
     },
     {
       "tool": "Claude",
@@ -17,7 +17,7 @@
       "id": "claude-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": null
+      "resets_at": "2026-11-15T21:59:59.900701+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 55.0,
+      "used_pct": 65.0,
       "resets_at": "2026-11-21T14:35:43+00:00",
-      "as_of": "2026-11-15T11:41:40+00:00",
+      "as_of": "2026-11-15T17:42:39+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -37,17 +37,17 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-15T18:40:50+00:00",
-      "as_of": "2026-11-15T11:41:40+00:00",
+      "resets_at": "2026-11-16T00:15:13+00:00",
+      "as_of": "2026-11-15T17:42:39+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
-      "id": "muse-week",
+      "id": "muse",
       "plan": "",
       "source": "live",
-      "window": "week",
-      "note": "No usage reported yet this window. Shows after the first Muse prompt."
+      "window": "?",
+      "error": "    + FullyQualifiedErrorId : MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand"
     },
     {
       "tool": "ElevenLabs",
@@ -94,8 +94,8 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 402,
-      "codex_movie": 103,
+      "codex_image": 433,
+      "codex_movie": 111,
       "muse_image": 73,
       "muse_movie": 19
     },
@@ -118,7 +118,7 @@
       {
         "day": "2026-11-15",
         "tool": "codex",
-        "n": 133
+        "n": 172
       },
       {
         "day": "2026-11-15",
@@ -126,6 +126,6 @@
         "n": 61
       }
     ],
-    "library_indexed": 1615
+    "library_indexed": 1654
   }
 }
