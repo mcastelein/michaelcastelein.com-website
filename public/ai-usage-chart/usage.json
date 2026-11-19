@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T13:34:25+00:00",
+  "generated_at": "2026-11-19T19:53:59+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,17 +7,7 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 44.0,
-      "resets_at": "2026-11-21T00:00:00.294871+00:00"
-    },
-    {
-      "tool": "Claude",
-      "plan": "Max",
-      "source": "live",
-      "id": "claude-5h",
-      "window": "5 hours",
-      "used_pct": 11.0,
-      "resets_at": "2026-11-19T15:30:00.294850+00:00"
+      "error": "read failed (URLError)"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -37,27 +27,24 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-19T15:46:53+00:00",
+      "resets_at": "2026-11-19T20:46:53+00:00",
       "as_of": "2026-11-16T20:44:45+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
-      "id": "muse-week",
+      "id": "muse",
       "plan": "",
       "source": "live",
-      "window": "week",
-      "note": "No usage reported yet this window. Shows after the first Muse prompt."
+      "window": "?",
+      "error": "    + FullyQualifiedErrorId : MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand"
     },
     {
       "tool": "ElevenLabs",
       "id": "elevenlabs",
       "window": "month",
       "source": "live",
-      "plan": "Starter",
-      "used_pct": 8.8,
-      "detail": "7,895 of 90,000 characters",
-      "resets_at": "2026-11-30T08:39:28+00:00"
+      "error": "read failed (URLError)"
     },
     {
       "id": "higgsfield",
