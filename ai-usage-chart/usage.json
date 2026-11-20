@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T07:34:24+00:00",
+  "generated_at": "2026-11-20T10:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 49.0,
-      "resets_at": "2026-11-21T00:00:00.383100+00:00"
+      "resets_at": "2026-11-20T23:59:59.882767+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 22.0,
-      "resets_at": "2026-11-20T07:40:00.383072+00:00"
+      "used_pct": 0.0,
+      "resets_at": "2026-11-20T15:29:59.882747+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -47,7 +47,7 @@
       "plan": "Everyday Usage",
       "source": "live",
       "window": "week",
-      "used_pct": 95.0,
+      "used_pct": 96.0,
       "resets_at": "2026-11-23T00:00:00+00:00"
     },
     {
@@ -57,7 +57,7 @@
       "source": "live",
       "window": "5 hours",
       "used_pct": 3.0,
-      "resets_at": "2026-11-20T07:45:55+00:00"
+      "resets_at": "2026-11-20T13:34:09+00:00"
     },
     {
       "tool": "ElevenLabs",
