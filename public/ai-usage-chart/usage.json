@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T19:34:25+00:00",
+  "generated_at": "2026-11-21T22:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 5.0,
-      "resets_at": "2026-11-28T00:00:00.283698+00:00"
+      "resets_at": "2026-11-27T23:59:59.549003+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 4.0,
-      "resets_at": "2026-11-21T20:50:00.283679+00:00"
+      "used_pct": 0.0,
+      "resets_at": null
     },
     {
       "tool": "Codex + ChatGPT",
@@ -95,7 +95,7 @@
     "library": "michael",
     "by_tool": {
       "codex_image": 459,
-      "codex_movie": 143,
+      "codex_movie": 145,
       "muse_image": 250,
       "muse_movie": 67
     },
@@ -134,8 +134,13 @@
         "day": "2026-11-16",
         "tool": "muse",
         "n": 181
+      },
+      {
+        "day": "2026-11-21",
+        "tool": "codex",
+        "n": 2
       }
     ],
-    "library_indexed": 1973
+    "library_indexed": 1975
   }
 }
