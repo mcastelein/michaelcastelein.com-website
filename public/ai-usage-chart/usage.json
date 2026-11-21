@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T22:34:24+00:00",
+  "generated_at": "2026-11-21T01:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 59.0,
-      "resets_at": "2026-11-20T23:59:59.991311+00:00"
+      "used_pct": 0.0,
+      "resets_at": "2026-11-27T23:59:59.820015+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 7.0,
-      "resets_at": "2026-11-21T01:39:59.991289+00:00"
+      "used_pct": 11.0,
+      "resets_at": "2026-11-21T01:39:59.819990+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -43,21 +43,11 @@
     },
     {
       "tool": "Muse (Meta)",
-      "id": "muse-week",
-      "plan": "Everyday Usage",
+      "id": "muse",
+      "plan": "",
       "source": "live",
-      "window": "week",
-      "used_pct": 98.0,
-      "resets_at": "2026-11-23T00:00:00+00:00"
-    },
-    {
-      "tool": "Muse (Meta)",
-      "id": "muse-5h",
-      "plan": "Everyday Usage",
-      "source": "live",
-      "window": "5 hours",
-      "used_pct": 3.0,
-      "resets_at": "2026-11-21T01:34:11+00:00"
+      "window": "?",
+      "error": "    + FullyQualifiedErrorId : MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand"
     },
     {
       "tool": "ElevenLabs",
