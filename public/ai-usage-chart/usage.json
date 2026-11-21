@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T01:34:25+00:00",
+  "generated_at": "2026-11-21T04:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 0.0,
-      "resets_at": "2026-11-27T23:59:59.820015+00:00"
+      "used_pct": 2.0,
+      "resets_at": "2026-11-28T00:00:00.025154+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 11.0,
-      "resets_at": "2026-11-21T01:39:59.819990+00:00"
+      "used_pct": 5.0,
+      "resets_at": "2026-11-21T07:20:00.025135+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -37,17 +37,27 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-21T02:46:53+00:00",
+      "resets_at": "2026-11-21T07:46:53+00:00",
       "as_of": "2026-11-16T20:44:45+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
-      "id": "muse",
-      "plan": "",
+      "id": "muse-week",
+      "plan": "Everyday Usage",
       "source": "live",
-      "window": "?",
-      "error": "    + FullyQualifiedErrorId : MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand"
+      "window": "week",
+      "used_pct": 99.0,
+      "resets_at": "2026-11-23T00:00:00+00:00"
+    },
+    {
+      "tool": "Muse (Meta)",
+      "id": "muse-5h",
+      "plan": "Everyday Usage",
+      "source": "live",
+      "window": "5 hours",
+      "used_pct": 3.0,
+      "resets_at": "2026-11-21T07:34:09+00:00"
     },
     {
       "tool": "ElevenLabs",
