@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T22:34:24+00:00",
+  "generated_at": "2026-11-22T01:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 5.0,
-      "resets_at": "2026-11-27T23:59:59.549003+00:00"
+      "resets_at": "2026-11-28T00:00:00.355942+00:00"
     },
     {
       "tool": "Claude",
@@ -37,7 +37,7 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-21T22:46:53+00:00",
+      "resets_at": "2026-11-22T03:46:53+00:00",
       "as_of": "2026-11-16T20:44:45+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
@@ -94,8 +94,8 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 459,
-      "codex_movie": 145,
+      "codex_image": 465,
+      "codex_movie": 146,
       "muse_image": 250,
       "muse_movie": 67
     },
@@ -138,9 +138,9 @@
       {
         "day": "2026-11-21",
         "tool": "codex",
-        "n": 2
+        "n": 9
       }
     ],
-    "library_indexed": 1975
+    "library_indexed": 1982
   }
 }
