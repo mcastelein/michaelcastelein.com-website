@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T07:34:24+00:00",
+  "generated_at": "2026-11-22T10:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 5.0,
-      "resets_at": "2026-11-27T23:59:59.553715+00:00"
+      "resets_at": "2026-11-28T00:00:00.120578+00:00"
     },
     {
       "tool": "Claude",
@@ -17,7 +17,7 @@
       "id": "claude-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": null
+      "resets_at": "2026-11-22T15:30:00.120557+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -37,7 +37,7 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-22T08:46:53+00:00",
+      "resets_at": "2026-11-22T13:46:53+00:00",
       "as_of": "2026-11-16T20:44:45+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
