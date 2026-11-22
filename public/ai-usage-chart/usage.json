@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T04:34:24+00:00",
+  "generated_at": "2026-11-22T07:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 5.0,
-      "resets_at": "2026-11-27T23:59:59.660552+00:00"
+      "resets_at": "2026-11-27T23:59:59.553715+00:00"
     },
     {
       "tool": "Claude",
@@ -141,6 +141,6 @@
         "n": 9
       }
     ],
-    "library_indexed": 1982
+    "library_indexed": 1989
   }
 }
