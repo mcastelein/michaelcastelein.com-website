@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T22:34:24+00:00",
+  "generated_at": "2026-11-23T01:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 6.0,
-      "resets_at": "2026-11-27T23:59:59.900078+00:00"
+      "resets_at": "2026-11-27T23:59:59.694263+00:00"
     },
     {
       "tool": "Claude",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 14.0,
+      "used_pct": 27.0,
       "resets_at": "2026-11-28T20:45:54+00:00",
-      "as_of": "2026-11-22T20:44:20+00:00",
+      "as_of": "2026-11-22T23:45:27+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -36,9 +36,9 @@
       "source": "live",
       "id": "codex-5h",
       "window": "5 hours",
-      "used_pct": 76.0,
-      "resets_at": "2026-11-22T22:36:15+00:00",
-      "as_of": "2026-11-22T20:44:20+00:00",
+      "used_pct": 55.0,
+      "resets_at": "2026-11-23T04:36:06+00:00",
+      "as_of": "2026-11-22T23:45:27+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -94,8 +94,8 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 509,
-      "codex_movie": 168,
+      "codex_image": 531,
+      "codex_movie": 185,
       "muse_image": 250,
       "muse_movie": 67
     },
@@ -143,9 +143,9 @@
       {
         "day": "2026-11-22",
         "tool": "codex",
-        "n": 66
+        "n": 105
       }
     ],
-    "library_indexed": 2055
+    "library_indexed": 2094
   }
 }
