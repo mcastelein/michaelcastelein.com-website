@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T10:34:24+00:00",
+  "generated_at": "2026-11-23T13:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 8.0,
-      "resets_at": "2026-11-28T00:00:00.364764+00:00"
+      "used_pct": 9.0,
+      "resets_at": "2026-11-28T00:00:00.144492+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 0.0,
-      "resets_at": "2026-11-23T15:30:00.364741+00:00"
+      "used_pct": 5.0,
+      "resets_at": "2026-11-23T15:30:00.144469+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 50.0,
+      "used_pct": 59.0,
       "resets_at": "2026-11-28T20:45:54+00:00",
-      "as_of": "2026-11-23T05:46:10+00:00",
+      "as_of": "2026-11-23T11:41:05+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -36,28 +36,18 @@
       "source": "live",
       "id": "codex-5h",
       "window": "5 hours",
-      "used_pct": 52.0,
-      "resets_at": "2026-11-23T10:36:22+00:00",
-      "as_of": "2026-11-23T05:46:10+00:00",
+      "used_pct": 32.0,
+      "resets_at": "2026-11-23T16:36:23+00:00",
+      "as_of": "2026-11-23T11:41:05+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
       "tool": "Muse (Meta)",
       "id": "muse-week",
-      "plan": "Everyday Usage",
+      "plan": "",
       "source": "live",
       "window": "week",
-      "used_pct": 61.0,
-      "resets_at": "2026-11-30T00:00:00+00:00"
-    },
-    {
-      "tool": "Muse (Meta)",
-      "id": "muse-5h",
-      "plan": "Everyday Usage",
-      "source": "live",
-      "window": "5 hours",
-      "used_pct": 101.0,
-      "resets_at": "2026-11-23T13:34:08+00:00"
+      "note": "No usage reported yet this window. Shows after the first Muse prompt."
     },
     {
       "tool": "ElevenLabs",
@@ -104,8 +94,8 @@
   "indexing": {
     "library": "michael",
     "by_tool": {
-      "codex_image": 560,
-      "codex_movie": 214,
+      "codex_image": 592,
+      "codex_movie": 221,
       "muse_image": 268,
       "muse_movie": 95
     },
@@ -158,7 +148,7 @@
       {
         "day": "2026-11-23",
         "tool": "codex",
-        "n": 58
+        "n": 97
       },
       {
         "day": "2026-11-23",
@@ -166,6 +156,6 @@
         "n": 46
       }
     ],
-    "library_indexed": 2217
+    "library_indexed": 2256
   }
 }
