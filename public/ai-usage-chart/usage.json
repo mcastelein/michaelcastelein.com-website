@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T04:34:25+00:00",
+  "generated_at": "2026-11-27T05:06:07+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 38.0,
-      "resets_at": "2026-11-27T23:59:59.600059+00:00"
+      "resets_at": "2026-11-27T23:59:59.732349+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 0.0,
-      "resets_at": null
+      "used_pct": 2.0,
+      "resets_at": "2026-11-27T09:59:59.732330+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -25,9 +25,9 @@
       "source": "live",
       "id": "codex-week",
       "window": "week",
-      "used_pct": 83.0,
+      "used_pct": 86.0,
       "resets_at": "2026-11-28T20:45:54+00:00",
-      "as_of": "2026-11-24T05:48:45+00:00",
+      "as_of": "2026-11-27T05:01:34+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -37,8 +37,8 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-26T07:36:11+00:00",
-      "as_of": "2026-11-24T05:48:45+00:00",
+      "resets_at": "2026-11-27T10:01:46+00:00",
+      "as_of": "2026-11-27T05:01:34+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
     {
@@ -100,16 +100,6 @@
       "muse_movie": 105
     },
     "days": [
-      {
-        "day": "2026-11-13",
-        "tool": "codex",
-        "n": 61
-      },
-      {
-        "day": "2026-11-13",
-        "tool": "muse",
-        "n": 31
-      },
       {
         "day": "2026-11-14",
         "tool": "codex",
