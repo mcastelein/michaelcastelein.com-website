@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T05:06:07+00:00",
+  "generated_at": "2026-11-27T10:34:24+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -7,8 +7,8 @@
       "source": "live",
       "id": "claude-week",
       "window": "week",
-      "used_pct": 38.0,
-      "resets_at": "2026-11-27T23:59:59.732349+00:00"
+      "used_pct": 40.0,
+      "resets_at": "2026-11-27T23:59:59.532841+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 2.0,
-      "resets_at": "2026-11-27T09:59:59.732330+00:00"
+      "used_pct": 3.0,
+      "resets_at": "2026-11-27T15:29:59.532817+00:00"
     },
     {
       "tool": "Codex + ChatGPT",
@@ -37,7 +37,7 @@
       "id": "codex-5h",
       "window": "5 hours",
       "used_pct": 0.0,
-      "resets_at": "2026-11-27T10:01:46+00:00",
+      "resets_at": "2026-11-27T15:01:46+00:00",
       "as_of": "2026-11-27T05:01:34+00:00",
       "note": "Last seen in a Codex session log. Updates when you next use Codex."
     },
@@ -156,6 +156,6 @@
         "n": 5
       }
     ],
-    "library_indexed": 2381
+    "library_indexed": 2403
   }
 }
