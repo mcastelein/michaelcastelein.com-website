@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T04:34:25+00:00",
+  "generated_at": "2026-11-28T07:34:25+00:00",
   "tools": [
     {
       "tool": "Claude",
@@ -8,7 +8,7 @@
       "id": "claude-week",
       "window": "week",
       "used_pct": 8.0,
-      "resets_at": "2026-12-04T23:59:59.982876+00:00"
+      "resets_at": "2026-12-04T23:59:59.709079+00:00"
     },
     {
       "tool": "Claude",
@@ -16,8 +16,8 @@
       "source": "live",
       "id": "claude-5h",
       "window": "5 hours",
-      "used_pct": 4.0,
-      "resets_at": "2026-11-28T06:29:59.982856+00:00"
+      "used_pct": 0.0,
+      "resets_at": null
     },
     {
       "tool": "Codex + ChatGPT",
@@ -44,10 +44,20 @@
     {
       "tool": "Muse (Meta)",
       "id": "muse-week",
-      "plan": "",
+      "plan": "Everyday Usage",
       "source": "live",
       "window": "week",
-      "note": "No usage reported yet this window. Shows after the first Muse prompt."
+      "used_pct": 94.0,
+      "resets_at": "2026-11-30T00:00:00+00:00"
+    },
+    {
+      "tool": "Muse (Meta)",
+      "id": "muse-5h",
+      "plan": "Everyday Usage",
+      "source": "live",
+      "window": "5 hours",
+      "used_pct": 3.0,
+      "resets_at": "2026-11-28T10:34:09+00:00"
     },
     {
       "tool": "ElevenLabs",
@@ -151,6 +161,6 @@
         "n": 5
       }
     ],
-    "library_indexed": 2403
+    "library_indexed": 2413
   }
 }
